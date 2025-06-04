@@ -68,8 +68,8 @@ public class Apexplanner {
 //        
         /*CSV ANALIZER*/
         //List<List<Double>> matriz=  csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/fichero de Three/ablacion.csv");
-        List<List<Double>> matriz=  csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv");
-        //List<List<Double>> matriz = csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv");
+        //List<List<Double>> matriz=  csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv");
+        List<List<Double>> matriz = csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv");
         csv.leerPunto(150, 265, matriz);
 //        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
 //        System.out.println("BREAK!");

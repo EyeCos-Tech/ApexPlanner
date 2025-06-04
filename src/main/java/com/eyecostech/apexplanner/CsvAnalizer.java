@@ -18,7 +18,6 @@ import org.bytedeco.opencv.opencv_core.MatVector;
 import org.bytedeco.opencv.opencv_core.Point;
 import org.bytedeco.opencv.opencv_core.Scalar;
 
-
 /**
  * CARREGAR I ANALITZAR UNA MATRIU CSV EXTRETA DEL THREE_I_TECH AMB EL MAPA
  * TOPOGRAFIC D'ABLACIO EXTREURE'N ELS SHOOTS NECESSARIS PER LA CORRECCIO
@@ -28,7 +27,12 @@ import org.bytedeco.opencv.opencv_core.Scalar;
 public class CsvAnalizer {
 
     public Calculador calc = new Calculador();
+    public Mat image;
 
+    public Mat getImage() {
+
+        return image;
+    }
     /*crea una matriu*/
     public List<List<Double>> cerarMatriz(String path) {
         String csvPath = path;
@@ -111,28 +115,37 @@ public class CsvAnalizer {
 //                matrix.get(y).set(x, valor * 1000); // Escala ×1000
 //            }
 //        }
-        // Escalado
-        double maxValue = matrix.stream()
-                .flatMap(List::stream)
-                .mapToDouble(Double::doubleValue)
-                .max().orElse(1.0);
 
+        /*FET A PARTIR DELS VALORS (ablacio) DE CADA PUNT DE LA MATRIU*/
+        // Escalado
+//        double maxValue = matrix.stream()
+//                .flatMap(List::stream)
+//                .mapToDouble(Double::doubleValue)
+//                .max().orElse(1.0);
+//        for (int y = 0; y < rows; y++) {
+//            for (int x = 0; x < cols; x++) {
+//                int grayValue = (int) (255.0 * matrix.get(y).get(x) / maxValue);
+//                grayValue = Math.min(255, Math.max(0, grayValue));
+//                image.ptr(y, x).put((byte) grayValue);
+//            }
+//        }
+
+        /*FET A PARTIR DELS NUMEROS DE SHOOT DE CADA PUNT DE LA MATRIU*/
+        // Escalado
+        double maxValue = calc.maxShoots(matrix);
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
-                int grayValue = (int) (255.0 * matrix.get(y).get(x) / maxValue);
+                int grayValue = (int) (255.0 * calc.numeroShoots(matrix.get(y).get(x), calc.mmXShoot(193)) / maxValue);
                 grayValue = Math.min(255, Math.max(0, grayValue));
                 image.ptr(y, x).put((byte) grayValue);
             }
         }
 
-        // Colormap:pasar al image de grisos a color
+        // Colormap:c pasar la image de grisos a color
         Mat colorMap = new Mat();
         opencv_imgproc.applyColorMap(image, colorMap, opencv_imgproc.COLORMAP_JET);
         addIsobaras(image, colorMap, matrix, 20); // 10 isobaras
 
-        
-        
-        
 //        double[] niveles = {0.0003,0.0008, 0.001,0.005,0.009,0.01,0.05,0.09,0.1,0.5,0.9,1.0}; // mm u otra unidad
 //        //Scalar rojo = new Scalar(0.0, 0.0, 255.0, 0.0);  // B, G, R, Alpha
 //        Scalar[] colores = {
@@ -145,8 +158,6 @@ public class CsvAnalizer {
 //        };
 //        double alpha = 0.5;
         //addIsobarasPersonalizadas(image, colorMap, matrix, niveles, colores, alpha);
-       
-        
         String windowName = "Mapa de Ablacion Corneal";
         opencv_highgui.namedWindow(windowName, opencv_highgui.WINDOW_NORMAL);
         //opencv_highgui.resizeWindow(windowName, 800, 600);
@@ -182,6 +193,11 @@ public class CsvAnalizer {
         opencv_highgui.waitKey(0);
         opencv_highgui.destroyAllWindows();
     }
+    
+    public void imprimirOImagen(){
+        
+    }
+
 
     public void addIsobaras(Mat grayImage, Mat colorImage, List<List<Double>> matrix, int numIsobaras) {
         int rows = matrix.size();
@@ -198,7 +214,6 @@ public class CsvAnalizer {
 //                .flatMap(List::stream)
 //                .mapToDouble(Double::doubleValue)
 //                .max().orElse(1.0);
-        
 
         for (int i = 1; i < numIsobaras; i++) {
             double thresholdValue = maxValue * i / numIsobaras;
@@ -207,7 +222,7 @@ public class CsvAnalizer {
             // Convertimos el valor de isobara a escala de grises [0-255]
             double thresholdGray = thresholdValue * 255.0 / maxValue;
 
-            // Umbralizar imagen
+            // Umbralizar imagen -> pasar els pixels a blanc o negre
             Mat thresholded = new Mat();
             opencv_imgproc.threshold(grayImage, thresholded, thresholdGray, 255, opencv_imgproc.THRESH_BINARY);
 
@@ -216,7 +231,6 @@ public class CsvAnalizer {
             Mat hierarchy = new Mat();
             opencv_imgproc.findContours(thresholded, contours, hierarchy, opencv_imgproc.RETR_EXTERNAL, opencv_imgproc.CHAIN_APPROX_SIMPLE);
 
-            
             // Dibujar todos los contornos encontrados
             for (int j = 0; j < contours.size(); j++) {
                 Scalar color = new Scalar(0, 0, 0, 0); //colo isobara(Negro)
