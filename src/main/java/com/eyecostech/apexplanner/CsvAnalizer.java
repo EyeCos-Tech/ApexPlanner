@@ -27,12 +27,17 @@ import org.bytedeco.opencv.opencv_core.Scalar;
 public class CsvAnalizer {
 
     public Calculador calc = new Calculador();
-    public Mat image;
+    public Mat image = null;
 
     public Mat getImage() {
 
         return image;
     }
+
+    public void setImage(Mat image) {
+
+    }
+
     /*crea una matriu*/
     public List<List<Double>> cerarMatriz(String path) {
         String csvPath = path;
@@ -100,8 +105,8 @@ public class CsvAnalizer {
         return ablacion;
     }
 
-    /*Mostra una imatge en color representant la matriu del csv i retorna la cantitat de disparos que has de fer en el punt on clickes cvu*/
-    public void mostrarImagen(List<List<Double>> matrix) {
+    /*prepara una imatge en color representant la matriu del csv i retorna la  imatge*/
+    public Mat prepararImagen(List<List<Double>> matrix) {
         //double ablacion;
 
         int rows = matrix.size();
@@ -140,11 +145,13 @@ public class CsvAnalizer {
                 image.ptr(y, x).put((byte) grayValue);
             }
         }
+        System.out.println("el maxim de shoots que te algun punt de la matriu es : " + maxValue);
 
         // Colormap:c pasar la image de grisos a color
         Mat colorMap = new Mat();
         opencv_imgproc.applyColorMap(image, colorMap, opencv_imgproc.COLORMAP_JET);
         addIsobaras(image, colorMap, matrix, 20); // 10 isobaras
+        image = colorMap;
 
 //        double[] niveles = {0.0003,0.0008, 0.001,0.005,0.009,0.01,0.05,0.09,0.1,0.5,0.9,1.0}; // mm u otra unidad
 //        //Scalar rojo = new Scalar(0.0, 0.0, 255.0, 0.0);  // B, G, R, Alpha
@@ -158,8 +165,50 @@ public class CsvAnalizer {
 //        };
 //        double alpha = 0.5;
         //addIsobarasPersonalizadas(image, colorMap, matrix, niveles, colores, alpha);
+//        String windowName = "Mapa de Ablacion Corneal";
+//        opencv_highgui.namedWindow(windowName, opencv_highgui.WINDOW_NORMAL);
+        //opencv_highgui.resizeWindow(windowName, 800, 600);
+
+        /*capturar punt de la imatge x/y i retorna valor. Dona lo mateix que el metode leerPunto()*/
+        // Callback del mouse 
+//        opencv_highgui.setMouseCallback(windowName, new MouseCallback() {
+//            @Override
+//            public void call(int event, int x, int y, int flags, Pointer userdata) {
+//                if (event == opencv_highgui.EVENT_LBUTTONDOWN) {
+//                    if (y < matrix.size() && x < matrix.get(0).size()) {
+//                        double valor = matrix.get(y).get(x);
+//
+//                        // Redondea a 4 decimales
+//                        BigDecimal bd = new BigDecimal(valor);
+//                        bd = bd.setScale(4, RoundingMode.HALF_DOWN);
+//                        double valorRedondo = bd.doubleValue();
+//
+//                        DecimalFormat df = new DecimalFormat("#.####");
+//                        System.out.println("Click en: X=" + x + ", Y=" + y + " -> Valor: " + df.format(valorRedondo) + " mm");
+//
+//                        double mm = valorRedondo; //????????????
+//
+//                        String numero = String.valueOf(mm);
+//                        calc.numeroShoots(numero, calc.mmXShoot(193));//calcula el numero de disparos que necessita per un laser de potencia estandard (193 de longitud d'ona)
+//
+//                    }
+//                }
+//            }
+//        });
+//        opencv_highgui.imshow(windowName, colorMap);
+//        opencv_highgui.waitKey(0);
+//        opencv_highgui.destroyAllWindows();
+        this.setImage(image);
+
+        return image;
+    }
+
+    /*mostra la imatge i imprimeix a consola la cantitat de disparos que has de fer en el punt on clickes */
+    public void imprimirImagen(Mat imagen, List<List<Double>> matrix) {
+
         String windowName = "Mapa de Ablacion Corneal";
         opencv_highgui.namedWindow(windowName, opencv_highgui.WINDOW_NORMAL);
+        imagen = prepararImagen(matrix);
         //opencv_highgui.resizeWindow(windowName, 800, 600);
 
         /*capturar punt de la imatge x/y i retorna valor. Dona lo mateix que el metode leerPunto()*/
@@ -189,19 +238,15 @@ public class CsvAnalizer {
             }
         });
 
-        opencv_highgui.imshow(windowName, colorMap);
+        opencv_highgui.imshow(windowName, imagen);
         opencv_highgui.waitKey(0);
         opencv_highgui.destroyAllWindows();
-    }
-    
-    public void imprimirOImagen(){
-        
-    }
 
+    }
 
     public void addIsobaras(Mat grayImage, Mat colorImage, List<List<Double>> matrix, int numIsobaras) {
-        int rows = matrix.size();
-        int cols = matrix.get(0).size();
+//        int rows = matrix.size();
+//        int cols = matrix.get(0).size();
 
         // Obtindre valor maxim dels elements de la matriu
 //        double maxValue = matrix.stream()
@@ -290,22 +335,3 @@ public class CsvAnalizer {
     }
 
 }
-
-//
-// ¿Qué hace este código?
-//Lee el archivo CSV ignorando encabezados.
-//
-//Convierte la matriz de ablación en una imagen en escala de grises.
-//
-//Aplica un colormap (COLORMAP_JET) para mejor visualización.
-//
-//Muestra la imagen con OpenCV.
-//
-//Permite leer la ablación en una coordenada específica.
-//
-//✅ Requisitos
-//Java 11 o superior.
-//
-//Archivo CSV con formato como el que me compartiste.
-//
-//Una IDE (como IntelliJ o Eclipse) con soporte para Maven.

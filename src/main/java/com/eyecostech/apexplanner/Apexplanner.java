@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Scanner;
 import javax.swing.JFrame;
+import org.bytedeco.opencv.opencv_core.AbstractMat;
 
 /**
  *
@@ -43,7 +44,7 @@ public class Apexplanner {
                 }
             }
 
-            pow = calc.potenciaLaser(potencia);
+            pow = calc.setPotenciaLaser(potencia);
             ab = calc.mmXShoot(pow);
             numeroShoots = calc.numeroShoots(ablacionNecesaria, ab);
 
@@ -80,7 +81,8 @@ public class Apexplanner {
         //System.out.println("total: "+calc.calcularNumeroShootsTotal(matriz));
         //System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
         calc.maxShoots(matriz);
-        csv.mostrarImagen(matriz);
+        //csv.mostrarImagen(matriz);
+        csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
 
         sc.close();
 

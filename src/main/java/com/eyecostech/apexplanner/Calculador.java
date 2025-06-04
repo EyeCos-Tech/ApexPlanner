@@ -22,19 +22,19 @@ public class Calculador {
 
     /*Alt + 0181*/
  /*DEMANA LA POTENCIA DEL LASER*/
-    public int potenciaLaser(String potencia) {
+    public int setPotenciaLaser(String potencia) {
         int numeroPotencia;
 
         if (potencia == "") {
             numeroPotencia = 193;
-            System.out.println("BREAK!");
+            System.out.println("Longitud de oda de laser Standard: 193");
 
         } else {
 
             numeroPotencia = Integer.parseInt(potencia);
         }
 
-        System.out.println("Potencia laser: " + numeroPotencia);
+        System.out.println("Longitud de onda del laser: " + numeroPotencia);
         return numeroPotencia;
     }
 
@@ -42,7 +42,8 @@ public class Calculador {
     public double mmXShoot(int potencia) {
         double referenciaPow = 193;
         double referenciaAbl = 0.00025;
-
+        
+        /*regla de 3 amb les referencies d'ablacio dels laser de 193*/
         double ablacion = (referenciaAbl / referenciaPow) * potencia;//???
         DecimalFormat df = new DecimalFormat("#.####");
         //System.out.println("mm d'ablacio per disparo: " + df.format(ablacion));
@@ -138,7 +139,7 @@ public class Calculador {
             }
         }
 
-        System.out.println("el maxim de shoots que te algun punt de la matriu es : " + maxShoots);
+        //System.out.println("el maxim de shoots que te algun punt de la matriu es : " + maxShoots);
 
         return maxShoots;
     }
