@@ -68,8 +68,8 @@ public class Apexplanner {
 //        
         /*CSV ANALIZER*/
         //List<List<Double>> matriz=  csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/fichero de Three/ablacion.csv");
-        //List<List<Double>> matriz=  csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv");
-        List<List<Double>> matriz = csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv");
+        List<List<Double>> matriz=  csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv");
+        //List<List<Double>> matriz = csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv");
         csv.leerPunto(150, 265, matriz);
 //        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
 //        System.out.println("BREAK!");
@@ -79,6 +79,7 @@ public class Apexplanner {
         //System.out.println("Numero total de disparos: "+calc.calcularNumeroShootsTotal(matriz));
         //System.out.println("total: "+calc.calcularNumeroShootsTotal(matriz));
         //System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
+        calc.maxShoots(matriz);
         csv.mostrarImagen(matriz);
 
         sc.close();
