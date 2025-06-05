@@ -13,6 +13,10 @@ import javax.imageio.ImageIO;
  * CREADOR DE UNA LISTA DE IMAGENES DE 1 BIT CON 0= NO SHOOT 1= SHOOTLOS
  * DISPAROS
  *
+ * TAL I COM ESTA EL LASER HA DE DISPARAR ON ESTA PINTAT DE BLANC EN CADA IMATGE
+ * DINS ARRIBAR AL FINA ON TOT ES NEGRE I PER TANT NO HA DE DISPARAR ENLLOC
+ *
+ *
  * @author Pau Savall
  */
 public class ImageListCreator {
@@ -70,9 +74,17 @@ public class ImageListCreator {
         return lista;
     }
 
+    /*pintar el contorn de l'ull*/
+    public void pintarContorno(int x, int y, double valor, BufferedImage image, int index) {
+//        if(/*x Es al contorn dels ulls&&y es al contorn els ulls*/){
+//          image.setRGB(x, y, Color.BLACK.getRGB());
+//        }
+
+    }
+    
     public void pintarPunto(int x, int y, double valor, BufferedImage image, int index) {
-        
-        double shoots= calc.numeroShoots(valor, calc.mmXShoot(193));
+
+        double shoots = calc.numeroShoots(valor, calc.mmXShoot(193));
         if (shoots > 0.0 && shoots <= index) {
             image.setRGB(x, y, Color.BLACK.getRGB());
             //System.out.println("blanc");
@@ -85,11 +97,11 @@ public class ImageListCreator {
     public void guardarImagenes(ArrayList<BufferedImage> lista) {
         System.out.println("BREAK guardar imagenes");
         BufferedImage img;
-        
-         File csvFile = new File(path); // path apunta al .csv
+
+        File csvFile = new File(path); // path apunta al .csv
         File parentDir = csvFile.getParentFile(); // obtiene la carpeta que contiene el .csv
         File dir = new File(parentDir, "imgList"); // crea carpeta imgList en esa ruta
-        
+
         if (!dir.exists()) {
             dir.mkdirs(); // Crea el directorio (y subdirectorios si es necesario)
         }
