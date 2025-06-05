@@ -1,6 +1,7 @@
 package com.eyecostech.apexplanner;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -67,6 +68,7 @@ public class ImageListCreator {
             }
 
             indice++;//pintar
+            pintarContorno(imagen);
             lista.add(imagen);
             //guardarImagen(imagen, ind);
             ind++;
@@ -75,13 +77,28 @@ public class ImageListCreator {
     }
 
     /*pintar el contorn de l'ull*/
-    public void pintarContorno(int x, int y, double valor, BufferedImage image, int index) {
-//        if(/*x Es al contorn dels ulls&&y es al contorn els ulls*/){
-//          image.setRGB(x, y, Color.BLACK.getRGB());
-//        }
+    public void pintarContorno(BufferedImage image) {
+        int altura = image.getHeight();
+        int amplada = image.getWidth();
+        int radio = 124; // ==========> Com extreure el radi de l'ull de la imatge?????????????
+
+        int centroX = amplada / 2;
+        int centroY = altura / 2;
+
+        // Obtener el contexto gráfico
+        Graphics2D g2d = image.createGraphics();
+
+        // Configurar color del borde del círculo
+        g2d.setColor(Color.BLACK);
+
+        // Dibujar un óvalo (círculo) vacío
+        g2d.drawOval(centroX - radio, centroY - radio, radio * 2, radio * 2);
+
+        // Liberar recursos gráficos
+        g2d.dispose();
 
     }
-    
+
     public void pintarPunto(int x, int y, double valor, BufferedImage image, int index) {
 
         double shoots = calc.numeroShoots(valor, calc.mmXShoot(193));
@@ -151,7 +168,50 @@ public class ImageListCreator {
 }
 
 
-/*
+/*PINTAR EL CONTORNO*/
+ /*
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+
+public class CirculoVacio {
+    public static void main(String[] args) {
+        int size = 200;
+        int radius = 80;
+        int centerX = size / 2;
+        int centerY = size / 2;
+
+        // Crear imagen
+        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+
+        // Obtener el contexto gráfico
+        Graphics2D g2d = image.createGraphics();
+
+        // Rellenar fondo blanco
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(0, 0, size, size);
+
+        // Configurar color del borde del círculo
+        g2d.setColor(Color.BLACK);
+
+        // Dibujar un óvalo (círculo) vacío
+        g2d.drawOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
+
+        // Liberar recursos gráficos
+        g2d.dispose();
+
+        // Guardar la imagen
+        try {
+            ImageIO.write(image, "png", new File("circulo_vacio.png"));
+            System.out.println("Imagen guardada correctamente.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}*/
+ /*
 ArrayList<BufferedImage> imagenes = new ArrayList<>();
 
 // Agregar imágenes dinámicamente
