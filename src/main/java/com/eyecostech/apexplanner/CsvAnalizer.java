@@ -45,8 +45,9 @@ public class CsvAnalizer {
         if (matrix == null) {
             System.out.println("No se pudo cargar el archivo.");
 
+        } else {
+            System.out.println("Csv "+csvPath+ " carreget amb exit");
         }
-
 //        int rows = matrix.size();
 //        int cols = matrix.get(0).size();
         return matrix;
@@ -101,7 +102,7 @@ public class CsvAnalizer {
         int columnaX = x; // por ejemplo, X=0.5 está en columna 5
 
         double ablacion = matrix.get(filaY).get(columnaX);
-        System.out.println("Ablacion en x= " + x + " y=  " + y + ": " + ablacion + " micras");
+        //System.out.println("Ablacion en x= " + x + " y=  " + y + ": " + ablacion + " micras");
         return ablacion;
     }
 
