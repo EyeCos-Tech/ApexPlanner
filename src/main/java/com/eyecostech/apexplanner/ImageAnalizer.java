@@ -160,7 +160,7 @@ public class ImageAnalizer {
 
         byte[] pixels = ((DataBufferByte) imagen.getRaster().getDataBuffer()).getData();
         Mat mat = new Mat(imagen.getHeight(), imagen.getWidth(), CvType.CV_8UC3);
-        //mat.put(0, 0, pixels);
+        //mat.put(0, 0, pixels); AREGLAR!!!!
         return mat;
     }
 
