@@ -65,6 +65,9 @@ public class Apexplanner {
 
         Apexplanner obj = new Apexplanner();
 
+        
+        
+        
         /*CALCULATOR*/
         //obj.solicitudDeClaculos(sc);
 //        /*IMAGE ANALIZER*/
@@ -75,6 +78,10 @@ public class Apexplanner {
 //        imageAnalizer.mostrarImagen(imagen, frame); //mostrar imatge i dir el color en RGB del pixel pulsat pel mouse
 //        System.out.println("Codigo color pixel " + 100 + " " + 150 + ": \nRGB:" + pixel[0] + "/" + pixel[1] + "/" + pixel[2]);
 //        
+
+
+
+
         /*CSV ANALIZER*/
         //List<List<Double>> matriz=  csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/fichero de Three/ablacion.csv");
         //List<List<Double>> matriz=  csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv");
@@ -91,19 +98,27 @@ public class Apexplanner {
         //calc.maxShoots(matriz);
         //csv.mostrarImagen(matriz);
         //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
-        sc.close();
 
+        
+        
+        
+        
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
         try {
             //imageList = new ImageListCreator("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/fichero de Three/ablacion.csv");
+            //imageList = new ImageListCreator("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv");
             imageList = new ImageListCreator("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv");
-            ArrayList<BufferedImage> lista = imageList.crearListaimagenes(imageList.getMatriz());
-            //System.out.println("break");
+            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
             imageList.guardarImagenes(lista);
-            // Tu código aquí
+            
         } catch (Exception e) {
-            e.printStackTrace(); // Esto muestra en qué clase y línea ocurrió el error
+            e.printStackTrace(); // mostra la linea on ha saltat l'error
         }
+
+        
+        sc.close();
+    }
+}
 
 //        /*DISCO 1 BIT*/
 //        int size = 200; // Tamaño de la imagen
@@ -132,5 +147,3 @@ public class Apexplanner {
 //        } catch (IOException e) {
 //            System.err.println("Error al guardar la imagen: " + e.getMessage());
 //        }
-    }
-}

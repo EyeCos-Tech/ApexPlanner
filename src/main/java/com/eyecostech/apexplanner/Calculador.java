@@ -133,6 +133,7 @@ public class Calculador {
             for (int j = 0; j < cols; j++) {
                 double ablacion = matriz.get(i).get(j);
                 double shoots = numeroShoots(ablacion, calc.mmXShoot(193));
+                //double shoots = numeroShoots(ablacion, calc.mmXShoot(213));
                 if (shoots >= maxShoots) {
                     maxShoots = shoots;
                 }

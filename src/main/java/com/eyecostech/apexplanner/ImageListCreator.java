@@ -2,12 +2,18 @@ package com.eyecostech.apexplanner;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import javax.imageio.ImageIO;
+import marvin.image.MarvinImage;
+import marvin.io.MarvinImageIO;
 
 /**
  *
@@ -41,7 +47,9 @@ public class ImageListCreator {
         return this.matriz;
     }
 
-    public ArrayList<BufferedImage> crearListaimagenes(List<List<Double>> matriz) {
+    public ArrayList<BufferedImage> crearListaImagenes(List<List<Double>> matriz) {
+//        int rows = matriz.get(0).size();
+//        int cols = matriz.size();
         int rows = matriz.size();
         int cols = matriz.get(0).size();
         double max = calc.maxShoots(matriz);
@@ -52,6 +60,7 @@ public class ImageListCreator {
 
         for (int k = 0; k < max; k++) { //repeteix fins al maxim dde shots que te el punt que te mes shoots
             BufferedImage imagen = new BufferedImage(rows, cols, BufferedImage.TYPE_BYTE_BINARY);
+            //BufferedImage imagen = new BufferedImage( cols, rows,BufferedImage.TYPE_BYTE_BINARY);
             //System.out.println("BREAK");
 
             for (int i = 0; i <= cols - 1; i++) {
@@ -68,12 +77,67 @@ public class ImageListCreator {
             }
 
             indice++;//pintar
+
+            /*forçar a negre el punt del centre*/
+            int centroX = imagen.getWidth() / 2;
+            int centroY = imagen.getHeight() / 2;
+            // Si el punto del centro sigue siendo blanco, lo pintamos manualmente
+            imagen.setRGB(centroX, centroY, Color.BLACK.getRGB());
+
             pintarContorno(imagen);
-            lista.add(imagen);
+
+            //lista.add(imagen);//guardar imatge 
+            lista.add(girarImagen90Izquierda(imagen)); //guardar imatge rotada
             //guardarImagen(imagen, ind);
             ind++;
+//            /*comprobar el colore del punt del centre*/
+//            int centroX = imagen.getWidth() / 2;
+//            int centroY = imagen.getHeight() / 2;
+//            int rgb = imagen.getRGB(centroX, centroY);
+//            System.out.println("Color en el centro (frame " + indice + "): " + Integer.toHexString(rgb));
         }
+
         return lista;
+    }
+
+    public void crearTXTInstrucciones(String path, String texto) {
+        // Texto que quieres escribir
+        String mensaje = texto;
+
+        // Crear la carpeta si no existe
+        File carpeta = new File(path);
+        if (!carpeta.exists()) {
+            carpeta.mkdirs();
+        }
+
+        // Crear archivo dentro de esa carpeta
+        File archivo = new File(carpeta, "instrucciones.txt");
+
+        try (FileWriter writer = new FileWriter(archivo)) {
+            writer.write(mensaje);
+            System.out.println("Archivo creado en: " + archivo.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("Error al escribir el archivo: " + e.getMessage());
+        }
+
+    }
+
+    public BufferedImage girarImagen90Izquierda(BufferedImage original) {
+        int width = original.getWidth();
+        int height = original.getHeight();
+
+        // Crear nueva imagen con dimensiones invertidas
+        BufferedImage imagenGirada = new BufferedImage(height, width, original.getType());
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                // Mover píxeles: columna -> fila inversa
+                imagenGirada.setRGB(y, width - 1 - x, original.getRGB(x, y));
+            }
+        }
+
+        return imagenGirada;
+
     }
 
     /*pintar el contorn de l'ull*/
@@ -87,9 +151,12 @@ public class ImageListCreator {
 
         // Obtener el contexto gráfico
         Graphics2D g2d = image.createGraphics();
+        // Activar antialiasing para suavizar bordes
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Configurar color del borde del círculo
         g2d.setColor(Color.BLACK);
+        //g2d.setColor(Color.WHITE);
 
         // Dibujar un óvalo (círculo) vacío
         g2d.drawOval(centroX - radio, centroY - radio, radio * 2, radio * 2);
@@ -102,8 +169,10 @@ public class ImageListCreator {
     public void pintarPunto(int x, int y, double valor, BufferedImage image, int index) {
 
         double shoots = calc.numeroShoots(valor, calc.mmXShoot(193));
-        if (shoots > 0.0 && shoots <= index) {
-            image.setRGB(x, y, Color.BLACK.getRGB());
+        if (shoots > 0.0 && shoots <= index) { //pinta el fondo blanc => te un pixel blanc al centre
+            //if (shoots >= 0.0 && shoots <= index) { //pinta el fondo negre => no te un pixel blanc al centre
+            image.setRGB(y, x, Color.BLACK.getRGB());
+            //image.setRGB(x, y, Color.BLACK.getRGB());
             //System.out.println("blanc");
         } else {
             image.setRGB(y, x, Color.WHITE.getRGB());
@@ -137,7 +206,12 @@ public class ImageListCreator {
                 System.getLogger(ImageListCreator.class.getName())
                         .log(System.Logger.Level.ERROR, "Error al guardar imagen" + indice, ex);
             }
+            //System.out.println(outputFile.getAbsolutePath());
+            recortarFondoImagen(outputFile.getAbsolutePath(), indice);
+            //recortarSoloFondoBlancoExteriorRobusto(outputFile.getAbsolutePath(), indice);
+
         }
+        crearTXTInstrucciones(dir.getAbsolutePath(), "¡Disparar en las áreas en blanco!\nLongitud de onda del laser 193");
 
     }
 
@@ -164,6 +238,185 @@ public class ImageListCreator {
         }
 
     }
+
+    public void recortarFondoImagen(String path, int indice) {
+        MarvinImage image = MarvinImageIO.loadImage(path);
+
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        int minX = width, minY = height, maxX = 0, maxY = 0;
+
+        // Usar umbral para detectar "contenido oscuro"
+        int threshold = 128;
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int gray = image.getIntComponent0(x, y);
+                //if (gray < threshold) { // detectar contenido oscuro
+                if (gray > threshold) { // detectar contenido claro
+                    if (x < minX) {
+                        minX = x;
+                    }
+                    if (y < minY) {
+                        minY = y;
+                    }
+                    if (x > maxX) {
+                        maxX = x;
+                    }
+                    if (y > maxY) {
+                        maxY = y;
+                    }
+                }
+            }
+        }
+
+        // Validar si se detectó contenido
+        if (maxX < minX || maxY < minY) {
+            System.out.println("No se encontró contenido oscuro para recortar.");
+            return;
+        }
+
+        int cropWidth = maxX - minX + 1;
+        int cropHeight = maxY - minY + 1;
+
+        MarvinImage croppedImage = new MarvinImage(cropWidth, cropHeight);
+
+        for (int y = 0; y < cropHeight; y++) {
+            for (int x = 0; x < cropWidth; x++) {
+                int gray = image.getIntComponent0(x + minX, y + minY);
+                //int alpha = (gray > 240) ? 0 : 255; // blanco se vuelve transparente
+                int alpha = (gray < 15) ? 0 : 255; // megro se vuelve transparente
+                croppedImage.setIntColor(x, y, alpha, gray, gray, gray);
+            }
+        }
+
+        // Guardar imagen recortada
+        File csvFile = new File(path); // path apunta al .csv
+        File parentDir = csvFile.getParentFile(); // obtiene la carpeta que contiene el .csv
+        File dir = new File(parentDir, "negro_transparente"); // crea carpeta imgList en esa ruta
+
+        if (!dir.exists()) {
+            dir.mkdirs(); // Crea el directorio (y subdirectorios si es necesario)
+        }
+        MarvinImageIO.saveImage(croppedImage, dir + "/imagen_recortada" + indice + ".png");
+    }
+
+//    public void recortarSoloFondoBlancoExterior(String path, int indice) {
+//        MarvinImage image = MarvinImageIO.loadImage(path);
+//        int width = image.getWidth();
+//        int height = image.getHeight();
+//
+//        boolean[][] isBackground = new boolean[width][height];
+//        Queue<int[]> queue = new LinkedList<>();
+//
+//        // Umbral más bajo (fondo blanco "sucio")
+//        int threshold = 240;
+//
+//        // Agrega bordes a la cola si son suficientemente claros
+//        for (int x = 0; x < width; x++) {
+//            if (esBlanco(image, x, 0, threshold)) {
+//                queue.add(new int[]{x, 0});
+//            }
+//            if (esBlanco(image, x, height - 1, threshold)) {
+//                queue.add(new int[]{x, height - 1});
+//            }
+//        }
+//        for (int y = 0; y < height; y++) {
+//            if (esBlanco(image, 0, y, threshold)) {
+//                queue.add(new int[]{0, y});
+//            }
+//            if (esBlanco(image, width - 1, y, threshold)) {
+//                queue.add(new int[]{width - 1, y});
+//            }
+//        }
+//
+//        // Flood fill
+//        while (!queue.isEmpty()) {
+//            int[] p = queue.poll();
+//            int x = p[0], y = p[1];
+//            if (x < 0 || x >= width || y < 0 || y >= height) {
+//                continue;
+//            }
+//            if (isBackground[x][y]) {
+//                continue;
+//            }
+//            if (!esBlanco(image, x, y, threshold)) {
+//                continue;
+//            }
+//
+//            isBackground[x][y] = true;
+//
+//            queue.add(new int[]{x + 1, y});
+//            queue.add(new int[]{x - 1, y});
+//            queue.add(new int[]{x, y + 1});
+//            queue.add(new int[]{x, y - 1});
+//        }
+//
+//        // Bounding box del contenido
+//        int minX = width, minY = height, maxX = 0, maxY = 0;
+//        for (int y = 0; y < height; y++) {
+//            for (int x = 0; x < width; x++) {
+//                if (!isBackground[x][y]) {
+//                    if (x < minX) {
+//                        minX = x;
+//                    }
+//                    if (y < minY) {
+//                        minY = y;
+//                    }
+//                    if (x > maxX) {
+//                        maxX = x;
+//                    }
+//                    if (y > maxY) {
+//                        maxY = y;
+//                    }
+//                }
+//            }
+//        }
+//
+//        if (maxX < minX || maxY < minY) {
+//            System.out.println("No se encontró contenido para recortar.");
+//            return;
+//        }
+//
+//        int cropWidth = maxX - minX + 1;
+//        int cropHeight = maxY - minY + 1;
+//        MarvinImage cropped = new MarvinImage(cropWidth, cropHeight);
+//
+//        for (int y = 0; y < cropHeight; y++) {
+//            for (int x = 0; x < cropWidth; x++) {
+//                int origX = x + minX;
+//                int origY = y + minY;
+//
+//                int r = image.getIntComponent0(origX, origY);
+//                int g = image.getIntComponent1(origX, origY);
+//                int b = image.getIntComponent2(origX, origY);
+//
+//                int alpha = isBackground[origX][origY] ? 0 : 255;
+//                cropped.setIntColor(x, y, alpha, r, g, b);
+//            }
+//        }
+//
+//        File imgFile = new File(path);
+//        File parentDir = imgFile.getParentFile();
+//        File dir = new File(parentDir, "recortado");
+//
+//        if (!dir.exists()) {
+//            dir.mkdirs();
+//        }
+//
+//        File outputFile = new File(dir, "imagen_recortada_sinfondo_" + indice + ".png");
+//        MarvinImageIO.saveImage(cropped, outputFile.getAbsolutePath());
+//        System.out.println("Imagen guardada en: " + outputFile.getAbsolutePath());
+//    }
+//
+//    // Función auxiliar para detectar blancos "sucios"
+//    private boolean esBlanco(MarvinImage image, int x, int y, int threshold) {
+//        int r = image.getIntComponent0(x, y);
+//        int g = image.getIntComponent1(x, y);
+//        int b = image.getIntComponent2(x, y);
+//        return r > threshold && g > threshold && b > threshold;
+//    }
 
 }
 

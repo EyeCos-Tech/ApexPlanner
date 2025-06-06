@@ -22,6 +22,7 @@
             <artifactId>opencv-platform</artifactId>
             <version>4.6.0-1.5.8</version>
         </dependency>
+      
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>opencv-platform</artifactId>
@@ -32,7 +33,12 @@
             <artifactId>javafx-graphics</artifactId>
             <version>17</version>
         </dependency>
-        
+        <dependency>
+            <groupId>com.github.downgoon</groupId>
+            <artifactId>MarvinFramework</artifactId>
+            <version>1.5.5</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     
     <build>
