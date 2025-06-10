@@ -1,6 +1,5 @@
 package com.eyecostech.apexplanner;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -9,9 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import javax.imageio.ImageIO;
 import marvin.image.MarvinImage;
 import marvin.io.MarvinImageIO;
@@ -101,6 +98,7 @@ public class ImageListCreator {
 
         return lista;
     }
+    
     public void pintarPunto(int x, int y, double valor, BufferedImage image, int index) {
 
         double shoots = calc.numeroShoots(valor, calc.mmXShoot(193));
@@ -181,7 +179,6 @@ public class ImageListCreator {
         g2d.dispose();
 
     }
-
 
     public void guardarImagenes(ArrayList<BufferedImage> lista) {
         System.out.println("BREAK guardar imagenes");
@@ -328,8 +325,8 @@ public class ImageListCreator {
 
         return sumDist / matriz.size(); // radio promedio
     }
-    
-    
+        
+}
     /*EN TEORIA PER PINTAR NOMES EL CERCLE I LO DE FORA PINTAR-HO TRANSPARENT
     NO FUNCIONA*/
 //public ArrayList<BufferedImage> crearListaImagenes(List<List<Double>> matriz) {
@@ -512,7 +509,6 @@ public class ImageListCreator {
 //        int b = image.getIntComponent2(x, y);
 //        return r > threshold && g > threshold && b > threshold;
 //    }
-}
 
 
 /*PINTAR EL CONTORNO*/

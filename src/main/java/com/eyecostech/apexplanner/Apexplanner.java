@@ -4,6 +4,7 @@ import java.util.Scanner;
 import javax.swing.JFrame;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -22,6 +23,10 @@ public class Apexplanner {
     static CsvAnalizer csv = new CsvAnalizer();
     static ShootPlanner sPlanner = new ShootPlanner();
     static ImageListCreator imageList;
+    static FrameDeImagenes frameImg;
+    static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv";
+    //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv";
+    //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/fichero de Three/ablacion.csv";
 
     public void solicitudDeClaculos(Scanner sc) {
         System.out.println("Dame la longtud de onda del LASER: ");
@@ -75,9 +80,8 @@ public class Apexplanner {
 
 
         /*CSV ANALIZER*/
-        //List<List<Double>> matriz=  csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/fichero de Three/ablacion.csv");
-        //List<List<Double>> matriz=  csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv");
-        //List<List<Double>> matriz = csv.cerarMatriz("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv");
+        
+        //List<List<Double>> matriz = csv.cerarMatriz(path);
         //csv.leerPunto(150, 265, matriz);
 //        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
 //        System.out.println("BREAK!");
@@ -97,15 +101,16 @@ public class Apexplanner {
         
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
         try {
-            //imageList = new ImageListCreator("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/fichero de Three/ablacion.csv");
-            imageList = new ImageListCreator("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv");
-            //imageList = new ImageListCreator("C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv");
+            
+            imageList = new ImageListCreator(path);
             ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
             imageList.guardarImagenes(lista);
             
         } catch (Exception e) {
             e.printStackTrace(); // mostra la linea on ha saltat l'error
         }
+        
+        frameImg= new FrameDeImagenes("C:\\Users\\Usuario\\Documents\\Topografias\\OPD Scan III\\Mica\\csv\\imgList");
 
         
         sc.close();
