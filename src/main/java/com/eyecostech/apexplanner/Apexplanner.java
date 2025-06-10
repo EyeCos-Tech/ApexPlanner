@@ -3,6 +3,7 @@ package com.eyecostech.apexplanner;
 import java.util.Scanner;
 import javax.swing.JFrame;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +25,9 @@ public class Apexplanner {
     static ShootPlanner sPlanner = new ShootPlanner();
     static ImageListCreator imageList;
     static FrameDeImagenes frameImg;
-    static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv";
+    //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv";
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv";
+    static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/csv/ari.csv";
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/fichero de Three/ablacion.csv";
 
     public void solicitudDeClaculos(Scanner sc) {
@@ -62,11 +64,8 @@ public class Apexplanner {
 
         Apexplanner obj = new Apexplanner();
 
-        
-        
-        
         /*CALCULATOR*/
-        //obj.solicitudDeClaculos(sc);
+//        obj.solicitudDeClaculos(sc);
 //        /*IMAGE ANALIZER*/
 //        frame = new JFrame();
 //        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -75,12 +74,7 @@ public class Apexplanner {
 //        imageAnalizer.mostrarImagen(imagen, frame); //mostrar imatge i dir el color en RGB del pixel pulsat pel mouse
 //        System.out.println("Codigo color pixel " + 100 + " " + 150 + ": \nRGB:" + pixel[0] + "/" + pixel[1] + "/" + pixel[2]);
 //        
-
-
-
-
         /*CSV ANALIZER*/
-        
         //List<List<Double>> matriz = csv.cerarMatriz(path);
         //csv.leerPunto(150, 265, matriz);
 //        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
@@ -92,27 +86,27 @@ public class Apexplanner {
         //System.out.println("total: "+calc.calcularNumeroShootsTotal(matriz));
         //System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
         //calc.maxShoots(matriz);
-        //csv.mostrarImagen(matriz);
         //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
-
-        
         
         
         
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
-        try {
-            
-            imageList = new ImageListCreator(path);
-            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
-            imageList.guardarImagenes(lista);
-            
-        } catch (Exception e) {
-            e.printStackTrace(); // mostra la linea on ha saltat l'error
-        }
-        
-        frameImg= new FrameDeImagenes("C:\\Users\\Usuario\\Documents\\Topografias\\OPD Scan III\\Mica\\csv\\imgList");
+//        try {
+//            
+//            imageList = new ImageListCreator(path);
+//            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
+//            imageList.guardarImagenes(lista);
+//            
+//        } catch (Exception e) {
+//            e.printStackTrace(); // mostra la linea on ha saltat l'error
+//        }
 
-        
+
+        /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
+        File file = new File(path);
+        String ruta = file.getParent() + "/imgList/";
+        frameImg = new FrameDeImagenes(ruta);
+
         sc.close();
     }
 }

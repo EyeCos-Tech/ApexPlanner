@@ -19,7 +19,8 @@ public class FrameDeImagenes extends JFrame {
 
     public FrameDeImagenes(String path) {
         // Configuración básica de la ventana
-        setTitle("Visor de Imágenes Superpuestas");
+        String cliente;
+        setTitle("Visor de Imágenes Superpuestas: " + extreaerCliente(path));
         setSize(600, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -45,6 +46,19 @@ public class FrameDeImagenes extends JFrame {
 
         setLocationRelativeTo(null); // Centrar ventana
         setVisible(true);
+    }
+
+    private String extreaerCliente(String path) {
+        
+        if (path.contains("\\csv/")) {
+            path = path.substring(0, path.indexOf("\\csv/"));
+        }
+        
+        File file = new File(path);
+        String nombreCarpeta = file.getName(); // Obtiene el último segmento
+        
+
+        return nombreCarpeta;
     }
 
     private void cargarImagenes(String path) {
