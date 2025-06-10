@@ -1,5 +1,6 @@
 package com.eyecostech.apexplanner;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -48,7 +49,7 @@ public class ImageListCreator {
     }
 
     public ArrayList<BufferedImage> crearListaImagenes(List<List<Double>> matriz) {
-//        int rows = matriz.get(0).size();
+    //        int rows = matriz.get(0).size();
 //        int cols = matriz.size();
         int rows = matriz.size();
         int cols = matriz.get(0).size();
@@ -59,7 +60,8 @@ public class ImageListCreator {
         int ind = 0;
 
         for (int k = 0; k < max; k++) { //repeteix fins al maxim dde shots que te el punt que te mes shoots
-            BufferedImage imagen = new BufferedImage(rows, cols, BufferedImage.TYPE_BYTE_BINARY);
+            //BufferedImage imagen = new BufferedImage(rows, cols, BufferedImage.TYPE_BYTE_BINARY);
+            BufferedImage imagen = new BufferedImage(rows, cols, BufferedImage.TYPE_INT_ARGB);
             //BufferedImage imagen = new BufferedImage( cols, rows,BufferedImage.TYPE_BYTE_BINARY);
             //System.out.println("BREAK");
 
@@ -84,7 +86,7 @@ public class ImageListCreator {
             // Si el punto del centro sigue siendo blanco, lo pintamos manualmente
             imagen.setRGB(centroX, centroY, Color.BLACK.getRGB());
 
-            pintarContorno(imagen);
+            //pintarContorno(imagen, matriz); //necessari si es pinte l'exterior del cercle en blanc
 
             //lista.add(imagen);//guardar imatge 
             lista.add(girarImagen90Izquierda(imagen)); //guardar imatge rotada
@@ -98,6 +100,19 @@ public class ImageListCreator {
         }
 
         return lista;
+    }
+    public void pintarPunto(int x, int y, double valor, BufferedImage image, int index) {
+
+        double shoots = calc.numeroShoots(valor, calc.mmXShoot(193));
+        //if (shoots > 0.0 && shoots <= index) { //pinta el fondo exterior del cercle blanc => te un pixel blanc al centre
+        if (shoots >= 0.0 && shoots <= index) { //pinta el fondo exterior del cercle negre => no te un pixel blanc al centre
+            image.setRGB(y, x, Color.BLACK.getRGB());
+            //image.setRGB(x, y, Color.BLACK.getRGB());
+            //System.out.println("blanc");
+        } else {
+            image.setRGB(y, x, Color.WHITE.getRGB());
+            //System.out.println("negre");
+        }
     }
 
     public void crearTXTInstrucciones(String path, String texto) {
@@ -141,10 +156,11 @@ public class ImageListCreator {
     }
 
     /*pintar el contorn de l'ull*/
-    public void pintarContorno(BufferedImage image) {
+    public void pintarContorno(BufferedImage image, List<List<Double>> matriz) {
         int altura = image.getHeight();
         int amplada = image.getWidth();
         int radio = 124; // ==========> Com extreure el radi de l'ull de la imatge?????????????
+        //int radio = (int)  calcularRadio(matriz); 
 
         int centroX = amplada / 2;
         int centroY = altura / 2;
@@ -166,19 +182,6 @@ public class ImageListCreator {
 
     }
 
-    public void pintarPunto(int x, int y, double valor, BufferedImage image, int index) {
-
-        double shoots = calc.numeroShoots(valor, calc.mmXShoot(193));
-        if (shoots > 0.0 && shoots <= index) { //pinta el fondo blanc => te un pixel blanc al centre
-            //if (shoots >= 0.0 && shoots <= index) { //pinta el fondo negre => no te un pixel blanc al centre
-            image.setRGB(y, x, Color.BLACK.getRGB());
-            //image.setRGB(x, y, Color.BLACK.getRGB());
-            //System.out.println("blanc");
-        } else {
-            image.setRGB(y, x, Color.WHITE.getRGB());
-            //System.out.println("negre");
-        }
-    }
 
     public void guardarImagenes(ArrayList<BufferedImage> lista) {
         System.out.println("BREAK guardar imagenes");
@@ -207,7 +210,7 @@ public class ImageListCreator {
                         .log(System.Logger.Level.ERROR, "Error al guardar imagen" + indice, ex);
             }
             //System.out.println(outputFile.getAbsolutePath());
-            recortarFondoImagen(outputFile.getAbsolutePath(), indice);
+            //recortarFondoImagen(outputFile.getAbsolutePath(), indice); /*LA BONA*/
             //recortarSoloFondoBlancoExteriorRobusto(outputFile.getAbsolutePath(), indice);
 
         }
@@ -301,6 +304,98 @@ public class ImageListCreator {
         }
         MarvinImageIO.saveImage(croppedImage, dir + "/imagen_recortada" + indice + ".png");
     }
+
+    public static double calcularRadio(List<List<Double>> matriz) {
+        if (matriz == null || matriz.isEmpty()) {
+            return 0;
+        }
+
+        double sumX = 0, sumY = 0;
+        for (List<Double> p : matriz) {
+            sumX += p.get(0);
+            sumY += p.get(1);
+        }
+
+        double centroX = sumX / matriz.size();
+        double centroY = sumY / matriz.size();
+
+        double sumDist = 0;
+        for (List<Double> p : matriz) {
+            double dx = p.get(0) - centroX;
+            double dy = p.get(1) - centroY;
+            sumDist += Math.sqrt(dx * dx + dy * dy);
+        }
+
+        return sumDist / matriz.size(); // radio promedio
+    }
+    
+    
+    /*EN TEORIA PER PINTAR NOMES EL CERCLE I LO DE FORA PINTAR-HO TRANSPARENT
+    NO FUNCIONA*/
+//public ArrayList<BufferedImage> crearListaImagenes(List<List<Double>> matriz) {
+//        int rows = matriz.size();
+//        int cols = matriz.get(0).size();
+//        double max = calc.maxShoots(matriz);
+//        ArrayList<BufferedImage> lista = new ArrayList<>();
+//
+//        int centroX = cols / 2;
+//        int centroY = rows / 2;
+//        //double radio = calc.radioCirculo(); // Define el radio del círculo
+//        double radio = 193; // Define el radio del círculo
+//
+//        for (int k = 0; k < max; k++) {
+//            BufferedImage imagen = new BufferedImage(cols, rows, BufferedImage.TYPE_INT_ARGB);
+//
+//            // Fondo transparente
+//            Graphics2D g = imagen.createGraphics();
+//            g.setComposite(AlphaComposite.Clear);
+//            g.fillRect(0, 0, cols, rows);
+//            g.setComposite(AlphaComposite.SrcOver);
+//            g.dispose();
+//
+//            for (int y = 0; y < rows; y++) {
+//                for (int x = 0; x < cols; x++) {
+//                    double distancia = Math.sqrt(Math.pow(x - centroX, 2) + Math.pow(y - centroY, 2));
+//                    if (distancia <= radio) {
+//                        double valor = csv.leerPunto(y, x, matriz);
+//                        double shoots = calc.numeroShoots(valor, calc.mmXShoot(193));
+//                        if (shoots > 0.0 && shoots <= k) {
+//                            imagen.setRGB(x, y, new Color(0, 0, 0, 255).getRGB()); // negro opaco
+//                        } else {
+//                            imagen.setRGB(x, y, new Color(255, 255, 255, 255).getRGB()); // blanco opaco dentro círculo
+//                        }
+//                    } else {
+//                        imagen.setRGB(x, y, new Color(0, 0, 0, 0).getRGB()); // transparente fuera círculo
+//                    }
+//                }
+//            }
+//
+//            // Punto central transparente (si quieres)
+//            imagen.setRGB(centroX, centroY, new Color(0, 0, 0, 0).getRGB());
+//
+//            pintarContorno(imagen, matriz);
+//
+//            lista.add(imagen);
+//        }
+//
+//        return lista;
+//    }
+//    public void pintarPunto(int x, int y, double valor, BufferedImage image, int index) {
+//        double shoots = calc.numeroShoots(valor, calc.mmXShoot(193));
+//        if (shoots > 0.0 && shoots <= index) {
+//            image.setRGB(x, y, new Color(0, 0, 0, 255).getRGB()); // negro opaco
+//        } else {
+//            image.setRGB(x, y, new Color(0, 0, 0, 0).getRGB()); // transparente en vez de blanco
+//        }
+//    }
+    
+    
+    
+    
+    
+    
+    
+    
 
 //    public void recortarSoloFondoBlancoExterior(String path, int indice) {
 //        MarvinImage image = MarvinImageIO.loadImage(path);
@@ -417,7 +512,6 @@ public class ImageListCreator {
 //        int b = image.getIntComponent2(x, y);
 //        return r > threshold && g > threshold && b > threshold;
 //    }
-
 }
 
 
