@@ -73,8 +73,8 @@ public class Apexplanner {
 //        pixel= imageAnalizer.colorPixel(100, 150, imagen); //Diu el color en RGB del pixel 100/150
 //        imageAnalizer.mostrarImagen(imagen, frame); //mostrar imatge i dir el color en RGB del pixel pulsat pel mouse
 //        System.out.println("Codigo color pixel " + 100 + " " + 150 + ": \nRGB:" + pixel[0] + "/" + pixel[1] + "/" + pixel[2]);
-//        System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptria(4) + " mm d'ablacio");
-//        System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptriaFormulaMunnerlyn(4, 6.0) + " mm d'ablacio sxegons la formula de Munnerlyn");
+        System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptria(4) + " mm d'ablacio");
+        System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptriaFormulaMunnerlyn(4, 6.0) + " mm d'ablacio sxegons la formula de Munnerlyn");
 
 //        
         /*CSV ANALIZER*/

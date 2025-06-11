@@ -165,7 +165,8 @@ public class Calculador {
             throw new IllegalArgumentException("Zona optica demasiado grande: ERROR");
         }
 
-        double ablacionNm = ((numeroDioptrias * numeroDioptrias) * (zona * zona)) / 120;
+        //double ablacionNm = ((numeroDioptrias * numeroDioptrias) * (zona * zona)) / 120; //formula  1
+        double ablacionNm = ((zona * zona)*numeroDioptrias ) / 3; //formula 2
         ablacion = ablacionNm / 1000;
 
         return ablacion;
