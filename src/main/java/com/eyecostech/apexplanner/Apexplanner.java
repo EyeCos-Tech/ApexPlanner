@@ -79,7 +79,7 @@ public class Apexplanner {
 
 //        
         /*CSV ANALIZER*/
-        //List<List<Double>> matriz = csv.cerarMatriz(path);
+        List<List<Double>> matriz = csv.cerarMatriz(path);
         //csv.leerPunto(150, 265, matriz);
 //        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
 //        System.out.println("BREAK!");
@@ -90,7 +90,7 @@ public class Apexplanner {
         //System.out.println("total: "+calc.calcularNumeroShootsTotal(matriz));
         //System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
         //calc.maxShoots(matriz);
-        //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
+       csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
 //        try {
 //            
@@ -104,8 +104,8 @@ public class Apexplanner {
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
         File file = new File(path);
         String ruta = file.getParent() + "/imgList/";
-        //frameImg = new FrameDeImagenes(ruta);
-        ventata3d= new Vista3DSimulada(ruta);
+        frameImg = new FrameDeImagenes(ruta);
+        //ventata3d= new Vista3DSimulada(ruta);
 
         sc.close();
     }

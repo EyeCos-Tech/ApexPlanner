@@ -5,6 +5,15 @@
     <artifactId>apexplanner</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+    
+    <!-- Configuración de Spring Boot -->
+<!--    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.1.0</version>  Usa la versión más reciente 
+        <relativePath/>  Busca el padre en el repositorio 
+    </parent>-->
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>24</maven.compiler.release>
@@ -12,6 +21,17 @@
     </properties>
     
     <dependencies>
+        <!-- Web REST API -->
+<!--        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+         (Opcional) Para servir archivos estáticos 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>-->
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>javacv-platform</artifactId>
@@ -43,15 +63,22 @@
     
     <build>
         <plugins>
+            <!-- Plugin de Spring Boot -->
+<!--            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>-->
+            
+            
             <!-- Plugin para compilar con Java -->
-            <plugin>
+<!--            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
                     <release>${maven.compiler.release}</release>
                 </configuration>
-            </plugin>           
+            </plugin>           -->
         </plugins>
     </build>
     
