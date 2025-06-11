@@ -3,6 +3,7 @@ package com.eyecostech.apexplanner;
 import static com.eyecostech.apexplanner.Apexplanner.calc;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.SQLOutput;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -149,6 +150,19 @@ public class Calculador {
     public double mmXDioptria(int numeroDioptrias) {
         /*0.013 a 0.015 mm por dioptría en cirugía refractiva lasers como LASIK , PRK o SMILE*/
         /*Para cálculos más exactos, se puede usar la fórmula de Munnerlyn*/
+        
+        if(numeroDioptrias<0/*MIOPIA*/){
+            System.out.println("MIOPIA");
+            if(numeroDioptrias<-12){
+                throw new IllegalArgumentException("Supera las -12 Doptrias, es PELIGROSO operar");
+            }
+        } else if(numeroDioptrias>0/*HIPERMETROPIA*/){
+            System.out.println("HIPERMETROPIA");
+            if(numeroDioptrias>6){
+                throw new IllegalArgumentException("Supera las +6 Doptrias, es PELIGROSO operar");
+            }
+            
+        }
 
         double ablacion = numeroDioptrias * 0.013; //aprox amb valor mes baix (0.013 a 0.015)
 

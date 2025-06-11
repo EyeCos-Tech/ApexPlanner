@@ -25,6 +25,7 @@ public class Apexplanner {
     static ShootPlanner sPlanner = new ShootPlanner();
     static ImageListCreator imageList;
     static FrameDeImagenes frameImg;
+    static Vista3DSimulada ventata3d;
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv";
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv";
     static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/csv/ari.csv";
@@ -73,8 +74,8 @@ public class Apexplanner {
 //        pixel= imageAnalizer.colorPixel(100, 150, imagen); //Diu el color en RGB del pixel 100/150
 //        imageAnalizer.mostrarImagen(imagen, frame); //mostrar imatge i dir el color en RGB del pixel pulsat pel mouse
 //        System.out.println("Codigo color pixel " + 100 + " " + 150 + ": \nRGB:" + pixel[0] + "/" + pixel[1] + "/" + pixel[2]);
-        System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptria(4) + " mm d'ablacio");
-        System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptriaFormulaMunnerlyn(4, 6.0) + " mm d'ablacio sxegons la formula de Munnerlyn");
+        //System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptria(5) + " mm d'ablacio"+"\nper tant: "+calc.numeroShoots(calc.mmXDioptria(5), calc.mmXShoot(pow))+" shoots");
+        //System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptriaFormulaMunnerlyn(-4, 6.5) + " mm d'ablacio sxegons la formula de Munnerlyn");
 
 //        
         /*CSV ANALIZER*/
@@ -101,9 +102,10 @@ public class Apexplanner {
 //            e.printStackTrace(); // mostra la linea on ha saltat l'error
 //        }
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
-//        File file = new File(path);
-//        String ruta = file.getParent() + "/imgList/";
-//        frameImg = new FrameDeImagenes(ruta);
+        File file = new File(path);
+        String ruta = file.getParent() + "/imgList/";
+        //frameImg = new FrameDeImagenes(ruta);
+        ventata3d= new Vista3DSimulada(ruta);
 
         sc.close();
     }
