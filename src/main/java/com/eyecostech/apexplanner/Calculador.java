@@ -20,8 +20,9 @@ public class Calculador {
 
     public double total = 0;
 
-    /*Alt + 0181*/
- /*DEMANA LA POTENCIA DEL LASER*/
+    /*Alt + 0181 = µ*/
+    
+    /*DEMANA LA POTENCIA DEL LASER*/
     public int setPotenciaLaser(String potencia) {
         int numeroPotencia;
 
@@ -42,7 +43,7 @@ public class Calculador {
     public double mmXShoot(int potencia) {
         double referenciaPow = 193;
         double referenciaAbl = 0.00025;
-        
+
         /*regla de 3 amb les referencies d'ablacio dels laser de 193*/
         double ablacion = (referenciaAbl / referenciaPow) * potencia;//???
         DecimalFormat df = new DecimalFormat("#.####");
@@ -141,8 +142,33 @@ public class Calculador {
         }
 
         //System.out.println("el maxim de shoots que te algun punt de la matriu es : " + maxShoots);
-
         return maxShoots;
+    }
+
+    /*CALCULAR EL mm D'ABLACIO PER CORRETGIR UN NUMERO DE DIOPTRIES*/
+    public double mmXDioptria(int numeroDioptrias) {
+        /*0.013 a 0.015 mm por dioptría en cirugía refractiva lasers como LASIK , PRK o SMILE*/
+        /*Para cálculos más exactos, se puede usar la fórmula de Munnerlyn*/
+
+        double ablacion = numeroDioptrias * 0.013; //aprox amb valor mes baix (0.013 a 0.015)
+
+        return ablacion;
+    }
+
+    /*CALCULAR EL mm D'ABLACIO PER CORRETGIR UN NUMERO DE DIOPTRIES SEGONS LA FORMULA MUNNERLYN*/
+    public double mmXDioptriaFormulaMunnerlyn(int numeroDioptrias, double zona) {
+        /*Para cálculos más exactos, se puede usar la fórmula de Munnerlyn*/
+
+        double ablacion = 0.0;
+
+        if (zona > 8) {
+            throw new IllegalArgumentException("Zona optica demasiado grande: ERROR");
+        }
+
+        double ablacionNm = ((numeroDioptrias * numeroDioptrias) * (zona * zona)) / 120;
+        ablacion = ablacionNm / 1000;
+
+        return ablacion;
     }
 
 }
