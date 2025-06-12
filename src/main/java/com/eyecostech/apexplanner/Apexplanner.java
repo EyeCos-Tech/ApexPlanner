@@ -32,6 +32,7 @@ public class Apexplanner {
     static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/csv/ari.csv";
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/fichero de Three/ablacion.csv";
 
+    
     public static String getPath() {
         return path;
     }
@@ -72,9 +73,8 @@ public class Apexplanner {
         }
 
     }
-
-//    public static void main(String[] args) {
-        public void Apexplanner(){
+    public static void main(String[] args) {
+    //public  Apexplanner() {
         Scanner sc = new Scanner(System.in);
 
         Apexplanner obj = new Apexplanner();
@@ -118,14 +118,14 @@ public class Apexplanner {
         File file = new File(path);
         String ruta = file.getParent() + "/imgList/";
         frameImg = new FrameDeImagenes(ruta);
-        
-
 
 //        setFrameImg(frameImg);
 //        front = new Front();
-
         //ventata3d= new Vista3DSimulada(ruta);
         sc.close();
     }
+
+
+   
 
 }

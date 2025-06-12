@@ -11,8 +11,8 @@ package com.eyecostech.apexplanner;
 public class Main {
     private static Apexplanner apex;
     
-    public static void main(String[] args) {
-        apex= new Apexplanner();
-    }
+//    public static void main(String[] args) {
+//        apex= new Apexplanner();
+//    }
     
 }
