@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -22,14 +23,26 @@ public class Apexplanner {
     static int[] pixel;
     static JFrame frame;
     static CsvAnalizer csv = new CsvAnalizer();
-    static ShootPlanner sPlanner = new ShootPlanner();
     static ImageListCreator imageList;
     static FrameDeImagenes frameImg;
     static Vista3DSimulada ventata3d;
+    static Front front;
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv";
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv";
     static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/csv/ari.csv";
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/fichero de Three/ablacion.csv";
+
+    public static String getPath() {
+        return path;
+    }
+
+    public static FrameDeImagenes getFrameImg() {
+        return frameImg;
+    }
+
+    public static void setFrameImg(FrameDeImagenes frameImg) {
+        Apexplanner.frameImg = frameImg;
+    }
 
     public void solicitudDeClaculos(Scanner sc) {
         System.out.println("Dame la longtud de onda del LASER: ");
@@ -60,7 +73,8 @@ public class Apexplanner {
 
     }
 
-    public static void main(String[] args) {
+//    public static void main(String[] args) {
+        public void Apexplanner(){
         Scanner sc = new Scanner(System.in);
 
         Apexplanner obj = new Apexplanner();
@@ -76,10 +90,9 @@ public class Apexplanner {
 //        System.out.println("Codigo color pixel " + 100 + " " + 150 + ": \nRGB:" + pixel[0] + "/" + pixel[1] + "/" + pixel[2]);
         //System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptria(5) + " mm d'ablacio"+"\nper tant: "+calc.numeroShoots(calc.mmXDioptria(5), calc.mmXShoot(pow))+" shoots");
         //System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptriaFormulaMunnerlyn(-4, 6.5) + " mm d'ablacio sxegons la formula de Munnerlyn");
-
 //        
         /*CSV ANALIZER*/
-        List<List<Double>> matriz = csv.cerarMatriz(path);
+        //List<List<Double>> matriz = csv.cerarMatriz(path);
         //csv.leerPunto(150, 265, matriz);
 //        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
 //        System.out.println("BREAK!");
@@ -90,7 +103,7 @@ public class Apexplanner {
         //System.out.println("total: "+calc.calcularNumeroShootsTotal(matriz));
         //System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
         //calc.maxShoots(matriz);
-       csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
+        //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
 //        try {
 //            
@@ -105,8 +118,14 @@ public class Apexplanner {
         File file = new File(path);
         String ruta = file.getParent() + "/imgList/";
         frameImg = new FrameDeImagenes(ruta);
-        //ventata3d= new Vista3DSimulada(ruta);
+        
 
+
+//        setFrameImg(frameImg);
+//        front = new Front();
+
+        //ventata3d= new Vista3DSimulada(ruta);
         sc.close();
     }
+
 }
