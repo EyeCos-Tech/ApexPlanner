@@ -4,13 +4,20 @@ import java.util.Scanner;
 import javax.swing.JFrame;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.io.FileWriter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
+ * CLASE PRINCIPAL I MAIN CLASSE PRINCIPAL DEL SPRINGBOOT
  *
  * @author Pau Savall
  */
+@SpringBootApplication // ← SPRING BOOT
 public class Apexplanner {
 
     static int pow = 193; //potencia del laser
@@ -60,10 +67,50 @@ public class Apexplanner {
 
     }
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+    public void iniciarSpringboot(String[] args) {
+        System.out.println("\n INICIANDO APLICACIÓN SPRING BOOT...");
+        System.out.println("=====================================");
+         /** INICIAR SPRING BOOT **/
+        SpringApplication.run(Apexplanner.class, args);
+        System.out.println("\n APLICACIoN INICIADA CORRECTAMENTE");
+        System.out.println("=====================================");
+        System.out.println(" URL Principal: http://localhost:8080");
+        System.out.println(" Documentacion: http://localhost:8080/info");
+        System.out.println(" Para parar: Ctrl+C en consola");
+        System.out.println("=====================================\n");
 
+    }
+
+    public void escribirLog() throws IOException {
+        try {
+            // Ruta relativa: se crea en la raíz del proyecto
+            FileWriter writer = new FileWriter("log.txt");
+            writer.write("Este es un mensaje de log.");
+            writer.close();
+            System.out.println("Log creado correctamente.");
+        } catch (IOException e) {
+            System.out.println("Error al escribir el archivo:");
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
         Apexplanner obj = new Apexplanner();
+        obj.iniciarSpringboot(args);
+//        System.out.println("\n INICIANDO APLICACIÓN SPRING BOOT...");
+//        System.out.println("=====================================");
+//         /** INICIAR SPRING BOOT **/
+//        SpringApplication.run(Apexplanner.class, args);
+//        System.out.println("\n APLICACIoN INICIADA CORRECTAMENTE");
+//        System.out.println("=====================================");
+//        System.out.println(" URL Principal: http://localhost:8080");
+//        System.out.println(" Documentacion: http://localhost:8080/info");
+//        System.out.println(" Para parar: Ctrl+C en consola");
+//        System.out.println("=====================================\n");
+        Scanner sc = new Scanner(System.in);
+        
+        
+
 
         /*CALCULATOR*/
 //        obj.solicitudDeClaculos(sc);
@@ -76,10 +123,9 @@ public class Apexplanner {
 //        System.out.println("Codigo color pixel " + 100 + " " + 150 + ": \nRGB:" + pixel[0] + "/" + pixel[1] + "/" + pixel[2]);
         //System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptria(5) + " mm d'ablacio"+"\nper tant: "+calc.numeroShoots(calc.mmXDioptria(5), calc.mmXShoot(pow))+" shoots");
         //System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptriaFormulaMunnerlyn(-4, 6.5) + " mm d'ablacio sxegons la formula de Munnerlyn");
-
 //        
         /*CSV ANALIZER*/
-        List<List<Double>> matriz = csv.cerarMatriz(path);
+        //List<List<Double>> matriz = csv.cerarMatriz(path);
         //csv.leerPunto(150, 265, matriz);
 //        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
 //        System.out.println("BREAK!");
@@ -90,7 +136,7 @@ public class Apexplanner {
         //System.out.println("total: "+calc.calcularNumeroShootsTotal(matriz));
         //System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
         //calc.maxShoots(matriz);
-       csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
+        //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
 //        try {
 //            
@@ -107,6 +153,13 @@ public class Apexplanner {
         frameImg = new FrameDeImagenes(ruta);
         //ventata3d= new Vista3DSimulada(ruta);
 
+        System.out.println("A ver si escribe");
+
         sc.close();
+//        try {
+//            obj.escribirLog();
+//        } catch (IOException ex) {
+//            System.getLogger(Apexplanner.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+//        }
     }
 }
