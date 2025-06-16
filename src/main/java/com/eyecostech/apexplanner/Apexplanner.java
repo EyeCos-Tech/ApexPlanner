@@ -67,6 +67,15 @@ public class Apexplanner {
 
     }
 
+    public static String getPath() {
+        return path;
+    }
+
+    public static CsvAnalizer getCsv() {
+        return csv;
+    }
+    
+
     public void iniciarSpringboot(String[] args) {
         System.out.println("\n INICIANDO APLICACIÓN SPRING BOOT...");
         System.out.println("=====================================");
@@ -101,6 +110,7 @@ public class Apexplanner {
 
     public static void main(String[] args) {
         Apexplanner obj = new Apexplanner();
+        
         obj.iniciarSpringboot(args);
 
         Scanner sc = new Scanner(System.in);
@@ -146,7 +156,7 @@ public class Apexplanner {
 
 
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
-        obj.iniciarFrameSliderImagenes(path);
+        //obj.iniciarFrameSliderImagenes(path);
 //      
 
         System.out.println("A ver si escribe");

@@ -37,6 +37,7 @@ public class CsvAnalizer {
     public void setImage(Mat image) {
 
     }
+    
 
     /*crea una matriu*/
     public List<List<Double>> cerarMatriz(String path) {

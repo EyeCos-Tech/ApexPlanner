@@ -4,8 +4,13 @@
  */
 package com.eyecostech.apexplanner.controller;
 
+import com.eyecostech.apexplanner.Apexplanner;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +24,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.Arrays;
+import javax.imageio.ImageIO;
+import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.javacpp.IntPointer;
+import org.bytedeco.opencv.global.opencv_imgcodecs;
+import org.bytedeco.opencv.opencv_core.Mat;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -43,6 +53,9 @@ import org.springframework.http.MediaType;
 // origins = "http://localhost:3000" permite peticiones desde React
 @RestController
 public class ApexplannerController {
+
+    Apexplanner planner = new Apexplanner();
+    String path = planner.getPath();
 
     /**
      * RUTA PRINCIPAL - PÁGINA DE INICIO
@@ -232,18 +245,43 @@ public class ApexplannerController {
         """;
     }
 
-//    @GetMapping("/api/imagen")
-//    public ResponseEntity<byte[]> obtenerImagen() throws IOException {
-//        // Opción 1: Cargar imagen desde resources
+    @GetMapping("/api/imagen")
+    public ResponseEntity<byte[]> obtenerImagen() throws IOException {
+        // Opción 1: Cargar imagen desde resources
 //        Resource resource = new ClassPathResource("static/images/proyecto.jpg");
 //        byte[] imageBytes = Files.readAllBytes(Paths.get(resource.getURI()));
-//
-//        // Opción 2: Cargar imagen desde el sistema de archivos
-//        // Path imagePath = Paths.get("ruta/a/tu/imagen.jpg");
-//        // byte[] imageBytes = Files.readAllBytes(imagePath);
-//        return ResponseEntity.ok()
-//                .contentType(MediaType.IMAGE_JPEG)
-//                .body(imageBytes);
-//    }
+
+//         Opción 2: Cargar imagen desde el sistema de archivos
+        /*cargar una Mat*/
+        Mat imagen;
+        imagen = planner.getCsv().prepararImagen(planner.getCsv().cerarMatriz(path));
+        /*convertir mat a bytes*/
+        // Codificar la imagen a bytes
+        BytePointer buffer = new BytePointer();
+        IntPointer params = new IntPointer(
+                opencv_imgcodecs.IMWRITE_JPEG_QUALITY, 95 // Calidad JPEG
+        );
+
+        boolean success = opencv_imgcodecs.imencode(".jpg", imagen, buffer, params);
+
+        if (!success) {
+            throw new RuntimeException("Error al codificar la imagen");
+        }
+
+        // Convertir BytePointer a byte[]
+        byte[] imageBytes = new byte[(int) buffer.limit()];
+        buffer.get(imageBytes);
+
+        // Liberar memoria
+        buffer.deallocate();
+        params.deallocate();
+        imagen.deallocate();
+
+//        Path imagePath = Paths.get(path + "imagen.jpg");
+//        byte[] imageBytes = Files.readAllBytes(imagePath);
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(imageBytes);
+    }
 
 }
