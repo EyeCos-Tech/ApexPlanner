@@ -5,32 +5,16 @@
 package com.eyecostech.apexplanner.controller;
 
 import com.eyecostech.apexplanner.Apexplanner;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.Arrays;
-import javax.imageio.ImageIO;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.IntPointer;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
 import org.bytedeco.opencv.opencv_core.Mat;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 
 /**
@@ -181,7 +165,7 @@ public class ApexplannerController {
         <body>
             <div class="main-wrapper">
                 <div class="container">
-                    <h1>¡Bienvenido a tu Primera App Spring Boot!</h1>
+                    <h1>PROBA APP SPRINGBOAT</h1>
                     <div class="info">
                         <h3>Estado de la Aplicación</h3>
                         <p><strong>Estado:</strong> Funcionando correctamente</p>
@@ -193,13 +177,13 @@ public class ApexplannerController {
                 </div>
                 
                 <div class="image-container">
-                    <h3>Imagen del Proyecto</h3>
+                    <h3>Imatge amb Isobares</h3>
                     <div class="image-wrapper" id="imageWrapper">
                         <div class="image-placeholder">
                             <p>Haz clic en el botón para cargar una imagen</p>
                         </div>
                     </div>
-                    <button class="load-image-btn" onclick="cargarImagen()">Cargar Imagen</button>
+                    <button class="load-image-btn" onclick="cargarImagen()">Carregar Imatge</button>
                     <div id="errorMessage"></div>
                 </div>
             </div>
@@ -247,11 +231,7 @@ public class ApexplannerController {
 
     @GetMapping("/api/csv")
     public ResponseEntity<byte[]> obtenerImagen() throws IOException {
-        // Opción 1: Cargar imagen desde resources
-//        Resource resource = new ClassPathResource("static/images/proyecto.jpg");
-//        byte[] imageBytes = Files.readAllBytes(Paths.get(resource.getURI()));
 
-//         Opción 2: Cargar imagen desde el sistema de archivos
         /*cargar una Mat*/
         Mat imagen;
         imagen = planner.getCsv().prepararImagen(planner.getCsv().cerarMatriz(path));
@@ -277,8 +257,6 @@ public class ApexplannerController {
         params.deallocate();
         imagen.deallocate();
 
-//        Path imagePath = Paths.get(path + "imagen.jpg");
-//        byte[] imageBytes = Files.readAllBytes(imagePath);
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(imageBytes);
