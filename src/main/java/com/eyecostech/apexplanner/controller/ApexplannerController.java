@@ -219,7 +219,7 @@ public class ApexplannerController {
                     imageWrapper.innerHTML = '<div class="loading">Cargando imagen...</div>';
                     
                     // Realizar petición al backend
-                    fetch('/api/imagen')
+                    fetch('/api/csv')
                         .then(response => {
                             if (!response.ok) {
                                 throw new Error('Error al cargar la imagen');
@@ -245,7 +245,7 @@ public class ApexplannerController {
         """;
     }
 
-    @GetMapping("/api/imagen")
+    @GetMapping("/api/csv")
     public ResponseEntity<byte[]> obtenerImagen() throws IOException {
         // Opción 1: Cargar imagen desde resources
 //        Resource resource = new ClassPathResource("static/images/proyecto.jpg");
