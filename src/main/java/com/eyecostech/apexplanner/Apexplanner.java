@@ -146,7 +146,7 @@ public class Apexplanner {
 
 
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
-        //obj.iniciarFrameSliderImagenes(path);
+        obj.iniciarFrameSliderImagenes(path);
 //      
 
         System.out.println("A ver si escribe");
