@@ -80,33 +80,29 @@ public class Apexplanner {
         System.out.println("=====================================\n");
 
     }
-
-    public void escribirLog() throws IOException {
-        try {
-            // Ruta relativa: se crea en la raíz del proyecto
-            FileWriter writer = new FileWriter("log.txt");
-            writer.write("Este es un mensaje de log.");
-            writer.close();
-            System.out.println("Log creado correctamente.");
-        } catch (IOException e) {
-            System.out.println("Error al escribir el archivo:");
-            e.printStackTrace();
-        }
+    public void iniciarFrameSliderImagenes(String ruta){
+        File file = new File(path);
+        String directorio = file.getParent() + "/imgList/";
+        frameImg = new FrameDeImagenes(directorio);
     }
+
+//    public void escribirLog() throws IOException {
+//        try {
+//            // Ruta relativa: se crea en la raíz del proyecto
+//            FileWriter writer = new FileWriter("log.txt");
+//            writer.write("Este es un mensaje de log.");
+//            writer.close();
+//            System.out.println("Log creado correctamente.");
+//        } catch (IOException e) {
+//            System.out.println("Error al escribir el archivo:");
+//            e.printStackTrace();
+//        }
+//    }
 
     public static void main(String[] args) {
         Apexplanner obj = new Apexplanner();
-        obj.iniciarSpringboot(args);
-//        System.out.println("\n INICIANDO APLICACIÓN SPRING BOOT...");
-//        System.out.println("=====================================");
-//         /** INICIAR SPRING BOOT **/
-//        SpringApplication.run(Apexplanner.class, args);
-//        System.out.println("\n APLICACIoN INICIADA CORRECTAMENTE");
-//        System.out.println("=====================================");
-//        System.out.println(" URL Principal: http://localhost:8080");
-//        System.out.println(" Documentacion: http://localhost:8080/info");
-//        System.out.println(" Para parar: Ctrl+C en consola");
-//        System.out.println("=====================================\n");
+        //obj.iniciarSpringboot(args);
+
         Scanner sc = new Scanner(System.in);
         
         
@@ -147,19 +143,15 @@ public class Apexplanner {
 //        } catch (Exception e) {
 //            e.printStackTrace(); // mostra la linea on ha saltat l'error
 //        }
+
+
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
-        File file = new File(path);
-        String ruta = file.getParent() + "/imgList/";
-        frameImg = new FrameDeImagenes(ruta);
-        //ventata3d= new Vista3DSimulada(ruta);
+        obj.iniciarFrameSliderImagenes(path);
+//      
 
         System.out.println("A ver si escribe");
 
         sc.close();
-//        try {
-//            obj.escribirLog();
-//        } catch (IOException ex) {
-//            System.getLogger(Apexplanner.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-//        }
+
     }
 }
