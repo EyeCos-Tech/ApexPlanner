@@ -4,6 +4,9 @@
  */
 package com.eyecostech.apexplanner.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,16 +19,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.Arrays;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 
 /**
  * CONTROLADOR PRINCIPAL DE LA APLICACIÓN
  *
- *  Este controlador maneja todas las peticiones HTTP 
- * - GET: 
- * - POST: 
- * - PUT: 
- * - DELETE:
- * 
+ * Este controlador maneja todas las peticiones HTTP - GET: - POST: - PUT: -
+ * DELETE:
+ *
  * @RestController = @Controller + @ResponseBody Todos los métodos devuelven
  * datos directamente (JSON/texto)
  * @author Pau Savall
@@ -34,14 +37,10 @@ import java.util.Arrays;
  */
 // @RestController: Combina @Controller + @ResponseBody
 // Indica que esta clase maneja peticiones HTTP y retorna JSON automáticamente
-
 // @RequestMapping: Define la ruta base para todas las APIs de este controlador
 // Todas las rutas de este controlador empezarán con "/api/***"
-
 // @CrossOrigin: Permite peticiones desde otros dominios (CORS)
 // origins = "http://localhost:3000" permite peticiones desde React
-
-
 @RestController
 public class ApexplannerController {
 
@@ -57,39 +56,194 @@ public class ApexplannerController {
         );
         return """
         <!DOCTYPE html>
-            <html lang="es">
-            <head>
+        <html lang="es">
+        <head>
             <meta charset="UTF-8">
             <title>Mi Primera App Spring Boot</title>
-                <style>
-                    body { font-family: Arial, sans-serif; margin: 40px;
-                    background-color: #f5f5f5; }
-                    .container { max-width: 800px; background: white;
-                    padding: 30px; border-radius: 10px;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-                    h1 { color: #2c3e50; }
-                    .info { background: #e8f4f8; padding: 15px;
-                    border-radius: 5px; margin: 20px 0; }
-                    a { color: #3498db; text-decoration: none; }
-                </style>
-            </head>
-            <body>
+            <style>
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 40px;
+                    background-color: #f5f5f5; 
+                }
+                
+                .main-wrapper {
+                    display: flex;
+                    gap: 20px;
+                    max-width: 1200px;
+                    margin: 0 auto;
+                }
+                
+                .container { 
+                    flex: 1;
+                    background: white;
+                    padding: 30px; 
+                    border-radius: 10px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+                }
+                
+                .image-container {
+                    width: 350px;
+                    background: white;
+                    padding: 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                }
+                
+                .image-container h3 {
+                    color: #2c3e50;
+                    margin-top: 0;
+                    margin-bottom: 15px;
+                }
+                
+                .image-wrapper {
+                    width: 100%;
+                    min-height: 200px;
+                    background: #f0f0f0;
+                    border-radius: 5px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    overflow: hidden;
+                }
+                
+                .image-wrapper img {
+                    max-width: 100%;
+                    max-height: 400px;
+                    object-fit: contain;
+                }
+                
+                .image-placeholder {
+                    color: #999;
+                    text-align: center;
+                }
+                
+                h1 { 
+                    color: #2c3e50; 
+                }
+                
+                .info { 
+                    background: #e8f4f8; 
+                    padding: 15px;
+                    border-radius: 5px; 
+                    margin: 20px 0; 
+                }
+                
+                a { 
+                    color: #3498db; 
+                    text-decoration: none; 
+                }
+                
+                .load-image-btn {
+                    margin-top: 15px;
+                    padding: 10px 20px;
+                    background: #3498db;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    width: 100%;
+                    font-size: 16px;
+                }
+                
+                .load-image-btn:hover {
+                    background: #2980b9;
+                }
+                
+                .loading {
+                    color: #3498db;
+                    text-align: center;
+                }
+                
+                .error {
+                    color: #e74c3c;
+                    text-align: center;
+                    padding: 10px;
+                    background: #ffe6e6;
+                    border-radius: 5px;
+                    margin-top: 10px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="main-wrapper">
                 <div class="container">
-                    <h1> ¡Bienvenido a tu Primera App Spring Boot!</h1>
+                    <h1>¡Bienvenido a tu Primera App Spring Boot!</h1>
                     <div class="info">
-                    <h3> Estado de la Aplicación</h3>
-                    <p><strong>Estado:</strong> Funcionando correctamente</p>
-                    <p><strong>Servidor:</strong> Apache Tomcat (embebido)</p>
-                    <p><strong>Puerto:</strong> 8080</p><p><strong>Framework:</strong> Spring Boot 3.3.0</p>
-                    <p><strong>Cargado el:</strong></p>
+                        <h3>Estado de la Aplicación</h3>
+                        <p><strong>Estado:</strong> Funcionando correctamente</p>
+                        <p><strong>Servidor:</strong> Apache Tomcat (embebido)</p>
+                        <p><strong>Puerto:</strong> 8080</p>
+                        <p><strong>Framework:</strong> Spring Boot 3.3.0</p>
+                        <p><strong>Cargado el:</strong> <span id="loadTime"></span></p>
+                    </div>
                 </div>
-                </ul>
+                
+                <div class="image-container">
+                    <h3>Imagen del Proyecto</h3>
+                    <div class="image-wrapper" id="imageWrapper">
+                        <div class="image-placeholder">
+                            <p>Haz clic en el botón para cargar una imagen</p>
+                        </div>
+                    </div>
+                    <button class="load-image-btn" onclick="cargarImagen()">Cargar Imagen</button>
+                    <div id="errorMessage"></div>
                 </div>
-            </body>
+            </div>
+            
+            <script>
+                // Mostrar la hora de carga
+                document.getElementById('loadTime').textContent = new Date().toLocaleString('es-ES');
+                
+                function cargarImagen() {
+                    const imageWrapper = document.getElementById('imageWrapper');
+                    const errorDiv = document.getElementById('errorMessage');
+                    
+                    // Limpiar mensajes de error anteriores
+                    errorDiv.innerHTML = '';
+                    
+                    // Mostrar estado de carga
+                    imageWrapper.innerHTML = '<div class="loading">Cargando imagen...</div>';
+                    
+                    // Realizar petición al backend
+                    fetch('/api/imagen')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Error al cargar la imagen');
+                            }
+                            return response.blob();
+                        })
+                        .then(blob => {
+                            const imageUrl = URL.createObjectURL(blob);
+                            imageWrapper.innerHTML = `<img src="${imageUrl}" alt="Imagen del proyecto">`;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            imageWrapper.innerHTML = '<div class="image-placeholder"><p>No se pudo cargar la imagen</p></div>';
+                            errorDiv.innerHTML = '<div class="error">Error: Verifica que el endpoint /api/imagen esté configurado en Spring Boot</div>';
+                        });
+                }
+                
+                // Cargar imagen automáticamente al iniciar (opcional)
+                // window.onload = () => cargarImagen();
+            </script>
+        </body>
         </html>
         """;
     }
-    
-    
-    
+
+//    @GetMapping("/api/imagen")
+//    public ResponseEntity<byte[]> obtenerImagen() throws IOException {
+//        // Opción 1: Cargar imagen desde resources
+//        Resource resource = new ClassPathResource("static/images/proyecto.jpg");
+//        byte[] imageBytes = Files.readAllBytes(Paths.get(resource.getURI()));
+//
+//        // Opción 2: Cargar imagen desde el sistema de archivos
+//        // Path imagePath = Paths.get("ruta/a/tu/imagen.jpg");
+//        // byte[] imageBytes = Files.readAllBytes(imagePath);
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.IMAGE_JPEG)
+//                .body(imageBytes);
+//    }
+
 }

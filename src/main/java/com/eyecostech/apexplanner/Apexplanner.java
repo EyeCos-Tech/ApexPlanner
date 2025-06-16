@@ -101,7 +101,7 @@ public class Apexplanner {
 
     public static void main(String[] args) {
         Apexplanner obj = new Apexplanner();
-        //obj.iniciarSpringboot(args);
+        obj.iniciarSpringboot(args);
 
         Scanner sc = new Scanner(System.in);
         
@@ -146,7 +146,7 @@ public class Apexplanner {
 
 
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
-        obj.iniciarFrameSliderImagenes(path);
+        //obj.iniciarFrameSliderImagenes(path);
 //      
 
         System.out.println("A ver si escribe");
