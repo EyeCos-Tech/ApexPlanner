@@ -102,6 +102,7 @@ public class FrameDeImagenes extends JFrame {
     }
 
     public List<ImageIcon> getArrayImagenes(String path) {
+        List<ImageIcon> imagenesNuevas = new ArrayList<>();
         File folder = new File(path); // Carpeta con tus .png
 
         /*COMPROBAR SI LA CARPETA EXISTEIX*/
@@ -126,22 +127,22 @@ public class FrameDeImagenes extends JFrame {
         // Cargar imágenes ya ordenadas
         for (File file : archivos) {
             ImageIcon icon = new ImageIcon(file.getAbsolutePath());
-            imagenes.add(icon);
+            imagenesNuevas.add(icon);
         }
 
-        if (imagenes.isEmpty()) {
+        if (imagenesNuevas.isEmpty()) {
             JOptionPane.showMessageDialog(this, "No se encontraron imágenes PNG en la carpeta.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return null;
         }
         System.out.println("array");
 
-        if (imagenes.isEmpty() || imagenes == null) {
-            System.out.println("array null");
+        if (imagenesNuevas == null || imagenesNuevas.isEmpty()) {
+            System.out.println("array null o vacío");
         }
-        for (ImageIcon elemento : imagenes) {
-            System.out.println(elemento+" 2o");
-        }
-        return imagenes;
+//        for (ImageIcon elemento : imagenes) {
+//            System.out.println(elemento+" 2o");
+//        }
+        return imagenesNuevas;
 
     }
 

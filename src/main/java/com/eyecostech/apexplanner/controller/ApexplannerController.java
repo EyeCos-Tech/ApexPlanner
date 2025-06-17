@@ -5,6 +5,7 @@
 package com.eyecostech.apexplanner.controller;
 
 import com.eyecostech.apexplanner.Apexplanner;
+import jakarta.annotation.PostConstruct;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -21,8 +22,10 @@ import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.IntPointer;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
 import org.bytedeco.opencv.opencv_core.Mat;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * CONTROLADOR PRINCIPAL DE LA APLICACIÓN
@@ -45,8 +48,15 @@ import org.springframework.http.MediaType;
 @RestController
 public class ApexplannerController {
 
-    Apexplanner planner = new Apexplanner();
-    String path = planner.getPath();
+    @Autowired
+    private Apexplanner planner;  // Spring inyecta la instancia
+
+    private String path;
+
+    @PostConstruct
+    public void init() {
+        this.path = planner.getPath();
+    }
 
     /**
      * RUTA PRINCIPAL - PÁGINA DE INICIO
@@ -207,7 +217,7 @@ public class ApexplannerController {
             </div>
             
             <script>
-                // Mostrar la hora de carga
+// Mostrar la hora de carga
                 document.getElementById('loadTime').textContent = new Date().toLocaleString('es-ES');
                 
                 function cargarImagen() {
@@ -237,34 +247,101 @@ public class ApexplannerController {
                             imageWrapper.innerHTML = '<div class="image-placeholder"><p>No se pudo cargar la imagen</p></div>';
                             errorDiv.innerHTML = '<div class="error">Error: Verifica que el endpoint /api/isobaras esté configurado en Spring Boot</div>';
                         });
-                                }
+                }
+                
+                // Variables para navegación
+                let currentIndex = 0;
+                let totalImages = 0;
+                
+                // Función principal para cargar el array
                 function cargarArray() {
+                    console.log("Iniciando carga de array...");
+                    
+                    fetch('/api/array/count')
+                        .then(response => {
+                            console.log("Respuesta count:", response);
+                            return response.json();
+                        })
+                        .then(count => {
+                            console.log("Total de imágenes:", count);
+                            totalImages = count;
+                            if (count > 0) {
+                                mostrarImagen(0);
+                            } else {
+                                const imageWrapper = document.getElementById('imageArrayWrapper');
+                                imageWrapper.innerHTML = '<div class="image-placeholder"><p>No hay imágenes disponibles</p></div>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error al obtener count:', error);
+                            const imageWrapper = document.getElementById('imageArrayWrapper');
+                            const errorDiv = document.getElementById('errorArrayMessage');
+                            imageWrapper.innerHTML = '<div class="image-placeholder"><p>Error al cargar imágenes</p></div>';
+                            errorDiv.innerHTML = '<div class="error">Error: ' + error.message + '</div>';
+                        });
+                }
+                
+                // Función para mostrar una imagen específica
+                function mostrarImagen(index) {
+                    console.log("Mostrando imagen:", index);
                     const imageWrapper = document.getElementById('imageArrayWrapper');
                     const errorDiv = document.getElementById('errorArrayMessage');
-
-                    // Limpiar mensajes de error anteriores
+                    
+                    // Limpiar errores previos
                     errorDiv.innerHTML = '';
-
-                    // Mostrar estado de carga
-                    imageWrapper.innerHTML = '<div class="loading">Cargando array...</div>';
-
-                    // Realizar petición al backend
-                    fetch('/api/array')
+                    
+                    // Mostrar loading
+                    imageWrapper.innerHTML = '<div class="loading">Cargando imagen ' + (index + 1) + '...</div>';
+                    
+                    fetch(`/api/array/${index}`)
                         .then(response => {
                             if (!response.ok) {
-                                throw new Error('Error al cargar la imagen');
+                                throw new Error('Error al cargar imagen ' + (index + 1));
                             }
                             return response.blob();
                         })
                         .then(blob => {
                             const imageUrl = URL.createObjectURL(blob);
-                            imageWrapper.innerHTML = `<img src="${imageUrl}" alt="Imagen del proyecto">`;
+                            imageWrapper.innerHTML = `
+                                <div style="text-align: center;">
+                                    <img src="${imageUrl}" alt="Imagen ${index + 1}" style="max-width: 100%; height: auto;">
+                                    <div style="margin-top: 10px;">
+                                        <button class="load-image-btn" style="width: auto; margin: 0 5px;" 
+                                                onclick="imagenAnterior()" 
+                                                ${index === 0 ? 'disabled' : ''}>
+                                            ← Anterior
+                                        </button>
+                                        <span style="margin: 0 10px; font-weight: bold;">
+                                            ${index + 1} / ${totalImages}
+                                        </span>
+                                        <button class="load-image-btn" style="width: auto; margin: 0 5px;" 
+                                                onclick="imagenSiguiente()"
+                                                ${index === totalImages - 1 ? 'disabled' : ''}>
+                                            Siguiente →
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                            currentIndex = index;
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            imageWrapper.innerHTML = '<div class="image-placeholder"><p>No se pudo cargar la imagen</p></div>';
-                            errorDiv.innerHTML = '<div class="error">Error: Verifica que el endpoint /api/array esté configurado en Spring Boot</div>';
+                            imageWrapper.innerHTML = '<div class="image-placeholder"><p>Error al cargar la imagen</p></div>';
+                            errorDiv.innerHTML = '<div class="error">' + error.message + '</div>';
                         });
+                }
+                
+                // Navegación
+                function imagenAnterior() {
+                    if (currentIndex > 0) {
+                        mostrarImagen(currentIndex - 1);
+                    }
+                }
+                
+                function imagenSiguiente() {
+                    if (currentIndex < totalImages - 1) {
+                        mostrarImagen(currentIndex + 1);
+                    }
                 }
                 
                 // Cargar imagen automáticamente al iniciar (opcional)
@@ -308,45 +385,73 @@ public class ApexplannerController {
                 .body(imageBytes);
     }
 
-    @GetMapping("/api/array")
-    /*VERSIO FACIL PER OBTENIR LA 1A IMATGE DE L'ARRAY*/
-    public ResponseEntity<byte[]> obtenerArrayImagenes() throws IOException {
-        System.out.println("BOTON!");
-        // Verificar que frameImg no sea null
-        if (planner.getFrameImg() == null) {
-            System.out.println("ERROR: FrameImg es NULL");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error: FrameImg no inicializado".getBytes());
+@GetMapping("/api/array")
+public ResponseEntity<byte[]> obtenerArrayImagenes() throws IOException {
+    System.out.println("BOTON!");
+    List<ImageIcon> arrayImagenes = planner.getArrayImg();
+    
+    // Verificar que hay imágenes
+    if (arrayImagenes == null || arrayImagenes.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+    
+    // Tomar la primera imagen
+    ImageIcon primeraImagen = arrayImagenes.get(0);
+    
+    // Convertir a BufferedImage
+    BufferedImage bufferedImage = new BufferedImage(
+        primeraImagen.getIconWidth(),
+        primeraImagen.getIconHeight(),
+        BufferedImage.TYPE_INT_RGB
+    );
+    
+    Graphics2D g2d = bufferedImage.createGraphics();
+    primeraImagen.paintIcon(null, g2d, 0, 0);
+    g2d.dispose();
+    
+    // Convertir a bytes
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ImageIO.write(bufferedImage, "jpg", baos);
+    
+    return ResponseEntity.ok()
+            .contentType(MediaType.IMAGE_JPEG)
+            .body(baos.toByteArray());
+}
+/*RETORNA UN ARRAY PERO AMB UN CONTADOR PER DESPLAÇAR-TE ENTRE L'ARRAY */
+    @GetMapping("/api/array/{index}")
+    public ResponseEntity<byte[]> obtenerImagenPorIndice(@PathVariable int index) throws IOException {
+        List<ImageIcon> arrayImagenes = planner.getArrayImg();
+
+        if (arrayImagenes == null || index < 0 || index >= arrayImagenes.size()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        System.out.println("BOTON2!");
-//        List<ImageIcon> arrayImagenes = planner.getFrameImg().getArrayImagenes(path);
-//
-//        if (arrayImagenes.isEmpty()) {
-//            System.out.println("Array de imágenes vacío");
-//        }
-//
-//        // Tomar la primera imagen del array
-//        ImageIcon firstImage = arrayImagenes.get(0);
-//
-//        // Convertir ImageIcon a BufferedImage
-//        BufferedImage bufferedImage = new BufferedImage(
-//                firstImage.getIconWidth(),
-//                firstImage.getIconHeight(),
-//                BufferedImage.TYPE_INT_RGB
-//        );
-//
-//        Graphics2D g2d = bufferedImage.createGraphics();
-//        firstImage.paintIcon(null, g2d, 0, 0);
-//        g2d.dispose();
-//
-//        // Convertir BufferedImage a bytes
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        ImageIO.write(bufferedImage, "jpg", baos);
-//        byte[] imageBytes = baos.toByteArray();
-//
+
+        ImageIcon imagen = arrayImagenes.get(index);
+
+        // Convertir a BufferedImage
+        BufferedImage bufferedImage = new BufferedImage(
+                imagen.getIconWidth(),
+                imagen.getIconHeight(),
+                BufferedImage.TYPE_INT_RGB
+        );
+
+        Graphics2D g2d = bufferedImage.createGraphics();
+        imagen.paintIcon(null, g2d, 0, 0);
+        g2d.dispose();
+
+        // Convertir a bytes
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "jpg", baos);
+
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
-                .body(null);
+                .body(baos.toByteArray());
+    }
+
+    @GetMapping("/api/array/count")
+    public ResponseEntity<Integer> obtenerTotalImagenes() {
+        List<ImageIcon> arrayImagenes = planner.getArrayImg();
+        return ResponseEntity.ok(arrayImagenes != null ? arrayImagenes.size() : 0);
     }
 //    public ResponseEntity<byte[]> obtenerArrayImagenes() throws IOException {
 //        

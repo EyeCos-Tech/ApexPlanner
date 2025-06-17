@@ -22,6 +22,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication // ← SPRING BOOT
 public class Apexplanner {
 
+    private static Apexplanner instancia;
+
     static int pow = 193; //potencia del laser
     static double ab = 0.00025; //ablacio del laser per disparo
     static double numeroShoots = 1;
@@ -39,7 +41,19 @@ public class Apexplanner {
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv";
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv";
     static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/csv/ari.csv";
+
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/fichero de Three/ablacion.csv";
+    public Apexplanner() {
+        System.out.println("=== CREANDO INSTANCIA DE APEXPLANNER ===");
+
+    }
+
+    public static Apexplanner getInstance() {
+        if (instancia == null) {
+            instancia = new Apexplanner();
+        }
+        return instancia;
+    }
 
     public void solicitudDeClaculos(Scanner sc) {
         System.out.println("Dame la longtud de onda del LASER: ");
@@ -121,22 +135,35 @@ public class Apexplanner {
         return directorio;
     }
 
-    public static void main(String[] args) {
-        Apexplanner obj = new Apexplanner();
-
-        //FrameDeImagenes frame = obj.iniciarImagenes(getImagePath());
-        //frame.cargarImagenes(getImagePath());
+    public List<ImageIcon> getArrayImg() {
         List<ImageIcon> array = new FrameDeImagenes(getImagePath(), true).getArrayImagenes(getImagePath());
 
         /*PROBA PER COMPROBAR EL CONTINGUT DE L'ARRAY*/
 //        for (ImageIcon elemento : array) {
-//            System.out.println(elemento);
+//            System.out.println(elemento+" 0 ");
 //        }
-        for (int i = 0; i < array.size(); i++) {
-            System.out.println("Elemento " + i + ": " + array.get(i));
-        }
+        System.out.println("numero elemetos array " + array.size());
 
-        //obj.iniciarSpringboot(args);
+        return array;
+    }
+
+    public static void main(String[] args) {
+        Apexplanner obj = Apexplanner.getInstance();  // ← Usar getInstance()
+
+        //FrameDeImagenes frame = obj.iniciarImagenes(getImagePath());
+        //frame.cargarImagenes(getImagePath());
+//        List<ImageIcon> array = new FrameDeImagenes(getImagePath(), true).getArrayImagenes(getImagePath());
+
+        /*PROBA PER COMPROBAR EL CONTINGUT DE L'ARRAY*/
+//        for (ImageIcon elemento : array) {
+//            System.out.println(elemento+" 0 ");
+//        }
+//        System.out.println("numero elemetos array "+array.size());
+//        for (int i = 0; i < array.size(); i++) {
+//            System.out.println("Elemento " + i + ": " + array.get(i));
+//        }
+        obj.getArrayImg();
+        obj.iniciarSpringboot(args);
         Scanner sc = new Scanner(System.in);
 
         /*CALCULATOR*/
