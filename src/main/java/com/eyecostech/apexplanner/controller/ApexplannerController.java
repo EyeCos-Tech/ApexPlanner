@@ -45,6 +45,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 // Todas las rutas de este controlador empezarán con "/api/***"
 // @CrossOrigin: Permite peticiones desde otros dominios (CORS)
 // origins = "http://localhost:3000" permite peticiones desde React
+
+
 @RestController
 public class ApexplannerController {
 
@@ -217,7 +219,7 @@ public class ApexplannerController {
             </div>
             
             <script>
-// Mostrar la hora de carga
+                // Mostrar la hora de carga
                 document.getElementById('loadTime').textContent = new Date().toLocaleString('es-ES');
                 
                 function cargarImagen() {
@@ -453,18 +455,6 @@ public ResponseEntity<byte[]> obtenerArrayImagenes() throws IOException {
         List<ImageIcon> arrayImagenes = planner.getArrayImg();
         return ResponseEntity.ok(arrayImagenes != null ? arrayImagenes.size() : 0);
     }
-//    public ResponseEntity<byte[]> obtenerArrayImagenes() throws IOException {
-//        
-//
-//        List<ImageIcon> arrayImagenes = planner.getFrameImg().getArrayImagenes(path);
-//        if (arrayImagenes.isEmpty()) {
-//            System.out.println("array vacio");
-//        }
-//        System.out.println("array lleno");
-//
-//        return ResponseEntity.ok()
-//                .contentType(MediaType.IMAGE_JPEG)
-//                .body(null);
-//    }
+
 
 }

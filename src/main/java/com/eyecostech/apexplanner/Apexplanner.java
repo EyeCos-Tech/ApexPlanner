@@ -38,9 +38,9 @@ public class Apexplanner {
     static FrameDeImagenes frameImg;
     static Vista3DSimulada ventata3d;
 
-    //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv";
+    static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv";
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv";
-    static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/csv/ari.csv";
+    //static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/csv/ari.csv";
 
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/fichero de Three/ablacion.csv";
     public Apexplanner() {
@@ -64,7 +64,7 @@ public class Apexplanner {
 
         while (numero == null) {
             try {
-                numero = Double.parseDouble(ablacionNecesaria);
+                numero = Double.valueOf(ablacionNecesaria);
                 System.out.println("Número convertido: " + numero);
 
             } catch (NumberFormatException e) {
@@ -142,13 +142,14 @@ public class Apexplanner {
 //        for (ImageIcon elemento : array) {
 //            System.out.println(elemento+" 0 ");
 //        }
-        System.out.println("numero elemetos array " + array.size());
+        //System.out.println("numero elemetos array " + array.size());
 
         return array;
     }
 
     public static void main(String[] args) {
         Apexplanner obj = Apexplanner.getInstance();  // ← Usar getInstance()
+        Scanner sc = new Scanner(System.in);
 
         //FrameDeImagenes frame = obj.iniciarImagenes(getImagePath());
         //frame.cargarImagenes(getImagePath());
@@ -162,9 +163,8 @@ public class Apexplanner {
 //        for (int i = 0; i < array.size(); i++) {
 //            System.out.println("Elemento " + i + ": " + array.get(i));
 //        }
-        obj.getArrayImg();
-        obj.iniciarSpringboot(args);
-        Scanner sc = new Scanner(System.in);
+//        obj.getArrayImg();
+//        obj.iniciarSpringboot(args);
 
         /*CALCULATOR*/
 //        obj.solicitudDeClaculos(sc);
@@ -191,16 +191,17 @@ public class Apexplanner {
         //System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
         //calc.maxShoots(matriz);
         //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
+        
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
-//        try {
-//            
-//            imageList = new ImageListCreator(path);
-//            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
-//            imageList.guardarImagenes(lista);
-//            
-//        } catch (Exception e) {
-//            e.printStackTrace(); // mostra la linea on ha saltat l'error
-//        }
+        try {            
+            imageList = new ImageListCreator(path);
+            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
+            imageList.guardarImagenes(lista);
+            
+        } catch (Exception e) {
+            e.printStackTrace(); // mostra la linea on ha saltat l'error
+        }
+
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
         //obj.iniciarFrameSliderImagenes(path);
 //      
@@ -209,11 +210,11 @@ public class Apexplanner {
         sc.close();
 
     }
-//    public void escribirLog() throws IOException {
+//    public void escribirLog(String mensaje) throws IOException {
 //        try {
 //            // Ruta relativa: se crea en la raíz del proyecto
 //            FileWriter writer = new FileWriter("log.txt");
-//            writer.write("Este es un mensaje de log.");
+//            writer.write("mensaje");
 //            writer.close();
 //            System.out.println("Log creado correctamente.");
 //        } catch (IOException e) {
