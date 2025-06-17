@@ -5,16 +5,23 @@
 package com.eyecostech.apexplanner.controller;
 
 import com.eyecostech.apexplanner.Apexplanner;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.IntPointer;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
 import org.bytedeco.opencv.opencv_core.Mat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 /**
@@ -186,6 +193,17 @@ public class ApexplannerController {
                     <button class="load-image-btn" onclick="cargarImagen()">Carregar Imatge</button>
                     <div id="errorMessage"></div>
                 </div>
+            
+                <div class="image-container">
+                    <h3>Array Imatges</h3>
+                    <div class="image-wrapper" id="imageArrayWrapper">
+                        <div class="image-placeholder">
+                            <p>Haz clic en el botón para cargar un array</p>
+                        </div>
+                    </div>
+                    <button class="load-image-btn" onclick="cargarArray()">Carregar Array</button>
+                    <div id="errorArrayMessage"></div>
+                </div>
             </div>
             
             <script>
@@ -203,7 +221,7 @@ public class ApexplannerController {
                     imageWrapper.innerHTML = '<div class="loading">Cargando imagen...</div>';
                     
                     // Realizar petición al backend
-                    fetch('/api/csv')
+                    fetch('/api/isobaras')
                         .then(response => {
                             if (!response.ok) {
                                 throw new Error('Error al cargar la imagen');
@@ -217,7 +235,35 @@ public class ApexplannerController {
                         .catch(error => {
                             console.error('Error:', error);
                             imageWrapper.innerHTML = '<div class="image-placeholder"><p>No se pudo cargar la imagen</p></div>';
-                            errorDiv.innerHTML = '<div class="error">Error: Verifica que el endpoint /api/imagen esté configurado en Spring Boot</div>';
+                            errorDiv.innerHTML = '<div class="error">Error: Verifica que el endpoint /api/isobaras esté configurado en Spring Boot</div>';
+                        });
+                                }
+                function cargarArray() {
+                    const imageWrapper = document.getElementById('imageArrayWrapper');
+                    const errorDiv = document.getElementById('errorArrayMessage');
+
+                    // Limpiar mensajes de error anteriores
+                    errorDiv.innerHTML = '';
+
+                    // Mostrar estado de carga
+                    imageWrapper.innerHTML = '<div class="loading">Cargando array...</div>';
+
+                    // Realizar petición al backend
+                    fetch('/api/array')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Error al cargar la imagen');
+                            }
+                            return response.blob();
+                        })
+                        .then(blob => {
+                            const imageUrl = URL.createObjectURL(blob);
+                            imageWrapper.innerHTML = `<img src="${imageUrl}" alt="Imagen del proyecto">`;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            imageWrapper.innerHTML = '<div class="image-placeholder"><p>No se pudo cargar la imagen</p></div>';
+                            errorDiv.innerHTML = '<div class="error">Error: Verifica que el endpoint /api/array esté configurado en Spring Boot</div>';
                         });
                 }
                 
@@ -229,7 +275,7 @@ public class ApexplannerController {
         """;
     }
 
-    @GetMapping("/api/csv")
+    @GetMapping("/api/isobaras")
     public ResponseEntity<byte[]> obtenerImagen() throws IOException {
 
         /*cargar una Mat*/
@@ -261,5 +307,59 @@ public class ApexplannerController {
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(imageBytes);
     }
+
+    @GetMapping("/api/array")
+    /*VERSIO FACIL PER OBTENIR LA 1A IMATGE DE L'ARRAY*/
+    public ResponseEntity<byte[]> obtenerArrayImagenes() throws IOException {
+        System.out.println("BOTON!");
+        // Verificar que frameImg no sea null
+        if (planner.getFrameImg() == null) {
+            System.out.println("ERROR: FrameImg es NULL");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: FrameImg no inicializado".getBytes());
+        }
+        System.out.println("BOTON2!");
+//        List<ImageIcon> arrayImagenes = planner.getFrameImg().getArrayImagenes(path);
+//
+//        if (arrayImagenes.isEmpty()) {
+//            System.out.println("Array de imágenes vacío");
+//        }
+//
+//        // Tomar la primera imagen del array
+//        ImageIcon firstImage = arrayImagenes.get(0);
+//
+//        // Convertir ImageIcon a BufferedImage
+//        BufferedImage bufferedImage = new BufferedImage(
+//                firstImage.getIconWidth(),
+//                firstImage.getIconHeight(),
+//                BufferedImage.TYPE_INT_RGB
+//        );
+//
+//        Graphics2D g2d = bufferedImage.createGraphics();
+//        firstImage.paintIcon(null, g2d, 0, 0);
+//        g2d.dispose();
+//
+//        // Convertir BufferedImage a bytes
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        ImageIO.write(bufferedImage, "jpg", baos);
+//        byte[] imageBytes = baos.toByteArray();
+//
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(null);
+    }
+//    public ResponseEntity<byte[]> obtenerArrayImagenes() throws IOException {
+//        
+//
+//        List<ImageIcon> arrayImagenes = planner.getFrameImg().getArrayImagenes(path);
+//        if (arrayImagenes.isEmpty()) {
+//            System.out.println("array vacio");
+//        }
+//        System.out.println("array lleno");
+//
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.IMAGE_JPEG)
+//                .body(null);
+//    }
 
 }

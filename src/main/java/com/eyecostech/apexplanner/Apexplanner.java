@@ -1,5 +1,6 @@
 package com.eyecostech.apexplanner;
 
+import java.awt.Image;
 import java.util.Scanner;
 import javax.swing.JFrame;
 import java.awt.image.BufferedImage;
@@ -9,6 +10,7 @@ import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.ImageIcon;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -33,6 +35,7 @@ public class Apexplanner {
     static ImageListCreator imageList;
     static FrameDeImagenes frameImg;
     static Vista3DSimulada ventata3d;
+
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv";
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv";
     static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/csv/ari.csv";
@@ -67,6 +70,10 @@ public class Apexplanner {
 
     }
 
+    public static FrameDeImagenes getFrameImg() {
+        return frameImg;
+    }
+
     public static String getPath() {
         return path;
     }
@@ -74,12 +81,13 @@ public class Apexplanner {
     public static CsvAnalizer getCsv() {
         return csv;
     }
-    
 
     public void iniciarSpringboot(String[] args) {
         System.out.println("\n INICIANDO APLICACIÓN SPRING BOOT...");
         System.out.println("=====================================");
-         /** INICIAR SPRING BOOT **/
+        /**
+         * INICIAR SPRING BOOT *
+         */
         SpringApplication.run(Apexplanner.class, args);
         System.out.println("\n APLICACIoN INICIADA CORRECTAMENTE");
         System.out.println("=====================================");
@@ -89,34 +97,47 @@ public class Apexplanner {
         System.out.println("=====================================\n");
 
     }
-    public void iniciarFrameSliderImagenes(String ruta){
+
+    public FrameDeImagenes iniciarFrameSliderImagenes(String ruta) {
         File file = new File(path);
         String directorio = file.getParent() + "/imgList/";
         frameImg = new FrameDeImagenes(directorio);
+
+        return frameImg;
     }
 
-//    public void escribirLog() throws IOException {
-//        try {
-//            // Ruta relativa: se crea en la raíz del proyecto
-//            FileWriter writer = new FileWriter("log.txt");
-//            writer.write("Este es un mensaje de log.");
-//            writer.close();
-//            System.out.println("Log creado correctamente.");
-//        } catch (IOException e) {
-//            System.out.println("Error al escribir el archivo:");
-//            e.printStackTrace();
-//        }
-//    }
+    /*INICIA EL FRAME DE IMAFENES PERO SENSE TREURE EL FRAME A PANTALLA NOMER RETORNA UNA LISRT<iMAGEiCON>*/
+    public FrameDeImagenes iniciarImagenes(String ruta) {
+        File file = new File(path);
+        String directorio = file.getParent() + "/imgList/";
+        frameImg = new FrameDeImagenes(directorio, true);
+
+        return frameImg;
+    }
+
+    public static String getImagePath() {
+        File file = new File(path);
+        String directorio = file.getParent() + "/imgList/";
+        return directorio;
+    }
 
     public static void main(String[] args) {
         Apexplanner obj = new Apexplanner();
-        
-        obj.iniciarSpringboot(args);
 
+        //FrameDeImagenes frame = obj.iniciarImagenes(getImagePath());
+        //frame.cargarImagenes(getImagePath());
+        List<ImageIcon> array = new FrameDeImagenes(getImagePath(), true).getArrayImagenes(getImagePath());
+
+        /*PROBA PER COMPROBAR EL CONTINGUT DE L'ARRAY*/
+//        for (ImageIcon elemento : array) {
+//            System.out.println(elemento);
+//        }
+        for (int i = 0; i < array.size(); i++) {
+            System.out.println("Elemento " + i + ": " + array.get(i));
+        }
+
+        //obj.iniciarSpringboot(args);
         Scanner sc = new Scanner(System.in);
-        
-        
-
 
         /*CALCULATOR*/
 //        obj.solicitudDeClaculos(sc);
@@ -153,15 +174,24 @@ public class Apexplanner {
 //        } catch (Exception e) {
 //            e.printStackTrace(); // mostra la linea on ha saltat l'error
 //        }
-
-
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
         //obj.iniciarFrameSliderImagenes(path);
 //      
-
         System.out.println("A ver si escribe");
 
         sc.close();
 
     }
+//    public void escribirLog() throws IOException {
+//        try {
+//            // Ruta relativa: se crea en la raíz del proyecto
+//            FileWriter writer = new FileWriter("log.txt");
+//            writer.write("Este es un mensaje de log.");
+//            writer.close();
+//            System.out.println("Log creado correctamente.");
+//        } catch (IOException e) {
+//            System.out.println("Error al escribir el archivo:");
+//            e.printStackTrace();
+//        }
+//    }
 }
