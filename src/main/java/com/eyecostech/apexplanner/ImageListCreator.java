@@ -81,7 +81,7 @@ public class ImageListCreator {
             int centroX = imagen.getWidth() / 2;
             int centroY = imagen.getHeight() / 2;
             // Si el punto del centro sigue siendo blanco, lo pintamos manualmente
-            imagen.setRGB(centroX, centroY, Color.WHITE.getRGB());
+            //imagen.setRGB(centroX, centroY, Color.WHITE.getRGB());
             //imagen.setRGB(centroX, centroY, Color.BLACK.getRGB());
 
             //pintarContorno(imagen, matriz); //necessari si es pinte l'exterior del cercle en blanc

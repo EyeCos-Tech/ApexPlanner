@@ -335,5 +335,11 @@ public class CsvAnalizer {
             }
         }
     }
+    
+    public void setPaciente(String nombre){
+        
+        
+        
+    }
 
 }

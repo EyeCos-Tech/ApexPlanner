@@ -5,6 +5,7 @@
 package com.eyecostech.apexplanner.controller;
 
 import com.eyecostech.apexplanner.Apexplanner;
+import com.eyecostech.apexplanner.Paciente;
 import jakarta.annotation.PostConstruct;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import org.bytedeco.javacpp.BytePointer;
@@ -26,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * CONTROLADOR PRINCIPAL DE LA APLICACIÓN
@@ -45,8 +49,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 // Todas las rutas de este controlador empezarán con "/api/***"
 // @CrossOrigin: Permite peticiones desde otros dominios (CORS)
 // origins = "http://localhost:3000" permite peticiones desde React
-
-
 @RestController
 public class ApexplannerController {
 
@@ -354,6 +356,15 @@ public class ApexplannerController {
         """;
     }
 
+    /**ASIGNA UN PACIEN AL PLANNER I RETORNA UN OBJECETE  PACIENT AL FRONT (per poder accedir a les veriables de Paciente)**/
+    @PostMapping("/api/paciente")
+    public ResponseEntity<Paciente> setPaciente(@RequestParam String nombre) {
+        planner.setPaciente(nombre);
+        Paciente paciente = planner.getPaciente();
+
+        return ResponseEntity.ok(paciente);
+    }
+
     @GetMapping("/api/isobaras")
     public ResponseEntity<byte[]> obtenerImagen() throws IOException {
 
@@ -387,39 +398,40 @@ public class ApexplannerController {
                 .body(imageBytes);
     }
 
-@GetMapping("/api/array")
-public ResponseEntity<byte[]> obtenerArrayImagenes() throws IOException {
-    System.out.println("BOTON!");
-    List<ImageIcon> arrayImagenes = planner.getArrayImg();
-    
-    // Verificar que hay imágenes
-    if (arrayImagenes == null || arrayImagenes.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    @GetMapping("/api/array")
+    public ResponseEntity<byte[]> obtenerArrayImagenes() throws IOException {
+        System.out.println("BOTON!");
+        List<ImageIcon> arrayImagenes = planner.getArrayImg();
+
+        // Verificar que hay imágenes
+        if (arrayImagenes == null || arrayImagenes.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+
+        // Tomar la primera imagen
+        ImageIcon primeraImagen = arrayImagenes.get(0);
+
+        // Convertir a BufferedImage
+        BufferedImage bufferedImage = new BufferedImage(
+                primeraImagen.getIconWidth(),
+                primeraImagen.getIconHeight(),
+                BufferedImage.TYPE_INT_RGB
+        );
+
+        Graphics2D g2d = bufferedImage.createGraphics();
+        primeraImagen.paintIcon(null, g2d, 0, 0);
+        g2d.dispose();
+
+        // Convertir a bytes
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "jpg", baos);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(baos.toByteArray());
     }
-    
-    // Tomar la primera imagen
-    ImageIcon primeraImagen = arrayImagenes.get(0);
-    
-    // Convertir a BufferedImage
-    BufferedImage bufferedImage = new BufferedImage(
-        primeraImagen.getIconWidth(),
-        primeraImagen.getIconHeight(),
-        BufferedImage.TYPE_INT_RGB
-    );
-    
-    Graphics2D g2d = bufferedImage.createGraphics();
-    primeraImagen.paintIcon(null, g2d, 0, 0);
-    g2d.dispose();
-    
-    // Convertir a bytes
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ImageIO.write(bufferedImage, "jpg", baos);
-    
-    return ResponseEntity.ok()
-            .contentType(MediaType.IMAGE_JPEG)
-            .body(baos.toByteArray());
-}
-/*RETORNA UN ARRAY PERO AMB UN CONTADOR PER DESPLAÇAR-TE ENTRE L'ARRAY */
+
+    /*RETORNA UN ARRAY PERO AMB UN CONTADOR PER DESPLAÇAR-TE ENTRE L'ARRAY */
     @GetMapping("/api/array/{index}")
     public ResponseEntity<byte[]> obtenerImagenPorIndice(@PathVariable int index) throws IOException {
         List<ImageIcon> arrayImagenes = planner.getArrayImg();
@@ -455,6 +467,5 @@ public ResponseEntity<byte[]> obtenerArrayImagenes() throws IOException {
         List<ImageIcon> arrayImagenes = planner.getArrayImg();
         return ResponseEntity.ok(arrayImagenes != null ? arrayImagenes.size() : 0);
     }
-
 
 }

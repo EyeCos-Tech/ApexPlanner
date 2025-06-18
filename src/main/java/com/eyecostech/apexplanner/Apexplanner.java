@@ -37,14 +37,24 @@ public class Apexplanner {
     static ImageListCreator imageList;
     static FrameDeImagenes frameImg;
     static Vista3DSimulada ventata3d;
+    static Paciente paciente;
+    static String path;
 
-    static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv";
-    //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv";
-    //static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/csv/ari.csv";
-
-    //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/fichero de Three/ablacion.csv";
+    /**
+     * PER CREAR EL PATH DIRECTAMENT*
+     */
+    //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/mica/csv/mica.csv";
+    //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/sara/csv/sara.csv";
+    //static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/ari/csv/ari.csv";
     public Apexplanner() {
+    }
+
+    public Apexplanner(String nombre) {
         System.out.println("=== CREANDO INSTANCIA DE APEXPLANNER ===");
+        System.out.println(path);
+
+        paciente = new Paciente(nombre);
+        path = paciente.getPath();
 
     }
 
@@ -53,6 +63,15 @@ public class Apexplanner {
             instancia = new Apexplanner();
         }
         return instancia;
+    }
+
+    public static Paciente getPaciente() {
+        return paciente;
+    }
+
+    public void setPaciente(String nombre) {
+        paciente = new Paciente(nombre);
+        path = paciente.getPath();
     }
 
     public void solicitudDeClaculos(Scanner sc) {
@@ -143,12 +162,13 @@ public class Apexplanner {
 //            System.out.println(elemento+" 0 ");
 //        }
         //System.out.println("numero elemetos array " + array.size());
-
         return array;
     }
 
     public static void main(String[] args) {
-        Apexplanner obj = Apexplanner.getInstance();  // ← Usar getInstance()
+        Apexplanner obj = Apexplanner.getInstance();
+        obj.setPaciente("mica");
+
         Scanner sc = new Scanner(System.in);
 
         //FrameDeImagenes frame = obj.iniciarImagenes(getImagePath());
@@ -163,9 +183,15 @@ public class Apexplanner {
 //        for (int i = 0; i < array.size(); i++) {
 //            System.out.println("Elemento " + i + ": " + array.get(i));
 //        }
-//        obj.getArrayImg();
-//        obj.iniciarSpringboot(args);
 
+
+        /**
+         * INICIALITZAR SPRINGBOOT*
+         */
+        obj.getArrayImg();
+        obj.iniciarSpringboot(args);
+
+        
         /*CALCULATOR*/
 //        obj.solicitudDeClaculos(sc);
 //        /*IMAGE ANALIZER*/
@@ -178,6 +204,7 @@ public class Apexplanner {
         //System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptria(5) + " mm d'ablacio"+"\nper tant: "+calc.numeroShoots(calc.mmXDioptria(5), calc.mmXShoot(pow))+" shoots");
         //System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptriaFormulaMunnerlyn(-4, 6.5) + " mm d'ablacio sxegons la formula de Munnerlyn");
 //        
+
         /*CSV ANALIZER*/
         //List<List<Double>> matriz = csv.cerarMatriz(path);
         //csv.leerPunto(150, 265, matriz);
@@ -191,16 +218,16 @@ public class Apexplanner {
         //System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
         //calc.maxShoots(matriz);
         //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
-        
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
-        try {            
-            imageList = new ImageListCreator(path);
-            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
-            imageList.guardarImagenes(lista);
-            
-        } catch (Exception e) {
-            e.printStackTrace(); // mostra la linea on ha saltat l'error
-        }
+//        try {            
+//            imageList = new ImageListCreator(path);
+//            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
+//            imageList.guardarImagenes(lista);
+//            
+//        } catch (Exception e) {
+//            e.printStackTrace(); // mostra la linea on ha saltat l'error
+//        }
+
 
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
         //obj.iniciarFrameSliderImagenes(path);
