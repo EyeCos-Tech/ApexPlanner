@@ -468,11 +468,28 @@ public BufferedImage prepararImagen(List<List<Double>> matriz) {
                     float hue = 0.7f * (1.0f - normalized);
                     int rgb = java.awt.Color.HSBtoRGB(hue, 1.0f, 1.0f);
 
-                    image.setRGB(x, y, rgb);
+                    //image.setRGB(x, y, rgb);
+                    image.put(y, x,rgb);
                 } else {
                     // Negro para valores nulos
                     image.setRGB(x, y, 0);
                 }
+                /*// En lugar de BufferedImage, crear directamente un Mat
+Mat image = MatColorOperations.prepararImagenColorConMat(matriz);
+
+// Ahora puedes usar este Mat con ColorIsobarDrawer
+ColorIsobarDrawer drawer = new ColorIsobarDrawer(image, colorToValueMap);
+drawer.drawColorIsobars();
+
+// Obtener resultado
+Mat resultado = drawer.getImageWithIsobars();
+
+// Si necesitas BufferedImage al final
+BufferedImage bufferedImage = matToBufferedImage(resultado);
+
+// Liberar memoria
+image.release();
+resultado.release();*/
             }
         }
 
