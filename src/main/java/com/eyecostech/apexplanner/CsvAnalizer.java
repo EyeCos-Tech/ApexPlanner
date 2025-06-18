@@ -27,6 +27,7 @@ import static org.bytedeco.opencv.global.opencv_imgproc.medianBlur;
 import org.bytedeco.opencv.opencv_core.MatVector;
 import org.bytedeco.opencv.opencv_core.Point;
 import org.bytedeco.opencv.opencv_core.Scalar;
+import org.opencv.core.CvType;
 
 /**
  * CARREGAR I ANALITZAR UNA MATRIU CSV EXTRETA DEL THREE_I_TECH AMB EL MAPA
@@ -369,13 +370,14 @@ public BufferedImage prepararImagen(List<List<Double>> matriz) {
         image.getRaster().setDataElements(0, 0, mat.cols(), mat.rows(), data);
         return image;
     }
-       public static Mat bufferedImageToMat(BufferedImage image) {
+
+    public static Mat bufferedImageToMat(BufferedImage image) {
         Mat mat = null;
-        
+
         // Determinar el tipo de Mat según el tipo de BufferedImage
         int type = -1;
         int channels = 0;
-        
+
         switch (image.getType()) {
             case BufferedImage.TYPE_BYTE_GRAY:
                 type = CV_8UC1;
@@ -392,8 +394,8 @@ public BufferedImage prepararImagen(List<List<Double>> matriz) {
             case BufferedImage.TYPE_INT_RGB:
             case BufferedImage.TYPE_INT_BGR:
                 // Convertir a BGR
-                BufferedImage converted = new BufferedImage(image.getWidth(), 
-                    image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+                BufferedImage converted = new BufferedImage(image.getWidth(),
+                        image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
                 converted.getGraphics().drawImage(image, 0, 0, null);
                 image = converted;
                 type = CV_8UC3;
@@ -401,8 +403,8 @@ public BufferedImage prepararImagen(List<List<Double>> matriz) {
                 break;
             case BufferedImage.TYPE_INT_ARGB:
                 // Convertir a ABGR
-                BufferedImage convertedAlpha = new BufferedImage(image.getWidth(), 
-                    image.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+                BufferedImage convertedAlpha = new BufferedImage(image.getWidth(),
+                        image.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
                 convertedAlpha.getGraphics().drawImage(image, 0, 0, null);
                 image = convertedAlpha;
                 type = CV_8UC4;
@@ -411,13 +413,13 @@ public BufferedImage prepararImagen(List<List<Double>> matriz) {
             default:
                 throw new IllegalArgumentException("Tipo de imagen no soportado: " + image.getType());
         }
-        
+
         // Crear Mat
         mat = new Mat(image.getHeight(), image.getWidth(), type);
-        
+
         // Obtener datos de la imagen
         byte[] data = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-        
+
         // Si es ABGR, necesitamos convertir a BGRA para OpenCV
         if (channels == 4) {
             byte[] bgra = new byte[data.length];
@@ -432,17 +434,16 @@ public BufferedImage prepararImagen(List<List<Double>> matriz) {
             // Para otros formatos, copiar directamente
             mat.data().put(data);
         }
-        
+
         return mat;
     }
-    
 
 // Método alternativo más simple usando colores predefinidos
     public Mat prepararImagenColorSimple(List<List<Double>> matriz) {
         int rows = matriz.size();
         int cols = matriz.get(0).size();
 
-        Mat image = new Mat(cols, rows, BufferedImage.TYPE_INT_RGB);
+        Mat image = new Mat(cols, rows, CvType.CV_8UC3);
 
         // Encontrar valor máximo
         double maxValue = 0;
@@ -459,6 +460,7 @@ public BufferedImage prepararImagen(List<List<Double>> matriz) {
             for (int x = 0; x < cols; x++) {
                 Double value = matriz.get(y).get(x);
 
+                    UByteIndexer indexer = image.createIndexer();
                 if (value != null && value > 0) {
                     // Normalizar valor entre 0 y 1
                     float normalized = (float) (value / maxValue);
@@ -468,13 +470,44 @@ public BufferedImage prepararImagen(List<List<Double>> matriz) {
                     float hue = 0.7f * (1.0f - normalized);
                     int rgb = java.awt.Color.HSBtoRGB(hue, 1.0f, 1.0f);
 
-                    //image.setRGB(x, y, rgb);
-                    image.put(y, x,rgb);
-                } else {
-                    // Negro para valores nulos
-                    image.setRGB(x, y, 0);
-                }
-                /*// En lugar de BufferedImage, crear directamente un Mat
+
+                    
+                        int red = (rgb >> 16) & 0xFF;
+                        int green = (rgb >> 8) & 0xFF;
+                        int blue = rgb & 0xFF;
+
+                        // BGR order
+                        indexer.put(y, x, 0, blue);
+                        indexer.put(y, x, 1, green);
+                        indexer.put(y, x, 2, red);
+                    } else {
+                        indexer.put(y, x, 0, 0);
+                        indexer.put(y, x, 1, 0);
+                        indexer.put(y, x, 2, 0);
+                    }
+
+                    indexer.release();
+//                    //image.setRGB(x, y, rgb);
+//                    image.put(y, x, blue, green, red);
+//                } else {
+//                    // Negro para valores nulos
+//                    image.put(y, x, 0, 0, 0);                    
+//                    //image.setRGB(x, y, 0);
+//                }
+                    /*// Establecer píxel con color
+if (condicion) {
+    // Extraer componentes RGB
+    int red = (rgb >> 16) & 0xFF;
+    int green = (rgb >> 8) & 0xFF;
+    int blue = rgb & 0xFF;
+    
+    // OpenCV usa BGR, no RGB
+    image.put(y, x, new byte[]{(byte)blue, (byte)green, (byte)red});
+} else {
+    // Negro para valores nulos
+    image.put(y, x, new byte[]{0, 0, 0});
+}*/
+ /*// En lugar de BufferedImage, crear directamente un Mat
 Mat image = MatColorOperations.prepararImagenColorConMat(matriz);
 
 // Ahora puedes usar este Mat con ColorIsobarDrawer
@@ -490,20 +523,19 @@ BufferedImage bufferedImage = matToBufferedImage(resultado);
 // Liberar memoria
 image.release();
 resultado.release();*/
+                }
             }
+
+            return image;
         }
-
-        return image;
-    }
-
-    /*mostra la imatge i imprimeix a consola la cantitat de disparos que has de fer en el punt on clickes */
+        /*mostra la imatge i imprimeix a consola la cantitat de disparos que has de fer en el punt on clickes */
     public void imprimirImagen(Mat imagen, List<List<Double>> matrix) {
 
         String windowName = "Mapa de Ablacion Corneal";
         opencv_highgui.namedWindow(windowName, opencv_highgui.WINDOW_NORMAL);
 //        BufferedImage bugImage= matToBufferedImage(image);
 //        bugImage = prepararImagenColorSimple(matrix);
-       
+
         //opencv_highgui.resizeWindow(windowName, 800, 600);
 
         /*capturar punt de la imatge x/y i retorna valor. Dona lo mateix que el metode leerPunto()*/
