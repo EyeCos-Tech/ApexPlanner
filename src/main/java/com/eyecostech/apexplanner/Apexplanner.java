@@ -188,8 +188,8 @@ public class Apexplanner {
         /**
          * INICIALITZAR SPRINGBOOT*
          */
-        obj.getArrayImg();
-        obj.iniciarSpringboot(args);
+//        obj.getArrayImg();
+//        obj.iniciarSpringboot(args);
 
         
         /*CALCULATOR*/
@@ -206,18 +206,18 @@ public class Apexplanner {
 //        
 
         /*CSV ANALIZER*/
-        //List<List<Double>> matriz = csv.cerarMatriz(path);
-        //csv.leerPunto(150, 265, matriz);
-//        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
+        List<List<Double>> matriz = csv.cerarMatriz(path);
+        csv.leerPunto(150, 265, matriz);
+        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
 //        System.out.println("BREAK!");
 //        System.out.println(rutaLaser.get(5).toString());
-        //double valorMaximo = csv.getMaxValue(matriz);
-        //System.out.println("Valor maximo: " + valorMaximo);
-        //System.out.println("Numero total de disparos: "+calc.calcularNumeroShootsTotal(matriz));
-        //System.out.println("total: "+calc.calcularNumeroShootsTotal(matriz));
-        //System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
-        //calc.maxShoots(matriz);
-        //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
+//        double valorMaximo = csv.getMaxValue(matriz);
+//        System.out.println("Valor maximo: " + valorMaximo);
+//        System.out.println("Numero total de disparos: "+calc.calcularNumeroShootsTotal(matriz));
+//        System.out.println("total: "+calc.calcularNumeroShootsTotal(matriz));
+//        System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
+//        calc.maxShoots(matriz);
+        csv.imprimirImagen(csv.prepararImagenColorSimple(matriz), matriz);
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
 //        try {            
 //            imageList = new ImageListCreator(path);

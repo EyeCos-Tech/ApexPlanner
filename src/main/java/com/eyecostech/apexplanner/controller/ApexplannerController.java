@@ -356,7 +356,7 @@ public class ApexplannerController {
         """;
     }
 
-    /**ASIGNA UN PACIEN AL PLANNER I RETORNA UN OBJECETE  PACIENT AL FRONT (per poder accedir a les veriables de Paciente)**/
+    /**ASIGNA UN PACIEN AL PLANNER I RETORNA UN OBJECETE  PACIENT AL FRONT (per poder accedir a les veriables de paciente)**/
     @PostMapping("/api/paciente")
     public ResponseEntity<Paciente> setPaciente(@RequestParam String nombre) {
         planner.setPaciente(nombre);
@@ -370,7 +370,7 @@ public class ApexplannerController {
 
         /*cargar una Mat*/
         Mat imagen;
-        imagen = planner.getCsv().prepararImagen(planner.getCsv().cerarMatriz(path));
+        imagen = planner.getCsv().prepararImagenColorSimple(planner.getCsv().cerarMatriz(path));
         /*convertir mat a bytes*/
         // Codificar la imagen a bytes
         BytePointer buffer = new BytePointer();

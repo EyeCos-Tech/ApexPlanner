@@ -1,5 +1,8 @@
 package com.eyecostech.apexplanner;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import org.bytedeco.opencv.global.opencv_core;
 import org.bytedeco.opencv.global.opencv_highgui;
 import org.bytedeco.opencv.global.opencv_imgproc;
@@ -12,8 +15,15 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.bytedeco.javacpp.Pointer;
+import org.bytedeco.javacpp.indexer.UByteIndexer;
+import static org.bytedeco.opencv.global.opencv_core.CV_8UC1;
+import static org.bytedeco.opencv.global.opencv_core.CV_8UC3;
+import static org.bytedeco.opencv.global.opencv_core.CV_8UC4;
+import static org.bytedeco.opencv.global.opencv_imgproc.medianBlur;
 import org.bytedeco.opencv.opencv_core.MatVector;
 import org.bytedeco.opencv.opencv_core.Point;
 import org.bytedeco.opencv.opencv_core.Scalar;
@@ -37,7 +47,7 @@ public class CsvAnalizer {
     public void setImage(Mat image) {
 
     }
-    
+
 
     /*crea una matriu*/
     public List<List<Double>> cerarMatriz(String path) {
@@ -47,7 +57,7 @@ public class CsvAnalizer {
             System.out.println("No se pudo cargar el archivo.");
 
         } else {
-            System.out.println("Csv "+csvPath+ " carreget amb exit");
+            System.out.println("Csv " + csvPath + " carreget amb exit");
         }
 //        int rows = matrix.size();
 //        int cols = matrix.get(0).size();
@@ -108,99 +118,363 @@ public class CsvAnalizer {
     }
 
     /*prepara una imatge en color representant la matriu del csv i retorna la  imatge*/
-    public Mat prepararImagen(List<List<Double>> matrix) {
-        //double ablacion;
-
-        int rows = matrix.size();
-        int cols = matrix.get(0).size();
-        Mat image = new Mat(rows, cols, opencv_core.CV_8UC1);
-
-//        // Escalar todos los valores (por ejemplo, de mm a µm) per traballar mes comodament
+//    public Mat prepararImagen(List<List<Double>> matrix) {
+//        //double ablacion;
+//
+//        int rows = matrix.size();
+//        int cols = matrix.get(0).size();
+//            Color[] colorPalette = ColorImageGenerator.createHeatMapPalette();
+//
+//        Mat image = new Mat(rows, cols, opencv_core.CV_8UC1);
+//
+    ////        // Escalar todos los valores (por ejemplo, de mm a µm) per traballar mes comodament
+////        for (int y = 0; y < rows; y++) {
+////            for (int x = 0; x < cols; x++) {
+////                double valor = matrix.get(y).get(x);
+////                matrix.get(y).set(x, valor * 1000); // Escala ×1000
+////            }
+////        }
+//
+//        /*FET A PARTIR DELS VALORS (ablacio) DE CADA PUNT DE LA MATRIU*/
+//        // Escalado
+////        double maxValue = matrix.stream()
+////                .flatMap(List::stream)
+////                .mapToDouble(Double::doubleValue)
+////                .max().orElse(1.0);
+////        for (int y = 0; y < rows; y++) {
+////            for (int x = 0; x < cols; x++) {
+////                int grayValue = (int) (255.0 * matrix.get(y).get(x) / maxValue);
+////                grayValue = Math.min(255, Math.max(0, grayValue));
+////                image.ptr(y, x).put((byte) grayValue);
+////            }
+////        }
+//
+//        /*FET A PARTIR DELS NUMEROS DE SHOOT DE CADA PUNT DE LA MATRIU*/
+//        // Escalado
+//        double maxValue = calc.maxShoots(matrix);
 //        for (int y = 0; y < rows; y++) {
 //            for (int x = 0; x < cols; x++) {
-//                double valor = matrix.get(y).get(x);
-//                matrix.get(y).set(x, valor * 1000); // Escala ×1000
-//            }
-//        }
-
-        /*FET A PARTIR DELS VALORS (ablacio) DE CADA PUNT DE LA MATRIU*/
-        // Escalado
-//        double maxValue = matrix.stream()
-//                .flatMap(List::stream)
-//                .mapToDouble(Double::doubleValue)
-//                .max().orElse(1.0);
-//        for (int y = 0; y < rows; y++) {
-//            for (int x = 0; x < cols; x++) {
-//                int grayValue = (int) (255.0 * matrix.get(y).get(x) / maxValue);
+//                int grayValue = (int) (255.0 * calc.numeroShoots(matrix.get(y).get(x), calc.mmXShoot(193)) / maxValue);
 //                grayValue = Math.min(255, Math.max(0, grayValue));
 //                image.ptr(y, x).put((byte) grayValue);
 //            }
 //        }
+//        System.out.println("el maxim de shoots que te algun punt de la matriu es : " + maxValue);
+//
+//        // Colormap:c pasar la image de grisos a color
+//        Mat color = new Mat();
+//        opencv_imgproc.applyColorMap(image, color, opencv_imgproc.COLORMAP_JET);
+//        //addIsobaras(image, colorMap, matrix, 20); // 10 isobaras
+//        /**
+//         * ISOBARAS DE COLOR
+//         */
+//        Map<Integer, Integer> colorMap = new HashMap<>();
+//        colorMap.put((255 << 16) | (0 << 8) | 0, 50);    // Rojo = valor 50
+//        colorMap.put((0 << 16) | (255 << 8) | 0, 30);    // Verde = valor 30
+//        colorMap.put((0 << 16) | (0 << 8) | 255, 10);    // Azul = valor 10
+//        ColorIsobarDrawer drawer = new ColorIsobarDrawer(image, colorMap);
+//        // Dibujar isobaras
+//        drawer.drawColorIsobars();
+//
+//        // Obtener resultado
+//        Mat resultado = drawer.getImageWithIsobars();
+//        
+//        image = resultado;
+//
+////        double[] niveles = {0.0003,0.0008, 0.001,0.005,0.009,0.01,0.05,0.09,0.1,0.5,0.9,1.0}; // mm u otra unidad
+////        //Scalar rojo = new Scalar(0.0, 0.0, 255.0, 0.0);  // B, G, R, Alpha
+////        Scalar[] colores = {
+////            
+////            new Scalar(255.0, 0.0, 0.0,0.0), // Azul
+////            new Scalar(0.0, 255.0, 0.0,0.0), // Verde
+////            new Scalar(0.0, 0.0, 255.0,0.0), // Rojo
+////            new Scalar(255.0, 255.0, 0.0,0.0), // Cyan
+////            new Scalar(255.0, 0.0, 255.0,0.0) // Magenta
+////        };
+////        double alpha = 0.5;
+//        //addIsobarasPersonalizadas(image, colorMap, matrix, niveles, colores, alpha);
+////        String windowName = "Mapa de Ablacion Corneal";
+////        opencv_highgui.namedWindow(windowName, opencv_highgui.WINDOW_NORMAL);
+//        //opencv_highgui.resizeWindow(windowName, 800, 600);
+//
+//        /*capturar punt de la imatge x/y i retorna valor. Dona lo mateix que el metode leerPunto()*/
+//        // Callback del mouse 
+////        opencv_highgui.setMouseCallback(windowName, new MouseCallback() {
+////            @Override
+////            public void call(int event, int x, int y, int flags, Pointer userdata) {
+////                if (event == opencv_highgui.EVENT_LBUTTONDOWN) {
+////                    if (y < matrix.size() && x < matrix.get(0).size()) {
+////                        double valor = matrix.get(y).get(x);
+////
+////                        // Redondea a 4 decimales
+////                        BigDecimal bd = new BigDecimal(valor);
+////                        bd = bd.setScale(4, RoundingMode.HALF_DOWN);
+////                        double valorRedondo = bd.doubleValue();
+////
+////                        DecimalFormat df = new DecimalFormat("#.####");
+////                        System.out.println("Click en: X=" + x + ", Y=" + y + " -> Valor: " + df.format(valorRedondo) + " mm");
+////
+////                        double mm = valorRedondo; //????????????
+////
+////                        String numero = String.valueOf(mm);
+////                        calc.numeroShoots(numero, calc.mmXShoot(193));//calcula el numero de disparos que necessita per un laser de potencia estandard (193 de longitud d'ona)
+////
+////                    }
+////                }
+////            }
+////        });
+////        opencv_highgui.imshow(windowName, colorMap);
+////        opencv_highgui.waitKey(0);
+////        opencv_highgui.destroyAllWindows();
+//        this.setImage(image);
+//
+//        return image;
+//    }
+    // Agregar este método a tu clase CsvAnalizer
 
-        /*FET A PARTIR DELS NUMEROS DE SHOOT DE CADA PUNT DE LA MATRIU*/
-        // Escalado
-        double maxValue = calc.maxShoots(matrix);
-        for (int y = 0; y < rows; y++) {
-            for (int x = 0; x < cols; x++) {
-                int grayValue = (int) (255.0 * calc.numeroShoots(matrix.get(y).get(x), calc.mmXShoot(193)) / maxValue);
-                grayValue = Math.min(255, Math.max(0, grayValue));
-                image.ptr(y, x).put((byte) grayValue);
+public BufferedImage prepararImagen(List<List<Double>> matriz) {
+        int rows = matriz.size();
+        int cols = matriz.get(0).size();
+
+        // Crear imagen a COLOR (4 canales: BGRA)
+        Mat colorImage = new Mat(rows, cols, CV_8UC4);
+
+        // Encontrar valor máximo y mínimo
+        double maxValue = Double.MIN_VALUE;
+        double minValue = Double.MAX_VALUE;
+
+        for (List<Double> row : matriz) {
+            for (Double value : row) {
+                if (value != null && value > 0) {
+                    maxValue = Math.max(maxValue, value);
+                    minValue = Math.min(minValue, value);
+                }
             }
         }
-        System.out.println("el maxim de shoots que te algun punt de la matriu es : " + maxValue);
 
-        // Colormap:c pasar la image de grisos a color
-        Mat colorMap = new Mat();
-        opencv_imgproc.applyColorMap(image, colorMap, opencv_imgproc.COLORMAP_JET);
-        addIsobaras(image, colorMap, matrix, 20); // 10 isobaras
-        image = colorMap;
+        System.out.println("Preparando imagen a color: min=" + minValue + ", max=" + maxValue);
 
-//        double[] niveles = {0.0003,0.0008, 0.001,0.005,0.009,0.01,0.05,0.09,0.1,0.5,0.9,1.0}; // mm u otra unidad
-//        //Scalar rojo = new Scalar(0.0, 0.0, 255.0, 0.0);  // B, G, R, Alpha
-//        Scalar[] colores = {
-//            
-//            new Scalar(255.0, 0.0, 0.0,0.0), // Azul
-//            new Scalar(0.0, 255.0, 0.0,0.0), // Verde
-//            new Scalar(0.0, 0.0, 255.0,0.0), // Rojo
-//            new Scalar(255.0, 255.0, 0.0,0.0), // Cyan
-//            new Scalar(255.0, 0.0, 255.0,0.0) // Magenta
-//        };
-//        double alpha = 0.5;
-        //addIsobarasPersonalizadas(image, colorMap, matrix, niveles, colores, alpha);
-//        String windowName = "Mapa de Ablacion Corneal";
-//        opencv_highgui.namedWindow(windowName, opencv_highgui.WINDOW_NORMAL);
-        //opencv_highgui.resizeWindow(windowName, 800, 600);
+        // Definir paleta de colores tipo mapa de calor
+        int[][] heatMapColors = {
+            {139, 0, 0}, // Azul oscuro (valores bajos)
+            {255, 0, 0}, // Azul
+            {255, 128, 0}, // Azul claro
+            {255, 255, 0}, // Cian
+            {128, 255, 0}, // Verde-cian
+            {0, 255, 0}, // Verde
+            {0, 255, 128}, // Verde-amarillo
+            {0, 255, 255}, // Amarillo
+            {0, 200, 255}, // Naranja claro
+            {0, 128, 255}, // Naranja
+            {0, 64, 255}, // Naranja oscuro
+            {0, 0, 255}, // Rojo
+            {0, 0, 200}, // Rojo oscuro
+            {0, 0, 139} // Rojo muy oscuro (valores altos)
+        };
 
-        /*capturar punt de la imatge x/y i retorna valor. Dona lo mateix que el metode leerPunto()*/
-        // Callback del mouse 
-//        opencv_highgui.setMouseCallback(windowName, new MouseCallback() {
-//            @Override
-//            public void call(int event, int x, int y, int flags, Pointer userdata) {
-//                if (event == opencv_highgui.EVENT_LBUTTONDOWN) {
-//                    if (y < matrix.size() && x < matrix.get(0).size()) {
-//                        double valor = matrix.get(y).get(x);
-//
-//                        // Redondea a 4 decimales
-//                        BigDecimal bd = new BigDecimal(valor);
-//                        bd = bd.setScale(4, RoundingMode.HALF_DOWN);
-//                        double valorRedondo = bd.doubleValue();
-//
-//                        DecimalFormat df = new DecimalFormat("#.####");
-//                        System.out.println("Click en: X=" + x + ", Y=" + y + " -> Valor: " + df.format(valorRedondo) + " mm");
-//
-//                        double mm = valorRedondo; //????????????
-//
-//                        String numero = String.valueOf(mm);
-//                        calc.numeroShoots(numero, calc.mmXShoot(193));//calcula el numero de disparos que necessita per un laser de potencia estandard (193 de longitud d'ona)
-//
-//                    }
-//                }
-//            }
-//        });
-//        opencv_highgui.imshow(windowName, colorMap);
-//        opencv_highgui.waitKey(0);
-//        opencv_highgui.destroyAllWindows();
-        this.setImage(image);
+        UByteIndexer idx = colorImage.createIndexer();
+
+        // Crear mapa para las isobaras
+        Map<Integer, Integer> colorToValue = new HashMap<>();
+
+        try {
+            for (int y = 0; y < rows; y++) {
+                for (int x = 0; x < cols; x++) {
+                    Double value = matriz.get(y).get(x);
+
+                    if (value != null && value > 0) {
+                        // Normalizar el valor al rango 0-1
+                        double normalized = (value - minValue) / (maxValue - minValue);
+
+                        // Obtener índice en la paleta
+                        int colorIndex = (int) (normalized * (heatMapColors.length - 1));
+                        colorIndex = Math.max(0, Math.min(heatMapColors.length - 1, colorIndex));
+
+                        // Obtener color
+                        int[] bgr = heatMapColors[colorIndex];
+
+                        // Asignar color al pixel
+                        idx.put(y, x, 0, bgr[0]); // B
+                        idx.put(y, x, 1, bgr[1]); // G
+                        idx.put(y, x, 2, bgr[2]); // R
+                        idx.put(y, x, 3, 255);    // A (opaco)
+
+                        // Agregar al mapa para isobaras
+                        int rgbKey = (bgr[2] << 16) | (bgr[1] << 8) | bgr[0];
+                        colorToValue.put(rgbKey, (int) (value * 10)); // Escalar valor para isobaras
+                    } else {
+                        // Pixel transparente
+                        idx.put(y, x, 0, 0);
+                        idx.put(y, x, 1, 0);
+                        idx.put(y, x, 2, 0);
+                        idx.put(y, x, 3, 0);
+                    }
+                }
+            }
+        } finally {
+            idx.release();
+        }
+
+        // Aplicar suavizado si lo deseas
+        Mat smoothed = new Mat();
+        medianBlur(colorImage, smoothed, 5);
+
+        // Dibujar isobaras
+        ColorIsobarDrawer drawer = new ColorIsobarDrawer(smoothed, colorToValue);
+        drawer.drawColorIsobars();
+
+        // Obtener imagen con isobaras
+        Mat result = drawer.getImageWithIsobars();
+
+        // Convertir a BufferedImage
+        BufferedImage bufferedImage = matToBufferedImage(result);
+
+        // Liberar memoria
+        colorImage.release();
+        smoothed.release();
+        result.release();
+
+        return bufferedImage;
+    }
+
+// Método auxiliar para convertir Mat a BufferedImage
+    private BufferedImage matToBufferedImage(Mat mat) {
+        int type = BufferedImage.TYPE_BYTE_GRAY;
+        if (mat.channels() > 1) {
+            type = BufferedImage.TYPE_3BYTE_BGR;
+            if (mat.channels() == 4) {
+                type = BufferedImage.TYPE_4BYTE_ABGR;
+            }
+        }
+
+        BufferedImage image = new BufferedImage(mat.cols(), mat.rows(), type);
+        byte[] data = new byte[mat.channels() * mat.cols() * mat.rows()];
+        mat.data().get(data);
+
+        if (mat.channels() == 4) {
+            // Convertir BGRA a ABGR para BufferedImage
+            for (int i = 0; i < data.length; i += 4) {
+                byte b = data[i];
+                byte g = data[i + 1];
+                byte r = data[i + 2];
+                byte a = data[i + 3];
+
+                data[i] = a;
+                data[i + 1] = b;
+                data[i + 2] = g;
+                data[i + 3] = r;
+            }
+        }
+
+        image.getRaster().setDataElements(0, 0, mat.cols(), mat.rows(), data);
+        return image;
+    }
+       public static Mat bufferedImageToMat(BufferedImage image) {
+        Mat mat = null;
+        
+        // Determinar el tipo de Mat según el tipo de BufferedImage
+        int type = -1;
+        int channels = 0;
+        
+        switch (image.getType()) {
+            case BufferedImage.TYPE_BYTE_GRAY:
+                type = CV_8UC1;
+                channels = 1;
+                break;
+            case BufferedImage.TYPE_3BYTE_BGR:
+                type = CV_8UC3;
+                channels = 3;
+                break;
+            case BufferedImage.TYPE_4BYTE_ABGR:
+                type = CV_8UC4;
+                channels = 4;
+                break;
+            case BufferedImage.TYPE_INT_RGB:
+            case BufferedImage.TYPE_INT_BGR:
+                // Convertir a BGR
+                BufferedImage converted = new BufferedImage(image.getWidth(), 
+                    image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+                converted.getGraphics().drawImage(image, 0, 0, null);
+                image = converted;
+                type = CV_8UC3;
+                channels = 3;
+                break;
+            case BufferedImage.TYPE_INT_ARGB:
+                // Convertir a ABGR
+                BufferedImage convertedAlpha = new BufferedImage(image.getWidth(), 
+                    image.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+                convertedAlpha.getGraphics().drawImage(image, 0, 0, null);
+                image = convertedAlpha;
+                type = CV_8UC4;
+                channels = 4;
+                break;
+            default:
+                throw new IllegalArgumentException("Tipo de imagen no soportado: " + image.getType());
+        }
+        
+        // Crear Mat
+        mat = new Mat(image.getHeight(), image.getWidth(), type);
+        
+        // Obtener datos de la imagen
+        byte[] data = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+        
+        // Si es ABGR, necesitamos convertir a BGRA para OpenCV
+        if (channels == 4) {
+            byte[] bgra = new byte[data.length];
+            for (int i = 0; i < data.length; i += 4) {
+                bgra[i] = data[i + 1];     // B
+                bgra[i + 1] = data[i + 2]; // G
+                bgra[i + 2] = data[i + 3]; // R
+                bgra[i + 3] = data[i];     // A
+            }
+            mat.data().put(bgra);
+        } else {
+            // Para otros formatos, copiar directamente
+            mat.data().put(data);
+        }
+        
+        return mat;
+    }
+    
+
+// Método alternativo más simple usando colores predefinidos
+    public Mat prepararImagenColorSimple(List<List<Double>> matriz) {
+        int rows = matriz.size();
+        int cols = matriz.get(0).size();
+
+        Mat image = new Mat(cols, rows, BufferedImage.TYPE_INT_RGB);
+
+        // Encontrar valor máximo
+        double maxValue = 0;
+        for (List<Double> row : matriz) {
+            for (Double value : row) {
+                if (value != null) {
+                    maxValue = Math.max(maxValue, value);
+                }
+            }
+        }
+
+        // Dibujar pixels con colores
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                Double value = matriz.get(y).get(x);
+
+                if (value != null && value > 0) {
+                    // Normalizar valor entre 0 y 1
+                    float normalized = (float) (value / maxValue);
+
+                    // Crear color usando HSB (Hue, Saturation, Brightness)
+                    // Hue va de 0.7 (azul) a 0.0 (rojo)
+                    float hue = 0.7f * (1.0f - normalized);
+                    int rgb = java.awt.Color.HSBtoRGB(hue, 1.0f, 1.0f);
+
+                    image.setRGB(x, y, rgb);
+                } else {
+                    // Negro para valores nulos
+                    image.setRGB(x, y, 0);
+                }
+            }
+        }
 
         return image;
     }
@@ -210,7 +484,9 @@ public class CsvAnalizer {
 
         String windowName = "Mapa de Ablacion Corneal";
         opencv_highgui.namedWindow(windowName, opencv_highgui.WINDOW_NORMAL);
-        imagen = prepararImagen(matrix);
+//        BufferedImage bugImage= matToBufferedImage(image);
+//        bugImage = prepararImagenColorSimple(matrix);
+       
         //opencv_highgui.resizeWindow(windowName, 800, 600);
 
         /*capturar punt de la imatge x/y i retorna valor. Dona lo mateix que el metode leerPunto()*/
@@ -335,11 +611,9 @@ public class CsvAnalizer {
             }
         }
     }
-    
-    public void setPaciente(String nombre){
-        
-        
-        
+
+    public void setPaciente(String nombre) {
+
     }
 
 }
