@@ -1,12 +1,13 @@
 package com.eyecostech.apexplanner;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Implementación de un nomograma de tratamiento láser para cirugía refractiva.
- * Permite calcular los parámetros óptimos de tratamiento basándose en las
- * características del paciente y factores de corrección empíricos.
+ * Implementación completa de un nomograma de tratamiento láser para cirugía refractiva.
+ * Contiene toda la lógica de cálculo y aplicación de parámetros.
  *
  * @author Pau Savall
  */
@@ -40,12 +41,33 @@ public class Nomograma {
     private double paquimetria;
     private double queratometria;
     private double diametroPupilar;
+    private ParametrosTratamiento parametrosCalculados;
     
     /**
-     * Constructor del nomograma
+     * Constructor vacío
      */
     public Nomograma() {
         // Constructor vacío
+    }
+    
+    /**
+     * Establece los datos del paciente desde un Map
+     * @param datosPaciente Map con los datos del paciente
+     */
+    public void setDatosPacienteDesdeMap(Map<String, Object> datosPaciente) throws Exception {
+        try {
+            this.refraccionEsferica = ((Number) datosPaciente.get("esfera")).doubleValue();
+            this.refraccionCilindrica = ((Number) datosPaciente.get("cilindro")).doubleValue();
+            this.ejeAstigmatismo = ((Number) datosPaciente.get("eje")).intValue();
+            this.edadPaciente = ((Number) datosPaciente.get("edad")).intValue();
+            this.paquimetria = ((Number) datosPaciente.get("paquimetria")).doubleValue();
+            this.queratometria = ((Number) datosPaciente.get("queratometria")).doubleValue();
+            this.diametroPupilar = ((Number) datosPaciente.get("diametroPupilar")).doubleValue();
+        } catch (NullPointerException e) {
+            throw new Exception("Faltan datos requeridos del paciente");
+        } catch (ClassCastException e) {
+            throw new Exception("Formato incorrecto en los datos del paciente");
+        }
     }
     
     /**
@@ -64,6 +86,129 @@ public class Nomograma {
     }
     
     /**
+     * Calcula y retorna los parámetros de tratamiento como Map
+     * @return Map con todos los parámetros calculados
+     */
+    public Map<String, Object> calcularTratamientoComoMap() throws IllegalStateException {
+        // Calcular parámetros
+        ParametrosTratamiento params = calcularTratamiento();
+        
+        // Convertir a Map para fácil serialización
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("status", "success");
+        resultado.put("parametrosTratamiento", parametrosAMap(params));
+        resultado.put("datosOriginales", datosOriginalesAMap());
+        resultado.put("factoresAplicados", factoresAplicadosAMap());
+        resultado.put("mensaje", "Cálculo completado exitosamente");
+        
+        return resultado;
+    }
+    
+    /**
+     * Aplica el nomograma a una matriz de ablación
+     * @param matrizOriginal Matriz de ablación original
+     * @return Map con la matriz ajustada y estadísticas
+     */
+    public Map<String, Object> aplicarNomogramaAMatriz(List<List<Double>> matrizOriginal) {
+        if (parametrosCalculados == null) {
+            calcularTratamiento();
+        }
+        
+        // Calcular factor de corrección
+        double factorCorreccion = calcularFactorCorreccion();
+        
+        // Ajustar matriz
+        List<List<Double>> matrizAjustada = ajustarMatriz(matrizOriginal, factorCorreccion);
+        
+        // Calcular estadísticas
+        Calculador calc = new Calculador();
+        double totalDisparos = calc.calcularNumeroShootsTotal(matrizAjustada);
+        double maxDisparos = calc.maxShoots(matrizAjustada);
+        
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("matrizAjustada", matrizAjustada);
+        resultado.put("factorCorreccion", factorCorreccion);
+        resultado.put("disparosTotales", totalDisparos);
+        resultado.put("disparosMaximos", maxDisparos);
+        resultado.put("profundidadMaxima", parametrosCalculados.getProfundidadAblacion());
+        
+        return resultado;
+    }
+    
+    /**
+     * Obtiene información sobre los factores del nomograma
+     * @return Map con información de todos los factores
+     */
+    public static Map<String, Object> obtenerInformacionFactores() {
+        Map<String, Object> info = new HashMap<>();
+        
+        info.put("factoresEdad", FACTORES_EDAD);
+        info.put("factoresRefraccion", FACTORES_REFRACCION);
+        info.put("limitesSeguridad", Map.of(
+            "lechoResidualMinimo", "300 µm",
+            "profundidadMaximaRecomendada", "150 µm",
+            "zonaOpticaMinima", "5.5 mm",
+            "zonaOpticaMaxima", "7.0 mm",
+            "edadMinima", "18 años",
+            "miopiaMaxima", "-12.00 D",
+            "hipermetropiaMaxima", "+6.00 D"
+        ));
+        info.put("descripcion", "Nomograma para ajuste de tratamientos láser refractivos");
+        
+        return info;
+    }
+    
+    /**
+     * Valida si los datos del paciente son aptos para tratamiento
+     * @return Map con el resultado de la validación
+     */
+    public Map<String, Object> validarPaciente() {
+        Map<String, Object> validacion = new HashMap<>();
+        List<String> advertencias = new ArrayList<>();
+        List<String> errores = new ArrayList<>();
+        boolean apto = true;
+        
+        // Validar edad
+        if (edadPaciente < 18) {
+            errores.add("Paciente menor de 18 años");
+            apto = false;
+        } else if (edadPaciente < 21) {
+            advertencias.add("Paciente entre 18-21 años: verificar estabilidad refractiva");
+        }
+        
+        // Validar refracción
+        if (refraccionEsferica < -12.0) {
+            errores.add("Miopía excede -12.00 D");
+            apto = false;
+        } else if (refraccionEsferica < -10.0) {
+            advertencias.add("Miopía alta: considerar técnicas alternativas");
+        }
+        
+        if (refraccionEsferica > 6.0) {
+            errores.add("Hipermetropía excede +6.00 D");
+            apto = false;
+        } else if (refraccionEsferica > 4.0) {
+            advertencias.add("Hipermetropía alta: resultados menos predecibles");
+        }
+        
+        // Validar paquimetría
+        if (paquimetria < 480) {
+            errores.add("Paquimetría insuficiente (<480 µm)");
+            apto = false;
+        } else if (paquimetria < 500) {
+            advertencias.add("Paquimetría límite: evaluar cuidadosamente");
+        }
+        
+        validacion.put("apto", apto);
+        validacion.put("advertencias", advertencias);
+        validacion.put("errores", errores);
+        
+        return validacion;
+    }
+    
+    // ========== MÉTODOS PRIVADOS DE CÁLCULO ==========
+    
+    /**
      * Calcula la corrección ajustada según el nomograma
      * @return Parámetros de tratamiento ajustados
      */
@@ -80,7 +225,6 @@ public class Nomograma {
         
         // 3. Ajustar por paquimetría (seguridad)
         if (paquimetria < 500) {
-            // Reducir tratamiento si córnea delgada
             double factorPaquimetria = 0.9 + (paquimetria - 450) * 0.002;
             esferaAjustada *= factorPaquimetria;
             cilindroAjustado *= factorPaquimetria;
@@ -106,12 +250,10 @@ public class Nomograma {
         params.setProfundidadAblacion(profundidadAblacion);
         params.setEnergiaNominal(calcularEnergia(profundidadAblacion));
         
+        this.parametrosCalculados = params;
         return params;
     }
     
-    /**
-     * Obtiene el factor de ajuste según la edad
-     */
     private double obtenerFactorEdad() {
         if (edadPaciente >= 18 && edadPaciente <= 25) return FACTORES_EDAD.get("18-25");
         if (edadPaciente >= 26 && edadPaciente <= 35) return FACTORES_EDAD.get("26-35");
@@ -120,9 +262,6 @@ public class Nomograma {
         return FACTORES_EDAD.get("56+");
     }
     
-    /**
-     * Obtiene el factor de ajuste según el tipo de refracción
-     */
     private double obtenerFactorRefraccion() {
         double factor = 1.0;
         
@@ -142,7 +281,6 @@ public class Nomograma {
             }
         }
         
-        // Ajuste adicional por astigmatismo
         if (Math.abs(refraccionCilindrica) > 1.0) {
             factor *= FACTORES_REFRACCION.get("ASTIGMATISMO");
         }
@@ -150,71 +288,40 @@ public class Nomograma {
         return factor;
     }
     
-    /**
-     * Calcula la zona óptica óptima
-     */
     private double calcularZonaOptica() {
-        // Base: 6.5mm
         double zonaBase = 6.5;
         
-        // Ajustar por diámetro pupilar
         if (diametroPupilar > 6.0) {
             zonaBase = Math.min(7.0, diametroPupilar + 0.5);
         }
         
-        // Ajustar por magnitud del defecto
         double magnitud = Math.abs(refraccionEsferica) + Math.abs(refraccionCilindrica / 2);
         if (magnitud > 6.0) {
-            // Reducir zona óptica en defectos altos para ahorrar tejido
             zonaBase -= 0.5;
         }
         
         return Math.max(5.5, Math.min(7.0, zonaBase));
     }
     
-    /**
-     * Calcula la zona de transición
-     */
     private double calcularZonaTransicion(double zonaOptica) {
-        // Típicamente 1-2mm adicionales
         return zonaOptica + 1.5;
     }
     
-    /**
-     * Calcula la profundidad de ablación usando la fórmula de Munnerlyn modificada
-     */
     private double calcularProfundidadAblacion(double esfera, double cilindro, double zona) {
-        // Fórmula de Munnerlyn: t = (D × S²) / 3
-        // Donde: t = profundidad (µm), D = dioptrías, S = zona óptica (mm)
-        
         double ablacionEsferica = Math.abs(esfera) * zona * zona / 3.0;
         double ablacionCilindrica = Math.abs(cilindro) * zona * zona / 3.0;
-        
-        // La ablación cilíndrica es máxima en el meridiano del eje
         return ablacionEsferica + (ablacionCilindrica / 2.0);
     }
     
-    /**
-     * Calcula la energía nominal del láser
-     */
     private double calcularEnergia(double profundidadAblacion) {
-        // Base: 193nm (excimer láser estándar)
-        // Ajustar energía según profundidad
         double energiaBase = 193.0;
-        
         if (profundidadAblacion > 100) {
-            // Aumentar ligeramente la energía para ablaciones profundas
             energiaBase *= 1.02;
         }
-        
         return energiaBase;
     }
     
-    /**
-     * Verifica los límites de seguridad
-     */
     private void verificarLimitesSeguridad(double profundidadAblacion) {
-        // Lecho corneal residual mínimo: 300µm
         double lechoResidual = paquimetria - profundidadAblacion;
         
         if (lechoResidual < 300) {
@@ -224,7 +331,6 @@ public class Nomograma {
             );
         }
         
-        // Profundidad máxima de ablación: 150µm (recomendado)
         if (profundidadAblacion > 150) {
             System.out.println(
                 "PRECAUCIÓN: Profundidad de ablación alta (" + 
@@ -233,11 +339,62 @@ public class Nomograma {
         }
     }
     
-    /**
-     * Redondea al cuarto de dioptría más cercano
-     */
     private double redondear(double valor, double incremento) {
         return Math.round(valor / incremento) * incremento;
+    }
+    
+    private double calcularFactorCorreccion() {
+        if (parametrosCalculados == null || refraccionEsferica == 0) {
+            return 1.0;
+        }
+        return Math.abs(parametrosCalculados.getEsferaCorregida() / refraccionEsferica);
+    }
+    
+    private List<List<Double>> ajustarMatriz(List<List<Double>> matrizOriginal, double factor) {
+        List<List<Double>> matrizAjustada = new ArrayList<>();
+        
+        for (List<Double> fila : matrizOriginal) {
+            List<Double> filaAjustada = new ArrayList<>();
+            for (Double valor : fila) {
+                filaAjustada.add(valor * factor);
+            }
+            matrizAjustada.add(filaAjustada);
+        }
+        
+        return matrizAjustada;
+    }
+    
+    // ========== MÉTODOS AUXILIARES PARA CONVERSIÓN ==========
+    
+    private Map<String, Object> parametrosAMap(ParametrosTratamiento params) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("esferaCorregida", params.getEsferaCorregida());
+        map.put("cilindroCorregido", params.getCilindroCorregido());
+        map.put("eje", params.getEje());
+        map.put("zonaOptica", params.getZonaOptica());
+        map.put("zonaTransicion", params.getZonaTransicion());
+        map.put("profundidadAblacion", params.getProfundidadAblacion());
+        map.put("energiaNominal", params.getEnergiaNominal());
+        return map;
+    }
+    
+    private Map<String, Object> datosOriginalesAMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("esfera", refraccionEsferica);
+        map.put("cilindro", refraccionCilindrica);
+        map.put("eje", ejeAstigmatismo);
+        map.put("edad", edadPaciente);
+        map.put("paquimetria", paquimetria);
+        map.put("queratometria", queratometria);
+        map.put("diametroPupilar", diametroPupilar);
+        return map;
+    }
+    
+    private Map<String, Object> factoresAplicadosAMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("factorEdad", obtenerFactorEdad());
+        map.put("factorRefraccion", obtenerFactorRefraccion());
+        return map;
     }
     
     /**
@@ -285,51 +442,8 @@ public class Nomograma {
         public void setEnergiaNominal(double energiaNominal) { 
             this.energiaNominal = energiaNominal; 
         }
-        
-        @Override
-        public String toString() {
-            return String.format(
-                "Parámetros de Tratamiento:\n" +
-                "- Esfera: %.2fD (ajustada: %.2fD)\n" +
-                "- Cilindro: %.2fD (ajustado: %.2fD) @ %d°\n" +
-                "- Zona óptica: %.1fmm\n" +
-                "- Zona transición: %.1fmm\n" +
-                "- Profundidad ablación: %.0fµm\n" +
-                "- Energía: %.0fnm",
-                esferaCorregida, esferaCorregida,
-                cilindroCorregido, cilindroCorregido, eje,
-                zonaOptica, zonaTransicion,
-                profundidadAblacion, energiaNominal
-            );
-        }
     }
-    
-    /**
-     * Método de ejemplo de uso
-     */
-//    public static void main(String[] args) {
-//        Nomograma nomograma = new Nomograma();
-//        
-//        // Ejemplo: Paciente con miopía y astigmatismo
-//        nomograma.setDatosPaciente(
-//            -4.50,  // Esfera
-//            -1.25,  // Cilindro
-//            90,     // Eje
-//            28,     // Edad
-//            540,    // Paquimetría
-//            43.5,   // Queratometría
-//            5.8     // Diámetro pupilar
-//        );
-//        
-//        try {
-//            ParametrosTratamiento params = nomograma.calcularTratamiento();
-//            System.out.println(params);
-//        } catch (IllegalStateException e) {
-//            System.err.println("Error de seguridad: " + e.getMessage());
-//        }
-//    }
 }
-
 /*
 
 Explicación del Nomograma

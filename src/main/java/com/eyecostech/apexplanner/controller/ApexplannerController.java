@@ -487,169 +487,55 @@ public class ApexplannerController {
         List<ImageIcon> arrayImagenes = planner.getArrayImg();
         return ResponseEntity.ok(arrayImagenes != null ? arrayImagenes.size() : 0);
     }
-    /**
+    
+    
+    
+    
+    
+    
+    
+    
+ /**NOMOGRAMA**/   
+ /**
  * Endpoint para calcular parámetros de tratamiento usando el nomograma
+ * Ahora solo llama a Apexplanner que maneja toda la lógica
  * 
  * URL: POST http://localhost:8080/api/nomograma/calcular
- * 
- * Ejemplo de JSON de entrada:
- * {
- *   "esfera": -4.50,
- *   "cilindro": -1.25,
- *   "eje": 90,
- *   "edad": 28,
- *   "paquimetria": 540,
- *   "queratometria": 43.5,
- *   "diametroPupilar": 5.8
- * }
- * 
+ * @author Pau Savall
  */
 @PostMapping("/api/nomograma/calcular")
 public ResponseEntity<?> calcularNomograma(@RequestBody Map<String, Object> datosPaciente) {
     try {
-        // 1. EXTRAER DATOS DEL JSON RECIBIDO
-        double esfera = ((Number) datosPaciente.get("esfera")).doubleValue();
-        double cilindro = ((Number) datosPaciente.get("cilindro")).doubleValue();
-        int eje = ((Number) datosPaciente.get("eje")).intValue();
-        int edad = ((Number) datosPaciente.get("edad")).intValue();
-        double paquimetria = ((Number) datosPaciente.get("paquimetria")).doubleValue();
-        double queratometria = ((Number) datosPaciente.get("queratometria")).doubleValue();
-        double diametroPupilar = ((Number) datosPaciente.get("diametroPupilar")).doubleValue();
-        
-        // 2. CREAR INSTANCIA DEL NOMOGRAMA
-        Nomograma nomograma = new Nomograma();
-        
-        // 3. CONFIGURAR CON LOS DATOS DEL PACIENTE
-        nomograma.setDatosPaciente(esfera, cilindro, eje, edad, 
-                                   paquimetria, queratometria, diametroPupilar);
-        
-        // 4. CALCULAR TRATAMIENTO
-        ParametrosTratamiento parametros = nomograma.calcularTratamiento();
-        
-        // 5. CREAR RESPUESTA JSON
-        Map<String, Object> respuesta = Map.of(
-            "status", "success",
-            "parametrosTratamiento", Map.of(
-                "esferaCorregida", parametros.getEsferaCorregida(),
-                "cilindroCorregido", parametros.getCilindroCorregido(),
-                "eje", parametros.getEje(),
-                "zonaOptica", parametros.getZonaOptica(),
-                "zonaTransicion", parametros.getZonaTransicion(),
-                "profundidadAblacion", parametros.getProfundidadAblacion(),
-                "energiaNominal", parametros.getEnergiaNominal()
-            ),
-            "datosOriginales", Map.of(
-                "esfera", esfera,
-                "cilindro", cilindro,
-                "edad", edad
-            ),
-            "mensaje", "Cálculo completado exitosamente"
-        );
-        
-        // 6. RETORNAR RESPUESTA EXITOSA
-        return ResponseEntity.ok(respuesta);
-        
+        Map<String, Object> resultado = planner.calcularTratamientoConNomograma(datosPaciente);
+        return ResponseEntity.ok(resultado);
     } catch (IllegalStateException e) {
-        // 7. MANEJAR ERROR DE SEGURIDAD (ej: lecho corneal insuficiente)
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
             "status", "error",
             "tipo", "seguridad",
-            "mensaje", e.getMessage(),
-            "detalles", "Los parámetros del paciente no cumplen con los límites de seguridad"
-        ));
-    } catch (NullPointerException e) {
-        // 8. MANEJAR ERROR DE DATOS FALTANTES
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-            "status", "error",
-            "tipo", "datos_faltantes",
-            "mensaje", "Faltan datos requeridos en la petición",
-            "detalles", "Verifica que todos los campos estén presentes: esfera, cilindro, eje, edad, paquimetria, queratometria, diametroPupilar"
+            "mensaje", e.getMessage()
         ));
     } catch (Exception e) {
-        // 9. MANEJAR OTROS ERRORES
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
             "status", "error",
-            "tipo", "interno",
             "mensaje", "Error al calcular los parámetros: " + e.getMessage()
         ));
     }
 }
 
 /**
- * Endpoint para obtener información sobre los factores del nomograma
- * URL: GET http://localhost:8080/api/nomograma/factores
- * 
- * @author Pau Savall
- */
-@GetMapping("/api/nomograma/factores")
-public ResponseEntity<Map<String, Object>> obtenerFactoresNomograma() {
-    Map<String, Object> factores = Map.of(
-        "factoresEdad", Map.of(
-            "18-25", "1.05 (sobrecorrección ligera)",
-            "26-35", "1.00 (sin ajuste)",
-            "36-45", "0.95 (subcorrección ligera)",
-            "46-55", "0.90 (subcorrección moderada)",
-            "56+", "0.85 (subcorrección significativa)"
-        ),
-        "factoresRefraccion", Map.of(
-            "MIOPIA_BAJA", "1.00 (-0.25 a -3.00 D)",
-            "MIOPIA_MEDIA", "0.98 (-3.25 a -6.00 D)",
-            "MIOPIA_ALTA", "0.95 (-6.25 a -12.00 D)",
-            "HIPERMETROPIA_BAJA", "1.10 (+0.25 a +3.00 D)",
-            "HIPERMETROPIA_ALTA", "1.15 (+3.25 a +6.00 D)",
-            "ASTIGMATISMO", "1.05 (factor adicional)"
-        ),
-        "limitesSeguridad", Map.of(
-            "lechoResidualMinimo", "300 µm",
-            "profundidadMaximaRecomendada", "150 µm",
-            "zonaOpticaMinima", "5.5 mm",
-            "zonaOpticaMaxima", "7.0 mm"
-        )
-    );
-    
-    return ResponseEntity.ok(factores);
-}
-
-/**
  * Endpoint para aplicar el nomograma a la planificación actual
  * URL: POST http://localhost:8080/api/nomograma/aplicar
- * 
  * @author Pau Savall
  */
 @PostMapping("/api/nomograma/aplicar")
-public ResponseEntity<?> aplicarNomogramaAPlanificacion(@RequestBody Map<String, Object> datos) {
+public ResponseEntity<?> aplicarNomograma(@RequestBody Map<String, Object> datosPaciente) {
     try {
-        // Primero calcular los parámetros del nomograma
-        ResponseEntity<?> calculoResponse = calcularNomograma(datos);
-        
-        if (calculoResponse.getStatusCode() != HttpStatus.OK) {
-            return calculoResponse;
-        }
-        
-        // Obtener los parámetros calculados
-        Map<String, Object> resultado = (Map<String, Object>) calculoResponse.getBody();
-        Map<String, Object> parametros = (Map<String, Object>) resultado.get("parametrosTratamiento");
-        
-        // Aplicar los parámetros a la matriz de ablación actual
-        double factorCorreccion = calcularFactorCorreccion(parametros);
-        
-        // Actualizar la planificación
-        List<List<Double>> matrizOriginal = planner.getCsv().cerarMatriz(planner.getPath());
-        List<List<Double>> matrizAjustada = ajustarMatrizConNomograma(matrizOriginal, factorCorreccion);
-        
-        // Recalcular disparos con la matriz ajustada
-        double totalDisparos = planner.calc.calcularNumeroShootsTotal(matrizAjustada);
-        double maxDisparos = planner.calc.maxShoots(matrizAjustada);
-        
+        Map<String, Object> resultado = planner.aplicarNomogramaAMatrizActual(datosPaciente);
         return ResponseEntity.ok(Map.of(
             "status", "success",
-            "parametrosNomograma", parametros,
-            "factorCorreccion", factorCorreccion,
-            "disparosTotales", totalDisparos,
-            "disparosMaximos", maxDisparos,
-            "mensaje", "Nomograma aplicado exitosamente a la planificación"
+            "resultado", resultado,
+            "mensaje", "Nomograma aplicado exitosamente"
         ));
-        
     } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
             "status", "error",
@@ -659,33 +545,30 @@ public ResponseEntity<?> aplicarNomogramaAPlanificacion(@RequestBody Map<String,
 }
 
 /**
- * Método auxiliar para calcular el factor de corrección basado en los parámetros del nomograma
+ * Endpoint para validar si un paciente es apto
+ * URL: POST http://localhost:8080/api/nomograma/validar
+ * @author Pau Savall
  */
-private double calcularFactorCorreccion(Map<String, Object> parametros) {
-    double esferaOriginal = -4.50; // Esto debería venir de los datos originales
-    double esferaCorregida = (Double) parametros.get("esferaCorregida");
-    
-    // Factor de corrección = corrección ajustada / corrección original
-    return Math.abs(esferaCorregida / esferaOriginal);
+@PostMapping("/api/nomograma/validar")
+public ResponseEntity<?> validarPaciente(@RequestBody Map<String, Object> datosPaciente) {
+    try {
+        Map<String, Object> validacion = planner.validarPacienteParaTratamiento(datosPaciente);
+        return ResponseEntity.ok(validacion);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+            "status", "error",
+            "mensaje", "Error al validar paciente: " + e.getMessage()
+        ));
+    }
 }
 
 /**
- * Método auxiliar para ajustar la matriz de ablación con el factor del nomograma
+ * Endpoint para obtener información sobre los factores del nomograma
+ * URL: GET http://localhost:8080/api/nomograma/factores
+ * @author Pau Savall
  */
-private List<List<Double>> ajustarMatrizConNomograma(List<List<Double>> matrizOriginal, 
-                                                     double factorCorreccion) {
-    List<List<Double>> matrizAjustada = new ArrayList<>();
-    
-    for (List<Double> fila : matrizOriginal) {
-        List<Double> filaAjustada = new ArrayList<>();
-        for (Double valor : fila) {
-            // Aplicar el factor de corrección a cada punto
-            filaAjustada.add(valor * factorCorreccion);
-        }
-        matrizAjustada.add(filaAjustada);
-    }
-    
-    return matrizAjustada;
+@GetMapping("/api/nomograma/factores")
+public ResponseEntity<Map<String, Object>> obtenerFactoresNomograma() {
+    return ResponseEntity.ok(planner.obtenerInformacionNomograma());
 }
-
 }

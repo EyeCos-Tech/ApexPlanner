@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.swing.ImageIcon;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -41,13 +42,14 @@ public class Apexplanner {
     static String path;
     private ImagenesService imagenesService = new ImagenesService();
 
+    private Nomograma nomograma;
+
     /**
      * PER CREAR EL PATH DIRECTAMENT*
      */
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/mica/csv/mica.csv";
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/sara/csv/sara.csv";
     //static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/ari/csv/ari.csv";
-    
     public Apexplanner() {
     }
 
@@ -58,6 +60,13 @@ public class Apexplanner {
         paciente = new Paciente(nombre);
         path = paciente.getPath();
 
+    }
+
+    public Nomograma getNomograma() {
+        if (nomograma == null) {
+            nomograma = new Nomograma();
+        }
+        return nomograma;
     }
 
     public static Apexplanner getInstance() {
@@ -158,8 +167,67 @@ public class Apexplanner {
 
     public List<ImageIcon> getArrayImg() {
         String directorio = getImagePath();
-        
+
         return imagenesService.cargarImagenes(directorio);
+    }
+    
+    /**NOMOGRAMA**/
+
+    /**
+     * Calcula los parámetros de tratamiento usando el nomograma
+     *
+     * @param datosPaciente Map con los datos del paciente
+     * @return Map con los parámetros calculados
+     * @throws Exception Si hay error en los datos o cálculos
+     * @author Pau Savall
+     */
+    public Map<String, Object> calcularTratamientoConNomograma(Map<String, Object> datosPaciente) throws Exception {
+        Nomograma nomograma = getNomograma();
+        nomograma.setDatosPacienteDesdeMap(datosPaciente);
+        return nomograma.calcularTratamientoComoMap();
+    }
+
+    /**
+     * Aplica el nomograma a la matriz de ablación actual
+     *
+     * @param datosPaciente Map con los datos del paciente
+     * @return Map con la matriz ajustada y estadísticas
+     * @throws Exception Si hay error en el proceso
+     * @author Pau Savall
+     */
+    public Map<String, Object> aplicarNomogramaAMatrizActual(Map<String, Object> datosPaciente) throws Exception {
+        // Primero calcular los parámetros
+        calcularTratamientoConNomograma(datosPaciente);
+
+        // Obtener la matriz actual
+        List<List<Double>> matrizOriginal = csv.cerarMatriz(path);
+
+        // Aplicar el nomograma
+        return getNomograma().aplicarNomogramaAMatriz(matrizOriginal);
+    }
+
+    /**
+     * Valida si un paciente es apto para el tratamiento
+     *
+     * @param datosPaciente Map con los datos del paciente
+     * @return Map con el resultado de la validación
+     * @throws Exception Si hay error en los datos
+     * @author Pau Savall
+     */
+    public Map<String, Object> validarPacienteParaTratamiento(Map<String, Object> datosPaciente) throws Exception {
+        Nomograma nomograma = getNomograma();
+        nomograma.setDatosPacienteDesdeMap(datosPaciente);
+        return nomograma.validarPaciente();
+    }
+
+    /**
+     * Obtiene información sobre los factores del nomograma
+     *
+     * @return Map con información de los factores
+     * @author Pau Savall
+     */
+    public Map<String, Object> obtenerInformacionNomograma() {
+        return Nomograma.obtenerInformacionFactores();
     }
 
     public static void main(String[] args) {
@@ -229,14 +297,9 @@ public class Apexplanner {
         sc.close();
 
     }
-    
+
 }
-    
-    
-    
-    
-    
-    
+
 //    public void escribirLog(String mensaje) throws IOException {
 //        try {
 //            // Ruta relativa: se crea en la raíz del proyecto
@@ -253,7 +316,7 @@ public class Apexplanner {
 //        List<ImageIcon> array = new FrameDeImagenes(getImagePath()).getArrayImagenes(getImagePath());
 //
 //        /*PROBA PER COMPROBAR EL CONTINGUT DE L'ARRAY*/
-    ////        for (ImageIcon elemento : array) {
+////        for (ImageIcon elemento : array) {
 ////            System.out.println(elemento+" 0 ");
 ////        }
 //        //System.out.println("numero elemetos array " + array.size());
