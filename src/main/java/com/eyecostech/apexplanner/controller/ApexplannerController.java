@@ -194,7 +194,7 @@ public class ApexplannerController {
         <body>
             <div class="main-wrapper">
                 <div class="container">
-                    <h1>PROBA APP SPRINGBOAT</h1>
+                    <h1>PRUEBA</h1>
                     <div class="info">
                         <h3>Estado de la Aplicación</h3>
                         <p><strong>Estado:</strong> Funcionando correctamente</p>
@@ -203,6 +203,21 @@ public class ApexplannerController {
                         <p><strong>Framework:</strong> Spring Boot 3.3.0</p>
                         <p><strong>Cargado el:</strong> <span id="loadTime"></span></p>
                     </div>
+               <div class="info" style="margin-top: 20px;">
+                                       <h3>Seleccionar Paciente</h3>
+                                       <div style="display: flex; gap: 10px; align-items: center;">
+                                           <select id="pacienteSelect" style="flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;">
+                                               <option value="">-- Seleccionar paciente --</option>
+                                               <option value="mica">Mica</option>
+                                               <option value="sara">Sara</option>
+                                               <option value="ari">Ari</option>
+                                           </select>
+                                           <button onclick="cargarPaciente()" style="padding: 8px 20px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                                               Cargar Paciente
+                                           </button>
+                                       </div>
+                                       <div id="pacienteStatus" style="margin-top: 10px; font-weight: bold;"></div>
+                                   </div>
                 </div>
                 
                 <div class="image-container">
@@ -355,6 +370,45 @@ public class ApexplannerController {
                         mostrarImagen(currentIndex + 1);
                     }
                 }
+               //funcio per carregar un paciient
+               function cargarPaciente() {
+                   const select = document.getElementById('pacienteSelect');
+                   const nombre = select.value;
+                   const statusDiv = document.getElementById('pacienteStatus');
+                   
+                   if (!nombre) {
+                       statusDiv.innerHTML = '<span style="color: #e74c3c;">Por favor, selecciona un paciente</span>';
+                       return;
+                   }
+                   
+                   statusDiv.innerHTML = '<span style="color: #3498db;">Cargando paciente...</span>';
+                   
+                   // Realizar petición POST al backend
+                   fetch('/api/paciente', {
+                       method: 'POST',
+                       headers: {
+                           'Content-Type': 'application/x-www-form-urlencoded',
+                       },
+                       body: 'nombre=' + encodeURIComponent(nombre)
+                   })
+                   .then(response => {
+                       if (!response.ok) {
+                           throw new Error('Error al cargar el paciente');
+                       }
+                       return response.json();
+                   })
+                   .then(data => {
+                       statusDiv.innerHTML = '<span style="color: #27ae60;">✓ Paciente ' + data.nombre + ' cargado correctamente</span>';
+                       
+                       // Opcionalmente, puedes recargar las imágenes automáticamente
+                       // cargarImagen();
+                       // cargarArray();
+                   })
+                   .catch(error => {
+                       console.error('Error:', error);
+                       statusDiv.innerHTML = '<span style="color: #e74c3c;">✗ Error al cargar el paciente: ' + error.message + '</span>';
+                   });
+               }
                 
                 // Cargar imagen automáticamente al iniciar (opcional)
                 // window.onload = () => cargarImagen();
