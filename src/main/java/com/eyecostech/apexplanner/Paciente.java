@@ -1,10 +1,13 @@
 package com.eyecostech.apexplanner;
 
-import static com.eyecostech.apexplanner.Apexplanner.path;
 import java.io.File;
-import java.util.HashSet;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
+ * Patient management class with automatic directory structure creation
  *
  * @author Pau Savall
  */
@@ -14,22 +17,22 @@ public class Paciente {
     public String apellidos;
     public String path;
     public String edad;
-    public String directorioBase= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/";
+    public String directorioBase = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/";
 
     /**
-     * CONSRTUCTOR GETTERS Y SETTERES*
+     * CONSTRUCTOR GETTERS AND SETTERS
      */
     public Paciente(String nombre, String apellidos, String edad) {
         this.nombre = nombre;
         this.apellidos = apellidos;
-        path= setPath(nombre);
+        this.path = setPath(nombre);
         this.edad = edad;
     }
 
     public Paciente(String nombre) {
         this.nombre = nombre;
-        System.out.println("nombre: "+nombre);
-        path= setPath(nombre);        
+        System.out.println("nombre: " + nombre);
+        this.path = setPath(nombre);
     }
 
     public String getNombre() {
@@ -60,10 +63,96 @@ public class Paciente {
         this.edad = edad;
     }
 
+    /**
+     * Sets the path for the patient and creates the necessary directory structure
+     * Creates the following structure:
+     * - directorioBase/nombrePaciente/
+     * - directorioBase/nombrePaciente/csv/
+     * - directorioBase/nombrePaciente/imgList/
+     * 
+     * @param nombre Patient name
+     * @return Full path to the patient's CSV file
+     */
     public String setPath(String nombre) {
-        
-        String dir= directorioBase+nombre.toLowerCase()+"/csv/"+nombre.toLowerCase()+".csv";
-        return dir;     
+        try {
+            // Convert name to lowercase for directory
+            String nombreLowerCase = nombre.toLowerCase();
+            
+            // Create patient base directory
+            Path patientDir = Paths.get(directorioBase, nombreLowerCase);
+            if (!Files.exists(patientDir)) {
+                Files.createDirectories(patientDir);
+                System.out.println("Created patient directory: " + patientDir);
+            }
+            
+            // Create csv subdirectory
+            Path csvDir = patientDir.resolve("csv");
+            if (!Files.exists(csvDir)) {
+                Files.createDirectories(csvDir);
+                System.out.println("Created CSV directory: " + csvDir);
+            }
+            
+            // Create imgList subdirectory
+            Path imgListDir = patientDir.resolve("imgList");
+            if (!Files.exists(imgListDir)) {
+                Files.createDirectories(imgListDir);
+                System.out.println("Created imgList directory: " + imgListDir);
+            }
+            
+            // Build complete path to CSV file
+            String csvFilePath = csvDir.resolve(nombreLowerCase + ".csv").toString();
+            
+            // Create empty CSV file if it doesn't exist
+            Path csvFile = Paths.get(csvFilePath);
+            if (!Files.exists(csvFile)) {
+                Files.createFile(csvFile);
+                System.out.println("Created empty CSV file: " + csvFile);
+            }
+            
+            return csvFilePath;
+            
+        } catch (IOException e) {
+            System.err.println("Error creating directory structure: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Return default path even if creation fails
+            return directorioBase + nombre.toLowerCase() + "/csv/" + nombre.toLowerCase() + ".csv";
+        }
     }
-
+    
+    /**
+     * Checks if the patient directory structure exists
+     * 
+     * @return true if all directories exist, false otherwise
+     */
+    public boolean verifyDirectoryStructure() {
+        String nombreLowerCase = nombre.toLowerCase();
+        Path patientDir = Paths.get(directorioBase, nombreLowerCase);
+        Path csvDir = patientDir.resolve("csv");
+        Path imgListDir = patientDir.resolve("imgList");
+        
+        return Files.exists(patientDir) && 
+               Files.exists(csvDir) && 
+               Files.exists(imgListDir);
+    }
+    
+    /**
+     * Gets the path to the imgList directory
+     * 
+     * @return Path to imgList directory
+     */
+    public String getImgListPath() {
+        String nombreLowerCase = nombre.toLowerCase();
+        return Paths.get(directorioBase, nombreLowerCase, "imgList").toString();
+    }
+    
+    /**
+     * Gets the path to the csv directory
+     * 
+     * @return Path to csv directory
+     */
+    public String getCsvDirPath() {
+        String nombreLowerCase = nombre.toLowerCase();
+        return Paths.get(directorioBase, nombreLowerCase, "csv").toString();
+    }
 }

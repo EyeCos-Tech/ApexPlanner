@@ -28,7 +28,7 @@ public class Apexplanner {
     static double ab = 0.00025; //ablacio del laser per disparo
     static double numeroShoots = 1;
     static BufferedImage imagen;
-    static Calculador calc = new Calculador();
+    public static Calculador calc = new Calculador();
     static ImageAnalizer imageAnalizer = new ImageAnalizer();
     static int[] pixel;
     static JFrame frame;
@@ -47,6 +47,7 @@ public class Apexplanner {
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/mica/csv/mica.csv";
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/sara/csv/sara.csv";
     //static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/ari/csv/ari.csv";
+    
     public Apexplanner() {
     }
 
@@ -155,16 +156,6 @@ public class Apexplanner {
         return directorio;
     }
 
-//    public List<ImageIcon> getArrayImg() {
-//        List<ImageIcon> array = new FrameDeImagenes(getImagePath()).getArrayImagenes(getImagePath());
-//
-//        /*PROBA PER COMPROBAR EL CONTINGUT DE L'ARRAY*/
-    ////        for (ImageIcon elemento : array) {
-////            System.out.println(elemento+" 0 ");
-////        }
-//        //System.out.println("numero elemetos array " + array.size());
-//        return array;
-//    }
     public List<ImageIcon> getArrayImg() {
         String directorio = getImagePath();
         
@@ -238,6 +229,14 @@ public class Apexplanner {
         sc.close();
 
     }
+    
+}
+    
+    
+    
+    
+    
+    
 //    public void escribirLog(String mensaje) throws IOException {
 //        try {
 //            // Ruta relativa: se crea en la raíz del proyecto
@@ -250,4 +249,14 @@ public class Apexplanner {
 //            e.printStackTrace();
 //        }
 //    }
-}
+//    public List<ImageIcon> getArrayImg() {
+//        List<ImageIcon> array = new FrameDeImagenes(getImagePath()).getArrayImagenes(getImagePath());
+//
+//        /*PROBA PER COMPROBAR EL CONTINGUT DE L'ARRAY*/
+    ////        for (ImageIcon elemento : array) {
+////            System.out.println(elemento+" 0 ");
+////        }
+//        //System.out.println("numero elemetos array " + array.size());
+//        return array;
+//    }
+
