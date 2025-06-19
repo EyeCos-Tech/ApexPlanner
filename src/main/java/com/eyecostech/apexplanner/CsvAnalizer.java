@@ -531,7 +531,7 @@ resultado.release();*/
         /*mostra la imatge i imprimeix a consola la cantitat de disparos que has de fer en el punt on clickes */
     public void imprimirImagen(Mat imagen, List<List<Double>> matrix) {
 
-        String windowName = "Mapa de Ablacion Corneal";
+        String windowName = "Mapa de Ablacion Corneal: ";
         opencv_highgui.namedWindow(windowName, opencv_highgui.WINDOW_NORMAL);
 //        BufferedImage bugImage= matToBufferedImage(image);
 //        bugImage = prepararImagenColorSimple(matrix);
