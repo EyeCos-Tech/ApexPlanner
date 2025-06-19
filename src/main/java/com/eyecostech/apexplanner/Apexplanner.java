@@ -27,9 +27,9 @@ public class Apexplanner {
     static FrameDeImagenes frameImg;
     static Vista3DSimulada ventata3d;
     static Front front;
-    //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv";
+    static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Mica/csv/mica.csv";
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Sara/csv/sara.csv";
-    static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/csv/ari.csv";
+    //static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/csv/ari.csv";
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/Ari/fichero de Three/ablacion.csv";
 
     
@@ -92,8 +92,8 @@ public class Apexplanner {
         //System.out.println("per corretgir 4 dioptries: " + calc.mmXDioptriaFormulaMunnerlyn(-4, 6.5) + " mm d'ablacio sxegons la formula de Munnerlyn");
 //        
         /*CSV ANALIZER*/
-        //List<List<Double>> matriz = csv.cerarMatriz(path);
-        //csv.leerPunto(150, 265, matriz);
+        List<List<Double>> matriz = csv.cerarMatriz(path);
+        csv.leerPunto(150, 265, matriz);
 //        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
 //        System.out.println("BREAK!");
 //        System.out.println(rutaLaser.get(5).toString());
@@ -103,7 +103,7 @@ public class Apexplanner {
         //System.out.println("total: "+calc.calcularNumeroShootsTotal(matriz));
         //System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
         //calc.maxShoots(matriz);
-        //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
+        csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
 //        try {
 //            
@@ -115,9 +115,9 @@ public class Apexplanner {
 //            e.printStackTrace(); // mostra la linea on ha saltat l'error
 //        }
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
-        File file = new File(path);
-        String ruta = file.getParent() + "/imgList/";
-        frameImg = new FrameDeImagenes(ruta);
+//        File file = new File(path);
+//        String ruta = file.getParent() + "/imgList/";
+//        frameImg = new FrameDeImagenes(ruta);
 
 //        setFrameImg(frameImg);
 //        front = new Front();

@@ -151,7 +151,7 @@ public class CsvAnalizer {
         // Colormap:c pasar la image de grisos a color
         Mat colorMap = new Mat();
         opencv_imgproc.applyColorMap(image, colorMap, opencv_imgproc.COLORMAP_JET);
-        addIsobaras(image, colorMap, matrix, 20); // 10 isobaras
+        //addIsobaras(image, colorMap, matrix, 20); // 10 isobaras
         image = colorMap;
 
 //        double[] niveles = {0.0003,0.0008, 0.001,0.005,0.009,0.01,0.05,0.09,0.1,0.5,0.9,1.0}; // mm u otra unidad
