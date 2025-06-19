@@ -40,7 +40,7 @@ public class Apexplanner {
     static ShootPlanner sPlanner = new ShootPlanner();
     static ImageListCreator imageList;
     static FrameDeImagenes frameImg;
-    static Vista3DSimulada ventata3d;
+    //static Vista3DSimulada ventata3d;
     static Paciente paciente;
     static String path;
     private ImagenesService imagenesService = new ImagenesService();
@@ -416,7 +416,7 @@ public class Apexplanner {
 
     public static void main(String[] args) {
         Apexplanner obj = Apexplanner.getInstance();
-        obj.setPaciente("mica");
+        obj.setPaciente("ari");
 
         Scanner sc = new Scanner(System.in);
 
@@ -436,7 +436,7 @@ public class Apexplanner {
          * INICIALITZAR SPRINGBOOT*
          */
 //        obj.getArrayImg();
-        obj.iniciarSpringboot(args);
+        //obj.iniciarSpringboot(args);
 
         /*CALCULATOR*/
 //        obj.solicitudDeClaculos(sc);
@@ -465,14 +465,14 @@ public class Apexplanner {
 //        calc.maxShoots(matriz);
         //csv.imprimirImagen(csv.prepararImagenColorSimple(matriz), matriz);
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
-//        try {            
-//            imageList = new ImageListCreator(path);
-//            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
-//            imageList.guardarImagenes(lista);
-//            
-//        } catch (Exception e) {
-//            e.printStackTrace(); // mostra la linea on ha saltat l'error
-//        }
+        try {            
+            imageList = new ImageListCreator(path);
+            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
+            imageList.guardarImagenes(lista);
+            
+        } catch (Exception e) {
+            e.printStackTrace(); // mostra la linea on ha saltat l'error
+        }
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
         //obj.iniciarFrameSliderImagenes(path);
 //      
