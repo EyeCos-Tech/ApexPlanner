@@ -546,6 +546,11 @@ resultado.release();*/
     public void setPaciente(String nombre) {
 
     }
+    
+    
+    /**
+     CODI COMENTEAT PER TREURE LES ISOBARES 
+     **/
     //public BufferedImage prepararImagen(List<List<Double>> matriz) {
 //        int rows = matriz.size();
 //        int cols = matriz.get(0).size();

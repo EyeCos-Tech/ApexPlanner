@@ -198,7 +198,7 @@ public class ApexplannerController {
                 </div>
                 
                 <div class="image-container">
-                    <h3>Imatge amb Isobares</h3>
+                    <h3>Imatge de Topografia en Color </h3>
                     <div class="image-wrapper" id="imageWrapper">
                         <div class="image-placeholder">
                             <p>Haz clic en el botón para cargar una imagen</p>
@@ -235,7 +235,7 @@ public class ApexplannerController {
                     imageWrapper.innerHTML = '<div class="loading">Cargando imagen...</div>';
                     
                     // Realizar petición al backend
-                    fetch('/api/isobaras')
+                    fetch('/api/imagenColor')
                         .then(response => {
                             if (!response.ok) {
                                 throw new Error('Error al cargar la imagen');
@@ -249,7 +249,7 @@ public class ApexplannerController {
                         .catch(error => {
                             console.error('Error:', error);
                             imageWrapper.innerHTML = '<div class="image-placeholder"><p>No se pudo cargar la imagen</p></div>';
-                            errorDiv.innerHTML = '<div class="error">Error: Verifica que el endpoint /api/isobaras esté configurado en Spring Boot</div>';
+                            errorDiv.innerHTML = '<div class="error">Error: Verifica que el endpoint /api/imagenColor esté configurado en Spring Boot</div>';
                         });
                 }
                 
@@ -356,7 +356,10 @@ public class ApexplannerController {
         """;
     }
 
-    /**ASIGNA UN PACIEN AL PLANNER I RETORNA UN OBJECETE  PACIENT AL FRONT (per poder accedir a les veriables de paciente)**/
+    /**
+     * ASIGNA UN PACIEN AL PLANNER I RETORNA UN OBJECETE PACIENT AL FRONT (per
+     * poder accedir a les veriables de paciente)*
+     */
     @PostMapping("/api/paciente")
     public ResponseEntity<Paciente> setPaciente(@RequestParam String nombre) {
         planner.setPaciente(nombre);
@@ -365,12 +368,12 @@ public class ApexplannerController {
         return ResponseEntity.ok(paciente);
     }
 
-    @GetMapping("/api/isobaras")
+    @GetMapping("/api/imagenColor")
     public ResponseEntity<byte[]> obtenerImagen() throws IOException {
 
         /*cargar una Mat*/
         Mat imagen;
-        imagen = planner.getCsv().prepararImagenColorSimple(planner.getCsv().cerarMatriz(path));
+        imagen = planner.getCsv().prepararImagen(planner.getCsv().cerarMatriz(path));
         /*convertir mat a bytes*/
         // Codificar la imagen a bytes
         BytePointer buffer = new BytePointer();
@@ -402,6 +405,11 @@ public class ApexplannerController {
     public ResponseEntity<byte[]> obtenerArrayImagenes() throws IOException {
         System.out.println("BOTON!");
         List<ImageIcon> arrayImagenes = planner.getArrayImg();
+
+        /*comprovar que l'array esta ple*/
+        for (ImageIcon elemento : arrayImagenes) {
+            System.out.println(elemento);
+        }
 
         // Verificar que hay imágenes
         if (arrayImagenes == null || arrayImagenes.isEmpty()) {

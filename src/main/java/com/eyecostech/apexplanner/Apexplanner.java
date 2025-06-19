@@ -39,6 +39,7 @@ public class Apexplanner {
     static Vista3DSimulada ventata3d;
     static Paciente paciente;
     static String path;
+    private ImagenesService imagenesService = new ImagenesService();
 
     /**
      * PER CREAR EL PATH DIRECTAMENT*
@@ -154,15 +155,20 @@ public class Apexplanner {
         return directorio;
     }
 
+//    public List<ImageIcon> getArrayImg() {
+//        List<ImageIcon> array = new FrameDeImagenes(getImagePath()).getArrayImagenes(getImagePath());
+//
+//        /*PROBA PER COMPROBAR EL CONTINGUT DE L'ARRAY*/
+    ////        for (ImageIcon elemento : array) {
+////            System.out.println(elemento+" 0 ");
+////        }
+//        //System.out.println("numero elemetos array " + array.size());
+//        return array;
+//    }
     public List<ImageIcon> getArrayImg() {
-        List<ImageIcon> array = new FrameDeImagenes(getImagePath(), true).getArrayImagenes(getImagePath());
-
-        /*PROBA PER COMPROBAR EL CONTINGUT DE L'ARRAY*/
-//        for (ImageIcon elemento : array) {
-//            System.out.println(elemento+" 0 ");
-//        }
-        //System.out.println("numero elemetos array " + array.size());
-        return array;
+        String directorio = getImagePath();
+        
+        return imagenesService.cargarImagenes(directorio);
     }
 
     public static void main(String[] args) {
@@ -183,15 +189,12 @@ public class Apexplanner {
 //        for (int i = 0; i < array.size(); i++) {
 //            System.out.println("Elemento " + i + ": " + array.get(i));
 //        }
-
-
         /**
          * INICIALITZAR SPRINGBOOT*
          */
 //        obj.getArrayImg();
-//        obj.iniciarSpringboot(args);
+        obj.iniciarSpringboot(args);
 
-        
         /*CALCULATOR*/
 //        obj.solicitudDeClaculos(sc);
 //        /*IMAGE ANALIZER*/
@@ -206,9 +209,9 @@ public class Apexplanner {
 //        
 
         /*CSV ANALIZER*/
-        List<List<Double>> matriz = csv.cerarMatriz(path);
-        csv.leerPunto(150, 265, matriz);
-        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
+//        List<List<Double>> matriz = csv.cerarMatriz(path);
+//        csv.leerPunto(150, 265, matriz);
+//        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
 //        System.out.println("BREAK!");
 //        System.out.println(rutaLaser.get(5).toString());
 //        double valorMaximo = csv.getMaxValue(matriz);
@@ -217,7 +220,7 @@ public class Apexplanner {
 //        System.out.println("total: "+calc.calcularNumeroShootsTotal(matriz));
 //        System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
 //        calc.maxShoots(matriz);
-        csv.imprimirImagen(csv.prepararImagenColorSimple(matriz), matriz);
+        //csv.imprimirImagen(csv.prepararImagenColorSimple(matriz), matriz);
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
 //        try {            
 //            imageList = new ImageListCreator(path);
@@ -227,8 +230,6 @@ public class Apexplanner {
 //        } catch (Exception e) {
 //            e.printStackTrace(); // mostra la linea on ha saltat l'error
 //        }
-
-
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
         //obj.iniciarFrameSliderImagenes(path);
 //      
