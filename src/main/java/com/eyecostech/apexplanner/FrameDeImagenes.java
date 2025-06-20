@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * CREADOR D'UN FRAME AMB L'SLIDE DE LA LLISTA D'IMATGES
  * @author Pau Savall
  */
 public class FrameDeImagenes extends JFrame {

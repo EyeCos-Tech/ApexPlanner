@@ -15,8 +15,7 @@ import marvin.io.MarvinImageIO;
 
 /**
  *
- * CREADOR DE UNA LISTA DE IMAGENES DE 1 BIT CON 0= NO SHOOT 1= SHOOTLOS
- * DISPAROS
+ * CREADOR DE UNA LISTA DE IMAGENES DE 1 BIT CON 0= NO SHOOT 1= SHOOT 
  *
  * TAL I COM ESTA EL LASER HA DE DISPARAR ON ESTA PINTAT DE BLANC EN CADA IMATGE
  * DINS ARRIBAR AL FINAL ON TOT ES NEGRE I PER TANT NO HA DE DISPARAR ENLLOC
@@ -39,15 +38,12 @@ public class ImageListCreator {
         matriz = csv.cerarMatriz(path);
     }
 
-//    int size = 200; // Tamaño de la imagen
-    //BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_BYTE_BINARY);
     public List<List<Double>> getMatriz() {
         return this.matriz;
     }
 
     public ArrayList<BufferedImage> crearListaImagenes(List<List<Double>> matriz) {
-    //        int rows = matriz.get(0).size();
-//        int cols = matriz.size();
+
         int rows = matriz.size();
         int cols = matriz.get(0).size();
         double max = calc.maxShoots(matriz);
@@ -57,65 +53,19 @@ public class ImageListCreator {
         int ind = 0;
 
         for (int k = 0; k < max; k++) { //repeteix fins al maxim dde shots que te el punt que te mes shoots
-            //BufferedImage imagen = new BufferedImage(rows, cols, BufferedImage.TYPE_BYTE_BINARY);
             BufferedImage imagen = new BufferedImage(rows, cols, BufferedImage.TYPE_INT_ARGB);
-            //BufferedImage imagen = new BufferedImage( cols, rows,BufferedImage.TYPE_BYTE_BINARY);
-            //System.out.println("BREAK");
+            imagen = new ImagenesService().crearImagen(matriz, indice);
 
-            for (int i = 0; i <= cols - 1; i++) {
-
-                for (int j = 0; j < rows - 1; j++) {
-
-                    double valor = csv.leerPunto(i, j, matriz);
-                    pintarPunto(i, j, valor, imagen, indice);
-
-                    //pintarPunto(i, j, csv.leerPunto(i, j, matriz), imagen);
-//                BufferedImage imagen= BufferedImage();
-//                lista.add(imagen);
-                }
-            }
 
             indice++;//pintar
 
-            /*forçar a negre el punt del centre*/
-            int centroX = imagen.getWidth() / 2;
-            int centroY = imagen.getHeight() / 2;
-            // Si el punto del centro sigue siendo blanco, lo pintamos manualmente
-            //imagen.setRGB(centroX, centroY, Color.WHITE.getRGB());
-            //imagen.setRGB(centroX, centroY, Color.BLACK.getRGB());
-
-            //pintarContorno(imagen, matriz); //necessari si es pinte l'exterior del cercle en blanc
-
-            //lista.add(imagen);//guardar imatge 
             lista.add(girarImagen90Izquierda(imagen)); //guardar imatge rotada
             //guardarImagen(imagen, ind);
             ind++;
-//            /*comprobar el colore del punt del centre*/
-//            int centroX = imagen.getWidth() / 2;
-//            int centroY = imagen.getHeight() / 2;
-//            int rgb = imagen.getRGB(centroX, centroY);
-//            System.out.println("Color en el centro (frame " + indice + "): " + Integer.toHexString(rgb));
+
         }
 
         return lista;
-    }
-    
-    public void pintarPunto(int x, int y, double valor, BufferedImage image, int index) {
-
-        double shoots = calc.numeroShoots(valor, calc.mmXShoot(193));
-        //if (shoots > 0.0 && shoots <= index) { //pinta el fondo exterior del cercle blanc => te un pixel blanc al centre
-        if (shoots >= 0.0 && shoots <= index) { //pinta el fondo exterior del cercle negre => no te un pixel blanc al centre
-            image.setRGB(y, x, Color.BLACK.getRGB());
-            //image.setRGB(x, y, Color.BLACK.getRGB());
-            //System.out.println("blanc");
-        } else {
-            image.setRGB(y, x, Color.WHITE.getRGB());
-            //System.out.println("negre");
-        }
-    }
-    
-    public void pintarTodaImagen(){
-        
     }
 
     public void crearTXTInstrucciones(String path, String texto) {
@@ -155,33 +105,6 @@ public class ImageListCreator {
         }
 
         return imagenGirada;
-
-    }
-
-    /*pintar el contorn de l'ull*/
-    public void pintarContorno(BufferedImage image, List<List<Double>> matriz) {
-        int altura = image.getHeight();
-        int amplada = image.getWidth();
-        int radio = 124; // ==========> Com extreure el radi de l'ull de la imatge?????????????
-        //int radio = (int)  calcularRadio(matriz); 
-
-        int centroX = amplada / 2;
-        int centroY = altura / 2;
-
-        // Obtener el contexto gráfico
-        Graphics2D g2d = image.createGraphics();
-        // Activar antialiasing para suavizar bordes
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        // Configurar color del borde del círculo
-        g2d.setColor(Color.BLACK);
-        //g2d.setColor(Color.WHITE);
-
-        // Dibujar un óvalo (círculo) vacío
-        g2d.drawOval(centroX - radio, centroY - radio, radio * 2, radio * 2);
-
-        // Liberar recursos gráficos
-        g2d.dispose();
 
     }
 
@@ -332,6 +255,74 @@ public class ImageListCreator {
     }
         
 }
+ //   public void pintarPunto(int x, int y, double valor, BufferedImage image, int index) {
+//
+//        double shoots = calc.numeroShoots(valor, calc.mmXShoot(193));
+//        //if (shoots > 0.0 && shoots <= index) { //pinta el fondo exterior del cercle blanc => te un pixel blanc al centre
+//        if (shoots >= 0.0 && shoots <= index) { //pinta el fondo exterior del cercle negre => no te un pixel blanc al centre
+//            image.setRGB(y, x, Color.BLACK.getRGB());
+//            //image.setRGB(x, y, Color.BLACK.getRGB());
+//            //System.out.println("blanc");
+//        } else {
+//            image.setRGB(y, x, Color.WHITE.getRGB());
+//            //System.out.println("negre");
+//        }
+//    }
+//    public ArrayList<BufferedImage> crearListaImagenes(List<List<Double>> matriz) {
+//    //        int rows = matriz.get(0).size();
+////        int cols = matriz.size();
+//        int rows = matriz.size();
+//        int cols = matriz.get(0).size();
+//        double max = calc.maxShoots(matriz);
+//        System.out.println("max= " + max);
+//        ArrayList<BufferedImage> lista = new ArrayList<BufferedImage>();
+//        int indice = 0;
+//        int ind = 0;
+//
+//        for (int k = 0; k < max; k++) { //repeteix fins al maxim dde shots que te el punt que te mes shoots
+//            //BufferedImage imagen = new BufferedImage(rows, cols, BufferedImage.TYPE_BYTE_BINARY);
+//            BufferedImage imagen = new BufferedImage(rows, cols, BufferedImage.TYPE_INT_ARGB);
+//            //BufferedImage imagen = new BufferedImage( cols, rows,BufferedImage.TYPE_BYTE_BINARY);
+//            //System.out.println("BREAK");
+//
+//            for (int i = 0; i <= cols - 1; i++) {
+//
+//                for (int j = 0; j < rows - 1; j++) {
+//
+//                    double valor = csv.leerPunto(i, j, matriz);
+//                    pintarPunto(i, j, valor, imagen, indice);
+//
+//                    //pintarPunto(i, j, csv.leerPunto(i, j, matriz), imagen);
+////                BufferedImage imagen= BufferedImage();
+////                lista.add(imagen);
+//                }
+//            }
+//
+//            indice++;//pintar
+//
+//            /*forçar a negre el punt del centre*/
+//            int centroX = imagen.getWidth() / 2;
+//            int centroY = imagen.getHeight() / 2;
+//            // Si el punto del centro sigue siendo blanco, lo pintamos manualmente
+//            //imagen.setRGB(centroX, centroY, Color.WHITE.getRGB());
+//            //imagen.setRGB(centroX, centroY, Color.BLACK.getRGB());
+//
+//            //pintarContorno(imagen, matriz); //necessari si es pinte l'exterior del cercle en blanc
+//
+//            //lista.add(imagen);//guardar imatge 
+//            lista.add(girarImagen90Izquierda(imagen)); //guardar imatge rotada
+//            //guardarImagen(imagen, ind);
+//            ind++;
+////            /*comprobar el colore del punt del centre*/
+////            int centroX = imagen.getWidth() / 2;
+////            int centroY = imagen.getHeight() / 2;
+////            int rgb = imagen.getRGB(centroX, centroY);
+////            System.out.println("Color en el centro (frame " + indice + "): " + Integer.toHexString(rgb));
+//        }
+//
+//        return lista;
+//    }
+    
     /*EN TEORIA PER PINTAR NOMES EL CERCLE I LO DE FORA PINTAR-HO TRANSPARENT
     NO FUNCIONA*/
 //public ArrayList<BufferedImage> crearListaImagenes(List<List<Double>> matriz) {

@@ -11,8 +11,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.ImageIcon;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.springframework.boot.SpringApplication;
@@ -64,6 +66,7 @@ public class Apexplanner {
         path = paciente.getPath();
 
     }
+    
 
     public Nomograma getNomograma() {
         if (nomograma == null) {
@@ -416,7 +419,11 @@ public class Apexplanner {
 
     public static void main(String[] args) {
         Apexplanner obj = Apexplanner.getInstance();
-        obj.setPaciente("ari");
+        obj.setPaciente("sara");
+        //System.out.println("nombre paciente: "+obj.getPaciente().getNombre());
+        csv.setNombre(obj.getPaciente().getNombre());
+        
+        
 
         Scanner sc = new Scanner(System.in);
 
@@ -436,7 +443,7 @@ public class Apexplanner {
          * INICIALITZAR SPRINGBOOT*
          */
 //        obj.getArrayImg();
-        //obj.iniciarSpringboot(args);
+        obj.iniciarSpringboot(args);
 
         /*CALCULATOR*/
 //        obj.solicitudDeClaculos(sc);
@@ -452,7 +459,7 @@ public class Apexplanner {
 //        
 
         /*CSV ANALIZER*/
-//        List<List<Double>> matriz = csv.cerarMatriz(path);
+        //List<List<Double>> matriz = csv.cerarMatriz(path);
 //        csv.leerPunto(150, 265, matriz);
 //        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
 //        System.out.println("BREAK!");
@@ -464,15 +471,17 @@ public class Apexplanner {
 //        System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
 //        calc.maxShoots(matriz);
         //csv.imprimirImagen(csv.prepararImagenColorSimple(matriz), matriz);
+        //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
+        
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
-        try {            
-            imageList = new ImageListCreator(path);
-            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
-            imageList.guardarImagenes(lista);
-            
-        } catch (Exception e) {
-            e.printStackTrace(); // mostra la linea on ha saltat l'error
-        }
+//        try {            
+//            imageList = new ImageListCreator(path);
+//            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
+//            imageList.guardarImagenes(lista);
+//            
+//        } catch (Exception e) {
+//            e.printStackTrace(); // mostra la linea on ha saltat l'error
+//        }
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
         //obj.iniciarFrameSliderImagenes(path);
 //      
