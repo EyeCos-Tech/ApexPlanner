@@ -12,10 +12,11 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import marvin.image.MarvinImage;
 import marvin.io.MarvinImageIO;
+import org.bytedeco.opencv.opencv_core.Mat;
 
 /**
  *
- * CREADOR DE UNA LISTA DE IMAGENES DE 1 BIT CON 0= NO SHOOT 1= SHOOT 
+ * CREADOR DE UNA LISTA DE IMAGENES DE 1 BIT CON 0= NO SHOOT 1= SHOOT
  *
  * TAL I COM ESTA EL LASER HA DE DISPARAR ON ESTA PINTAT DE BLANC EN CADA IMATGE
  * DINS ARRIBAR AL FINAL ON TOT ES NEGRE I PER TANT NO HA DE DISPARAR ENLLOC
@@ -35,7 +36,7 @@ public class ImageListCreator {
         this.path = path;
         this.calc = new Calculador();
 
-        matriz = csv.cerarMatriz(path);
+        matriz = csv.crearMatriz(path);
     }
 
     public List<List<Double>> getMatriz() {
@@ -54,8 +55,7 @@ public class ImageListCreator {
 
         for (int k = 0; k < max; k++) { //repeteix fins al maxim dde shots que te el punt que te mes shoots
             BufferedImage imagen = new BufferedImage(rows, cols, BufferedImage.TYPE_INT_ARGB);
-            imagen = new ImagenesService().crearImagen(matriz, indice);
-
+            imagen = new ImageService().crearImagen(matriz, indice);
 
             indice++;//pintar
 
@@ -66,6 +66,33 @@ public class ImageListCreator {
         }
 
         return lista;
+    }
+
+    public ArrayList<Mat> crearListaImagenesMat(List<List<Double>> matriz) {
+
+        int rows = matriz.size();
+        int cols = matriz.get(0).size();
+        double max = calc.maxShoots(matriz);
+        System.out.println("max= " + max);
+        //ArrayList<BufferedImage> lista = new ArrayList<BufferedImage>();
+        ArrayList<Mat> listaMat = new ArrayList<Mat>();
+        int indice = 0;
+        int ind = 0;
+
+        for (int k = 0; k < max; k++) { //repeteix fins al maxim dde shots que te el punt que te mes shoots
+            BufferedImage imagen = new BufferedImage(rows, cols, BufferedImage.TYPE_INT_ARGB);
+            imagen = new ImageService().crearImagen(matriz, indice);
+            Mat imagenMat = new ImageService().bufferedImageToMat(girarImagen90Izquierda(imagen));
+
+            indice++;//pintar
+
+            listaMat.add(imagenMat); //guardar imatge rotada
+            //guardarImagen(imagen, ind);
+            ind++;
+
+        }
+
+        return listaMat;
     }
 
     public void crearTXTInstrucciones(String path, String texto) {
@@ -253,9 +280,9 @@ public class ImageListCreator {
 
         return sumDist / matriz.size(); // radio promedio
     }
-        
+
 }
- //   public void pintarPunto(int x, int y, double valor, BufferedImage image, int index) {
+//   public void pintarPunto(int x, int y, double valor, BufferedImage image, int index) {
 //
 //        double shoots = calc.numeroShoots(valor, calc.mmXShoot(193));
 //        //if (shoots > 0.0 && shoots <= index) { //pinta el fondo exterior del cercle blanc => te un pixel blanc al centre

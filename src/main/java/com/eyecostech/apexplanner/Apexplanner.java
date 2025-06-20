@@ -45,7 +45,8 @@ public class Apexplanner {
     //static Vista3DSimulada ventata3d;
     static Paciente paciente;
     static String path;
-    private ImagenesService imagenesService = new ImagenesService();
+    private ImageService imagenesService = new ImageService();
+    //List<List<Double>> matriz;
 
     private Nomograma nomograma;
 
@@ -56,17 +57,18 @@ public class Apexplanner {
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/sara/csv/sara.csv";
     //static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/ari/csv/ari.csv";
     public Apexplanner() {
+        
     }
 
     public Apexplanner(String nombre) {
         System.out.println("=== CREANDO INSTANCIA DE APEXPLANNER ===");
         System.out.println(path);
 
+        //matriz = csv.crearMatriz(path);
         paciente = new Paciente(nombre);
         path = paciente.getPath();
 
     }
-    
 
     public Nomograma getNomograma() {
         if (nomograma == null) {
@@ -207,7 +209,7 @@ public class Apexplanner {
         calcularTratamientoConNomograma(datosPaciente);
 
         // Obtener la matriz actual
-        List<List<Double>> matrizOriginal = csv.cerarMatriz(path);
+        List<List<Double>> matrizOriginal = csv.crearMatriz(path);
 
         // Aplicar el nomograma
         return getNomograma().aplicarNomogramaAMatriz(matrizOriginal);
@@ -256,7 +258,7 @@ public class Apexplanner {
             Map<String, Object> parametrosNomograma = nomograma.calcularTratamientoComoMap();
 
             // 2. Cargar matriz original
-            List<List<Double>> matrizOriginal = csv.cerarMatriz(path);
+            List<List<Double>> matrizOriginal = csv.crearMatriz(path);
             System.out.println("Matriz original cargada: " + matrizOriginal.size() + " filas");
 
             // 3. Aplicar nomograma a la matriz
@@ -361,7 +363,7 @@ public class Apexplanner {
         nomograma.setDatosPacienteDesdeMap(datosPaciente);
 
         // 2. Cargar matriz original
-        List<List<Double>> matrizOriginal = csv.cerarMatriz(path);
+        List<List<Double>> matrizOriginal = csv.crearMatriz(path);
 
         // 3. Generar imagen de la matriz original
         Mat imagenOriginal = csv.prepararImagen(matrizOriginal);
@@ -417,12 +419,21 @@ public class Apexplanner {
         }
     }
 
+    public static void crearLlistaImatges(String ruta) {
+        try {
+            imageList = new ImageListCreator(ruta);
+            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
+            imageList.guardarImagenes(lista);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // mostra la linea on ha saltat l'error
+        }
+    }
+
     public static void main(String[] args) {
         Apexplanner obj = Apexplanner.getInstance();
-        obj.setPaciente("sara");
-        //System.out.println("nombre paciente: "+obj.getPaciente().getNombre());
+        obj.setPaciente("sara");       
         csv.setNombre(obj.getPaciente().getNombre());
-        
         
 
         Scanner sc = new Scanner(System.in);
@@ -459,7 +470,7 @@ public class Apexplanner {
 //        
 
         /*CSV ANALIZER*/
-        //List<List<Double>> matriz = csv.cerarMatriz(path);
+        //List<List<Double>> matriz = csv.crearMatriz(path);
 //        csv.leerPunto(150, 265, matriz);
 //        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
 //        System.out.println("BREAK!");
@@ -471,17 +482,10 @@ public class Apexplanner {
 //        System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
 //        calc.maxShoots(matriz);
         //csv.imprimirImagen(csv.prepararImagenColorSimple(matriz), matriz);
-        //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
-        
+       //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
+
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
-//        try {            
-//            imageList = new ImageListCreator(path);
-//            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
-//            imageList.guardarImagenes(lista);
-//            
-//        } catch (Exception e) {
-//            e.printStackTrace(); // mostra la linea on ha saltat l'error
-//        }
+        //crearLlistaImatges(path);
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
         //obj.iniciarFrameSliderImagenes(path);
 //      

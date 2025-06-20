@@ -62,8 +62,8 @@ public class CsvAnalizer {
     }
 
 
-    /*crea una matriu*/
-    public List<List<Double>> cerarMatriz(String path) {
+     /*crea una matriu*/
+    public List<List<Double>> crearMatriz(String path) {
         String csvPath = path;
         List<List<Double>> matrix = loadCSV(csvPath);
         if (matrix == null) {
@@ -97,7 +97,6 @@ public class CsvAnalizer {
             return null;
         }
     }
-
     public double getMaxValue(List<List<Double>> matrix) {
         double maxValue = 0.0;
         int rows = matrix.size();
@@ -133,7 +132,7 @@ public class CsvAnalizer {
     /*prepara una imatge en color representant la matriu del csv i retorna la  imatge*/
     public Mat prepararImagen(List<List<Double>> matrix) {
 
-        Mat image = new ImagenesService().crearImagenColor(matrix);
+        Mat image = new ImageService().crearImagenColor(matrix);
 
         return image;
     }
@@ -174,10 +173,6 @@ public class CsvAnalizer {
         opencv_highgui.imshow(windowName, imagen);
         opencv_highgui.waitKey(0);
         opencv_highgui.destroyAllWindows();
-
-    }
-
-    public void setPaciente(String nombre) {
 
     }
 }

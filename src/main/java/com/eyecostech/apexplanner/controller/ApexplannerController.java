@@ -42,26 +42,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 /**
  * CONTROLADOR PRINCIPAL DE LA APLICACIÓN
  *
- * Este controlador maneja todas las peticiones HTTP - GET: - POST: - PUT: -
- * DELETE:
- *
- * @RestController = @Controller + @ResponseBody Todos los métodos devuelven
- * datos directamente (JSON/texto)
  * @author Pau Savall
- *
- *
- */
-// @RestController: Combina @Controller + @ResponseBody
-// Indica que esta clase maneja peticiones HTTP y retorna JSON automáticamente
-// @RequestMapping: Define la ruta base para todas las APIs de este controlador
-// Todas las rutas de este controlador empezarán con "/api/***"
-// @CrossOrigin: Permite peticiones desde otros dominios (CORS)
+ **/
 // origins = "http://localhost:3000" permite peticiones desde React
 @RestController
 public class ApexplannerController {
 
     @Autowired
     private Apexplanner planner;  // Spring inyecta la instancia
+    private Paciente paciente;
 
     private String path;
 
@@ -72,8 +61,7 @@ public class ApexplannerController {
 
     /**
      * RUTA PRINCIPAL - PÁGINA DE INICIO
-     *
-     * URL: http://localhost:8080/
+     * URL: http://localhost:8080/ 
      */
     @GetMapping("/")
     public String paginaInicio() {
@@ -81,16 +69,60 @@ public class ApexplannerController {
                 DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
         );
         return """
-        <!DOCTYPE html>
+<!DOCTYPE html>
         <html lang="es">
         <head>
             <meta charset="UTF-8">
-            <title>Mi Primera App Spring Boot</title>
+            <title>APEXPLANNER - Sistema de Planificación</title>
             <style>
                 body { 
                     font-family: Arial, sans-serif; 
-                    margin: 40px;
+                    margin: 0;
+                    padding: 0;
                     background-color: #f5f5f5; 
+                }
+                
+                .header {
+                    background: white;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                    padding: 20px 0;
+                    margin-bottom: 40px;
+                }
+                
+                .header-content {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 0 40px;
+                    display: flex;
+                    align-items: center;
+                    gap: 30px;
+                }
+                
+                .logo-container {
+                    flex-shrink: 0;
+                }
+                
+                .logo-container img {
+                    width: 80px;
+                    height: 80px;
+                    object-fit: contain;
+                }
+                
+                .header-text {
+                    flex-grow: 1;
+                }
+                
+                .header-text h1 {
+                    margin: 0;
+                    color: #2c3e50;
+                    font-size: 32px;
+                    font-weight: 600;
+                }
+                
+                .header-text p {
+                    margin: 5px 0 0 0;
+                    color: #7f8c8d;
+                    font-size: 16px;
                 }
                 
                 .main-wrapper {
@@ -98,6 +130,7 @@ public class ApexplannerController {
                     gap: 20px;
                     max-width: 1200px;
                     margin: 0 auto;
+                    padding: 0 40px 40px 40px;
                 }
                 
                 .container { 
@@ -108,18 +141,115 @@ public class ApexplannerController {
                     box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
                 }
                 
+                .patient-selector {
+                    background: #e8f4f8;
+                    padding: 20px;
+                    border-radius: 5px;
+                    margin-bottom: 20px;
+                }
+                
+                .patient-selector h3 {
+                    margin-top: 0;
+                    color: #2c3e50;
+                }
+                
+                .form-group {
+                    margin-bottom: 15px;
+                }
+                
+                .form-group label {
+                    display: block;
+                    margin-bottom: 5px;
+                    font-weight: bold;
+                    color: #555;
+                }
+                
+                .form-group select {
+                    width: 100%;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    font-size: 16px;
+                    background-color: white;
+                }
+                
+                .btn-primary {
+                    background: #3498db;
+                    color: white;
+                    border: none;
+                    padding: 12px 30px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    transition: background 0.3s;
+                }
+                
+                .btn-primary:hover {
+                    background: #2980b9;
+                }
+                
+                .btn-primary:disabled {
+                    background: #bdc3c7;
+                    cursor: not-allowed;
+                }
+                
+                .patient-info {
+                    margin-top: 20px;
+                    padding: 15px;
+                    background: #f8f9fa;
+                    border-radius: 5px;
+                    display: none;
+                }
+                
+                .success-message {
+                    color: #27ae60;
+                    padding: 10px;
+                    background: #e8f8f5;
+                    border-radius: 5px;
+                    margin-top: 10px;
+                    display: none;
+                }
+                
+                .btn-nav {
+                    background: #2ecc71;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    transition: background 0.3s;
+                }
+                
+                .btn-nav:hover:not(:disabled) {
+                    background: #27ae60;
+                }
+                
+                .btn-nav:disabled {
+                    background: #bdc3c7;
+                    cursor: not-allowed;
+                }
+                
+                .error {
+                    color: #e74c3c;
+                    padding: 10px;
+                    background: #ffe6e6;
+                    border-radius: 5px;
+                    margin-top: 10px;
+                }
+                
+                .loading {
+                    color: #3498db;
+                    text-align: center;
+                    display: none;
+                }
+                
                 .image-container {
                     width: 350px;
                     background: white;
                     padding: 20px;
                     border-radius: 10px;
                     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                }
-                
-                .image-container h3 {
-                    color: #2c3e50;
-                    margin-top: 0;
-                    margin-bottom: 15px;
                 }
                 
                 .image-wrapper {
@@ -139,27 +269,6 @@ public class ApexplannerController {
                     object-fit: contain;
                 }
                 
-                .image-placeholder {
-                    color: #999;
-                    text-align: center;
-                }
-                
-                h1 { 
-                    color: #2c3e50; 
-                }
-                
-                .info { 
-                    background: #e8f4f8; 
-                    padding: 15px;
-                    border-radius: 5px; 
-                    margin: 20px 0; 
-                }
-                
-                a { 
-                    color: #3498db; 
-                    text-decoration: none; 
-                }
-                
                 .load-image-btn {
                     margin-top: 15px;
                     padding: 10px 20px;
@@ -176,86 +285,178 @@ public class ApexplannerController {
                     background: #2980b9;
                 }
                 
-                .loading {
-                    color: #3498db;
-                    text-align: center;
-                }
-                
-                .error {
-                    color: #e74c3c;
-                    text-align: center;
-                    padding: 10px;
-                    background: #ffe6e6;
-                    border-radius: 5px;
-                    margin-top: 10px;
+                .load-image-btn:disabled {
+                    background: #bdc3c7;
+                    cursor: not-allowed;
                 }
             </style>
         </head>
         <body>
+            <header class="header">
+                <div class="header-content">
+                    <div class="logo-container">
+                        <img src="/img/logo100x100.png" alt="APEXPLANNER Logo">
+                    </div>
+                    <div class="header-text">
+                        <h1>APEXPLANNER</h1>
+                        <p>Sistema de Planificación para Cirugía Refractiva Láser</p>
+                    </div>
+                </div>
+            </header>
+            
             <div class="main-wrapper">
                 <div class="container">
-                    <h1>PRUEBA</h1>
+                    <!-- Selector de Paciente -->
+                    <div class="patient-selector">
+                        <h3>Seleccionar Paciente</h3>
+                        <div class="form-group">
+                            <label for="patientSelect">Paciente:</label>
+                            <select id="patientSelect">
+                                <option value="">-- Seleccione un paciente --</option>
+                                <option value="mica">Mica</option>
+                                <option value="sara">Sara</option>
+                                <option value="ari">Ari</option>
+                            </select>
+                        </div>
+                        <button class="btn-primary" id="loadPatientBtn" onclick="cargarPaciente()">
+                            Cargar Paciente
+                        </button>
+                        
+                        <div class="loading" id="loadingMessage">
+                            Cargando datos del paciente...
+                        </div>
+                        
+                        <div class="success-message" id="successMessage"></div>
+                        <div class="error-message" id="errorMessage"></div>
+                        
+                        <div class="patient-info" id="patientInfo">
+                            <h4>Información del Paciente</h4>
+                            <p><strong>Nombre:</strong> <span id="patientName"></span></p>
+                            <p><strong>Path CSV:</strong> <span id="patientPath"></span></p>
+                            <p><strong>Estado:</strong> <span id="patientStatus">Cargado correctamente</span></p>
+                        </div>
+                    </div>
+                    
                     <div class="info">
                         <h3>Estado de la Aplicación</h3>
                         <p><strong>Estado:</strong> Funcionando correctamente</p>
                         <p><strong>Servidor:</strong> Apache Tomcat (embebido)</p>
                         <p><strong>Puerto:</strong> 8080</p>
                         <p><strong>Framework:</strong> Spring Boot 3.3.0</p>
-                        <p><strong>Cargado el:</strong> <span id="loadTime"></span></p>
+                        <p><strong>Paciente Actual:</strong> <span id="currentPatient">Ninguno</span></p>
                     </div>
-               <div class="info" style="margin-top: 20px;">
-                                       <h3>Seleccionar Paciente</h3>
-                                       <div style="display: flex; gap: 10px; align-items: center;">
-                                           <select id="pacienteSelect" style="flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;">
-                                               <option value="">-- Seleccionar paciente --</option>
-                                               <option value="mica">Mica</option>
-                                               <option value="sara">Sara</option>
-                                               <option value="ari">Ari</option>
-                                           </select>
-                                           <button onclick="cargarPaciente()" style="padding: 8px 20px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
-                                               Cargar Paciente
-                                           </button>
-                                       </div>
-                                       <div id="pacienteStatus" style="margin-top: 10px; font-weight: bold;"></div>
-                                   </div>
                 </div>
                 
                 <div class="image-container">
-                    <h3>Imatge de Topografia en Color </h3>
+                    <h3>Imagen de Topografía en Color</h3>
                     <div class="image-wrapper" id="imageWrapper">
                         <div class="image-placeholder">
-                            <p>Haz clic en el botón para cargar una imagen</p>
+                            <p>Primero debe cargar un paciente</p>
                         </div>
                     </div>
-                    <button class="load-image-btn" onclick="cargarImagen()">Carregar Imatge</button>
-                    <div id="errorMessage"></div>
+                    <button class="load-image-btn" id="loadImageBtn" onclick="cargarImagen()" disabled>
+                        Cargar Imagen
+                    </button>
                 </div>
-            
+                
                 <div class="image-container">
-                    <h3>Array Imatges</h3>
+                    <h3>Array de Imágenes de Tratamiento</h3>
                     <div class="image-wrapper" id="imageArrayWrapper">
                         <div class="image-placeholder">
-                            <p>Haz clic en el botón para cargar un array</p>
+                            <p>Primero debe cargar un paciente</p>
                         </div>
                     </div>
-                    <button class="load-image-btn" onclick="cargarArray()">Carregar Array</button>
+                    <button class="load-image-btn" id="loadArrayBtn" onclick="cargarArray()" disabled>
+                        Cargar Array de Imágenes
+                    </button>
                     <div id="errorArrayMessage"></div>
                 </div>
             </div>
             
             <script>
-                // Mostrar la hora de carga
-                document.getElementById('loadTime').textContent = new Date().toLocaleString('es-ES');
+                // Variable global para almacenar el paciente actual
+                let pacienteActual = null;
+                
+                function cargarPaciente() {
+                    const selectElement = document.getElementById('patientSelect');
+                    const nombrePaciente = selectElement.value;
+                    
+                    // Validar que se haya seleccionado un paciente
+                    if (!nombrePaciente) {
+                        mostrarError('Por favor seleccione un paciente');
+                        return;
+                    }
+                    
+                    // Limpiar mensajes anteriores
+                    ocultarMensajes();
+                    
+                    // Mostrar loading
+                    document.getElementById('loadingMessage').style.display = 'block';
+                    document.getElementById('loadPatientBtn').disabled = true;
+                    
+                    // Realizar petición al backend
+                    fetch('/api/paciente', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `nombre=${encodeURIComponent(nombrePaciente)}`
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error al cargar el paciente');
+                        }
+                        return response.json();
+                    })
+                    .then(paciente => {
+                        // Guardar paciente actual
+                        pacienteActual = paciente;
+                        
+                        // Mostrar información del paciente
+                        document.getElementById('patientName').textContent = paciente.nombre;
+                        document.getElementById('patientPath').textContent = paciente.path;
+                        document.getElementById('patientInfo').style.display = 'block';
+                        
+                        // Actualizar estado actual
+                        document.getElementById('currentPatient').textContent = paciente.nombre;
+                        
+                        // Habilitar botón de cargar imagen
+                        document.getElementById('loadImageBtn').disabled = false;
+                        document.getElementById('loadArrayBtn').disabled = false;
+                        
+                        // Mostrar mensaje de éxito
+                        mostrarExito(`Paciente ${paciente.nombre} cargado correctamente`);
+                        
+                        // Ocultar loading
+                        document.getElementById('loadingMessage').style.display = 'none';
+                        document.getElementById('loadPatientBtn').disabled = false;
+                        
+                        // Limpiar imagen anterior si existe
+                        document.getElementById('imageWrapper').innerHTML = 
+                            '<div class="image-placeholder"><p>Ahora puede cargar la imagen</p></div>';
+                        document.getElementById('imageArrayWrapper').innerHTML = 
+                            '<div class="image-placeholder"><p>Ahora puede cargar el array de imágenes</p></div>';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        mostrarError('Error al cargar el paciente: ' + error.message);
+                        
+                        // Ocultar loading y habilitar botón
+                        document.getElementById('loadingMessage').style.display = 'none';
+                        document.getElementById('loadPatientBtn').disabled = false;
+                    });
+                }
                 
                 function cargarImagen() {
-                    const imageWrapper = document.getElementById('imageWrapper');
-                    const errorDiv = document.getElementById('errorMessage');
+                    if (!pacienteActual) {
+                        mostrarError('Debe cargar un paciente primero');
+                        return;
+                    }
                     
-                    // Limpiar mensajes de error anteriores
-                    errorDiv.innerHTML = '';
+                    const imageWrapper = document.getElementById('imageWrapper');
                     
                     // Mostrar estado de carga
-                    imageWrapper.innerHTML = '<div class="loading">Cargando imagen...</div>';
+                    imageWrapper.innerHTML = '<div class="loading">Cargando imagen del paciente...</div>';
                     
                     // Realizar petición al backend
                     fetch('/api/imagenColor')
@@ -267,48 +468,97 @@ public class ApexplannerController {
                         })
                         .then(blob => {
                             const imageUrl = URL.createObjectURL(blob);
-                            imageWrapper.innerHTML = `<img src="${imageUrl}" alt="Imagen del proyecto">`;
+                            imageWrapper.innerHTML = `
+                                <img src="${imageUrl}" alt="Topografía de ${pacienteActual.nombre}">
+                            `;
+                            mostrarExito('Imagen cargada correctamente');
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            imageWrapper.innerHTML = '<div class="image-placeholder"><p>No se pudo cargar la imagen</p></div>';
-                            errorDiv.innerHTML = '<div class="error">Error: Verifica que el endpoint /api/imagenColor esté configurado en Spring Boot</div>';
+                            imageWrapper.innerHTML = 
+                                '<div class="image-placeholder"><p>No se pudo cargar la imagen</p></div>';
+                            mostrarError('Error al cargar la imagen: ' + error.message);
                         });
                 }
                 
-                // Variables para navegación
+                function mostrarExito(mensaje) {
+                    ocultarMensajes();
+                    const successDiv = document.getElementById('successMessage');
+                    successDiv.textContent = mensaje;
+                    successDiv.style.display = 'block';
+                    
+                    // Auto-ocultar después de 5 segundos
+                    setTimeout(() => {
+                        successDiv.style.display = 'none';
+                    }, 5000);
+                }
+                
+                function mostrarError(mensaje) {
+                    ocultarMensajes();
+                    const errorDiv = document.getElementById('errorMessage');
+                    errorDiv.textContent = mensaje;
+                    errorDiv.style.display = 'block';
+                }
+                
+                function ocultarMensajes() {
+                    document.getElementById('successMessage').style.display = 'none';
+                    document.getElementById('errorMessage').style.display = 'none';
+                }
+                
+                // Evento para cuando cambia la selección del paciente
+                document.getElementById('patientSelect').addEventListener('change', function() {
+                    // Limpiar mensajes cuando se cambia la selección
+                    ocultarMensajes();
+                });
+                
+                // Variables para navegación del array
                 let currentIndex = 0;
                 let totalImages = 0;
                 
-                // Función principal para cargar el array
+                // Función para cargar el array de imágenes
                 function cargarArray() {
-                    console.log("Iniciando carga de array...");
+                    if (!pacienteActual) {
+                        mostrarError('Debe cargar un paciente primero');
+                        return;
+                    }
+                    
+                    console.log("Iniciando carga de array para paciente:", pacienteActual.nombre);
+                    
+                    const imageWrapper = document.getElementById('imageArrayWrapper');
+                    const errorDiv = document.getElementById('errorArrayMessage');
+                    
+                    // Limpiar errores anteriores
+                    errorDiv.innerHTML = '';
+                    
+                    // Mostrar loading
+                    imageWrapper.innerHTML = '<div class="loading">Cargando array de imágenes...</div>';
                     
                     fetch('/api/array/count')
                         .then(response => {
                             console.log("Respuesta count:", response);
+                            if (!response.ok) {
+                                throw new Error('Error al obtener el número de imágenes');
+                            }
                             return response.json();
                         })
                         .then(count => {
                             console.log("Total de imágenes:", count);
                             totalImages = count;
                             if (count > 0) {
+                                currentIndex = 0;
                                 mostrarImagen(0);
                             } else {
-                                const imageWrapper = document.getElementById('imageArrayWrapper');
-                                imageWrapper.innerHTML = '<div class="image-placeholder"><p>No hay imágenes disponibles</p></div>';
+                                imageWrapper.innerHTML = '<div class="image-placeholder"><p>No hay imágenes disponibles para este paciente</p></div>';
                             }
                         })
                         .catch(error => {
                             console.error('Error al obtener count:', error);
-                            const imageWrapper = document.getElementById('imageArrayWrapper');
-                            const errorDiv = document.getElementById('errorArrayMessage');
                             imageWrapper.innerHTML = '<div class="image-placeholder"><p>Error al cargar imágenes</p></div>';
                             errorDiv.innerHTML = '<div class="error">Error: ' + error.message + '</div>';
                         });
                 }
                 
-                // Función para mostrar una imagen específica
+                // Función para mostrar una imagen específica del array
                 function mostrarImagen(index) {
                     console.log("Mostrando imagen:", index);
                     const imageWrapper = document.getElementById('imageArrayWrapper');
@@ -318,7 +568,7 @@ public class ApexplannerController {
                     errorDiv.innerHTML = '';
                     
                     // Mostrar loading
-                    imageWrapper.innerHTML = '<div class="loading">Cargando imagen ' + (index + 1) + '...</div>';
+                    imageWrapper.innerHTML = '<div class="loading">Cargando imagen ' + (index + 1) + ' de ' + totalImages + '...</div>';
                     
                     fetch(`/api/array/${index}`)
                         .then(response => {
@@ -331,25 +581,25 @@ public class ApexplannerController {
                             const imageUrl = URL.createObjectURL(blob);
                             imageWrapper.innerHTML = `
                                 <div style="text-align: center;">
-                                    <img src="${imageUrl}" alt="Imagen ${index + 1}" style="max-width: 100%; height: auto;">
-                                    <div style="margin-top: 10px;">
-                                        <button class="load-image-btn" style="width: auto; margin: 0 5px;" 
-                                                onclick="imagenAnterior()" 
-                                                ${index === 0 ? 'disabled' : ''}>
+                                    <img src="${imageUrl}" alt="Imagen ${index + 1} de ${pacienteActual.nombre}" style="max-width: 100%; height: auto;">
+                                    <div style="margin-top: 15px;">
+                                        <button class="btn-nav" onclick="imagenAnterior()" ${index === 0 ? 'disabled' : ''}>
                                             ← Anterior
                                         </button>
-                                        <span style="margin: 0 10px; font-weight: bold;">
+                                        <span style="margin: 0 15px; font-weight: bold; font-size: 16px;">
                                             ${index + 1} / ${totalImages}
                                         </span>
-                                        <button class="load-image-btn" style="width: auto; margin: 0 5px;" 
-                                                onclick="imagenSiguiente()"
-                                                ${index === totalImages - 1 ? 'disabled' : ''}>
+                                        <button class="btn-nav" onclick="imagenSiguiente()" ${index === totalImages - 1 ? 'disabled' : ''}>
                                             Siguiente →
                                         </button>
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 14px; color: #666;">
+                                        Imagen de tratamiento ${index + 1}
                                     </div>
                                 </div>
                             `;
                             currentIndex = index;
+                            mostrarExito(`Imagen ${index + 1} cargada correctamente`);
                         })
                         .catch(error => {
                             console.error('Error:', error);
@@ -358,7 +608,7 @@ public class ApexplannerController {
                         });
                 }
                 
-                // Navegación
+                // Funciones de navegación
                 function imagenAnterior() {
                     if (currentIndex > 0) {
                         mostrarImagen(currentIndex - 1);
@@ -370,52 +620,9 @@ public class ApexplannerController {
                         mostrarImagen(currentIndex + 1);
                     }
                 }
-               //funcio per carregar un paciient
-               function cargarPaciente() {
-                   const select = document.getElementById('pacienteSelect');
-                   const nombre = select.value;
-                   const statusDiv = document.getElementById('pacienteStatus');
-                   
-                   if (!nombre) {
-                       statusDiv.innerHTML = '<span style="color: #e74c3c;">Por favor, selecciona un paciente</span>';
-                       return;
-                   }
-                   
-                   statusDiv.innerHTML = '<span style="color: #3498db;">Cargando paciente...</span>';
-                   
-                   // Realizar petición POST al backend
-                   fetch('/api/paciente', {
-                       method: 'POST',
-                       headers: {
-                           'Content-Type': 'application/x-www-form-urlencoded',
-                       },
-                       body: 'nombre=' + encodeURIComponent(nombre)
-                   })
-                   .then(response => {
-                       if (!response.ok) {
-                           throw new Error('Error al cargar el paciente');
-                       }
-                       return response.json();
-                   })
-                   .then(data => {
-                       statusDiv.innerHTML = '<span style="color: #27ae60;">✓ Paciente ' + data.nombre + ' cargado correctamente</span>';
-                       
-                       // Opcionalmente, puedes recargar las imágenes automáticamente
-                       // cargarImagen();
-                       // cargarArray();
-                   })
-                   .catch(error => {
-                       console.error('Error:', error);
-                       statusDiv.innerHTML = '<span style="color: #e74c3c;">✗ Error al cargar el paciente: ' + error.message + '</span>';
-                   });
-               }
-                
-                // Cargar imagen automáticamente al iniciar (opcional)
-                // window.onload = () => cargarImagen();
             </script>
         </body>
-        </html>
-        """;
+        </html>        """;
     }
 
     /**
@@ -424,9 +631,11 @@ public class ApexplannerController {
      */
     @PostMapping("/api/paciente")
     public ResponseEntity<Paciente> setPaciente(@RequestParam String nombre) {
+        // Usar el método setPaciente existente, NO crear nueva instancia
         planner.setPaciente(nombre);
         Paciente paciente = planner.getPaciente();
-
+        this.path= planner.getPath();
+        
         return ResponseEntity.ok(paciente);
     }
 
@@ -435,7 +644,7 @@ public class ApexplannerController {
 
         /*cargar una Mat*/
         Mat imagen;
-        imagen = planner.getCsv().prepararImagen(planner.getCsv().cerarMatriz(path));
+        imagen = planner.getCsv().prepararImagen(planner.getCsv().crearMatriz(path));
         /*convertir mat a bytes*/
         // Codificar la imagen a bytes
         BytePointer buffer = new BytePointer();
@@ -544,197 +753,197 @@ public class ApexplannerController {
     /**
      * Endpoint para calcular parámetros de tratamiento usando el nomograma
      */
-    @PostMapping("/api/nomograma/calcular")
-    public ResponseEntity<?> calcularNomograma(@RequestBody Map<String, Object> datosPaciente) {
-        try {
-            Map<String, Object> resultado = planner.calcularTratamientoConNomograma(datosPaciente);
-            return ResponseEntity.ok(resultado);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-                    "status", "error",
-                    "tipo", "seguridad",
-                    "mensaje", e.getMessage()
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                    "status", "error",
-                    "mensaje", "Error al calcular los parámetros: " + e.getMessage()
-            ));
-        }
-    }
-
-    /**
-     * Endpoint para aplicar el nomograma a la planificación actual URL: POST
-     */
-    @PostMapping("/api/nomograma/aplicar")
-    public ResponseEntity<?> aplicarNomograma(@RequestBody Map<String, Object> datosPaciente) {
-        try {
-            Map<String, Object> resultado = planner.aplicarNomogramaAMatrizActual(datosPaciente);
-            return ResponseEntity.ok(Map.of(
-                    "status", "success",
-                    "resultado", resultado,
-                    "mensaje", "Nomograma aplicado exitosamente"
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                    "status", "error",
-                    "mensaje", "Error al aplicar el nomograma: " + e.getMessage()
-            ));
-        }
-    }
-
-    /**
-     * Endpoint para validar si un paciente es apto URL: POST
-     */
-    @PostMapping("/api/nomograma/validar")
-    public ResponseEntity<?> validarPaciente(@RequestBody Map<String, Object> datosPaciente) {
-        try {
-            Map<String, Object> validacion = planner.validarPacienteParaTratamiento(datosPaciente);
-            return ResponseEntity.ok(validacion);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-                    "status", "error",
-                    "mensaje", "Error al validar paciente: " + e.getMessage()
-            ));
-        }
-    }
-
-    /**
-     * Endpoint para obtener información sobre los factores del nomograma URL:
-     */
-    @GetMapping("/api/nomograma/factores")
-    public ResponseEntity<Map<String, Object>> obtenerFactoresNomograma() {
-        return ResponseEntity.ok(planner.obtenerInformacionNomograma());
-    }
-
-    /**
-     * Endpoint para generar imágenes de tratamiento aplicando el nomograma URL:
-     * POST http://localhost:8080/api/nomograma/generar-imagenes
-     *
-     * @author Pau Savall
-     */
-    @PostMapping("/api/nomograma/generar-imagenes")
-    public ResponseEntity<?> generarImagenesConNomograma(@RequestBody Map<String, Object> datosPaciente) {
-        try {
-            // Generar imágenes con nomograma aplicado
-            Map<String, Object> resultado = planner.generarImagenesConNomograma(datosPaciente);
-
-            return ResponseEntity.ok(resultado);
-
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-                    "status", "error",
-                    "tipo", "seguridad",
-                    "mensaje", e.getMessage()
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                    "status", "error",
-                    "mensaje", "Error al generar imágenes: " + e.getMessage()
-            ));
-        }
-    }
-
-    /**
-     * Endpoint para obtener comparación visual antes/después del nomograma URL:
-     * POST http://localhost:8080/api/nomograma/comparar
-     *
-     * @author Pau Savall
-     */
-    @PostMapping("/api/nomograma/comparar")
-    public ResponseEntity<?> compararConNomograma(@RequestBody Map<String, Object> datosPaciente) {
-        try {
-            Map<String, Object> comparacion = planner.generarComparacionNomograma(datosPaciente);
-
-            // Convertir las Mat a bytes para la respuesta
-            Mat imagenOriginal = (Mat) comparacion.get("imagenOriginal");
-            Mat imagenAjustada = (Mat) comparacion.get("imagenAjustada");
-
-            // Codificar imágenes
-            BytePointer bufferOriginal = new BytePointer();
-            BytePointer bufferAjustada = new BytePointer();
-            IntPointer params = new IntPointer(opencv_imgcodecs.IMWRITE_JPEG_QUALITY, 95);
-
-            opencv_imgcodecs.imencode(".jpg", imagenOriginal, bufferOriginal, params);
-            opencv_imgcodecs.imencode(".jpg", imagenAjustada, bufferAjustada, params);
-
-            // Convertir a Base64 para enviar en JSON
-            byte[] bytesOriginal = new byte[(int) bufferOriginal.limit()];
-            byte[] bytesAjustada = new byte[(int) bufferAjustada.limit()];
-            bufferOriginal.get(bytesOriginal);
-            bufferAjustada.get(bytesAjustada);
-
-            String base64Original = Base64.getEncoder().encodeToString(bytesOriginal);
-            String base64Ajustada = Base64.getEncoder().encodeToString(bytesAjustada);
-
-            // Preparar respuesta
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("status", "success");
-            respuesta.put("imagenOriginal", "data:image/jpeg;base64," + base64Original);
-            respuesta.put("imagenAjustada", "data:image/jpeg;base64," + base64Ajustada);
-            respuesta.put("estadisticas", Map.of(
-                    "disparosOriginales", comparacion.get("disparosOriginales"),
-                    "disparosAjustados", comparacion.get("disparosAjustados"),
-                    "porcentajeCambio", comparacion.get("porcentajeCambio"),
-                    "factorCorreccion", comparacion.get("factorCorreccion")
-            ));
-
-            // Liberar memoria
-            bufferOriginal.deallocate();
-            bufferAjustada.deallocate();
-            params.deallocate();
-
-            return ResponseEntity.ok(respuesta);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                    "status", "error",
-                    "mensaje", "Error al generar comparación: " + e.getMessage()
-            ));
-        }
-    }
-
-    /**
-     * Endpoint para obtener las imágenes generadas con nomograma URL: GET
-     * http://localhost:8080/api/nomograma/imagenes/{index}
-     *
-     * @author Pau Savall
-     */
-    @GetMapping("/api/nomograma/imagenes/{index}")
-    public ResponseEntity<byte[]> obtenerImagenNomograma(@PathVariable int index) throws IOException {
-        // Reutilizar el método existente ya que las imágenes están en el mismo lugar
-        return obtenerImagenPorIndice(index);
-    }
-
-    /**
-     * Endpoint para actualizar imágenes existentes con nomograma URL: PUT
-     * http://localhost:8080/api/nomograma/actualizar-imagenes
-     *
-     * @author Pau Savall
-     */
-    @PutMapping("/api/nomograma/actualizar-imagenes")
-    public ResponseEntity<?> actualizarImagenesConNomograma(@RequestBody Map<String, Object> datosPaciente) {
-        try {
-            boolean actualizado = planner.actualizarImagenesConNomograma(datosPaciente);
-
-            if (actualizado) {
-                return ResponseEntity.ok(Map.of(
-                        "status", "success",
-                        "mensaje", "Imágenes actualizadas con nomograma aplicado",
-                        "pathImagenes", planner.getImagePath()
-                ));
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                        "status", "error",
-                        "mensaje", "No se pudieron actualizar las imágenes"
-                ));
-            }
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                    "status", "error",
-                    "mensaje", "Error al actualizar imágenes: " + e.getMessage()
-            ));
-        }
-    }
+//    @PostMapping("/api/nomograma/calcular")
+//    public ResponseEntity<?> calcularNomograma(@RequestBody Map<String, Object> datosPaciente) {
+//        try {
+//            Map<String, Object> resultado = planner.calcularTratamientoConNomograma(datosPaciente);
+//            return ResponseEntity.ok(resultado);
+//        } catch (IllegalStateException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+//                    "status", "error",
+//                    "tipo", "seguridad",
+//                    "mensaje", e.getMessage()
+//            ));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+//                    "status", "error",
+//                    "mensaje", "Error al calcular los parámetros: " + e.getMessage()
+//            ));
+//        }
+//    }
+//
+//    /**
+//     * Endpoint para aplicar el nomograma a la planificación actual URL: POST
+//     */
+//    @PostMapping("/api/nomograma/aplicar")
+//    public ResponseEntity<?> aplicarNomograma(@RequestBody Map<String, Object> datosPaciente) {
+//        try {
+//            Map<String, Object> resultado = planner.aplicarNomogramaAMatrizActual(datosPaciente);
+//            return ResponseEntity.ok(Map.of(
+//                    "status", "success",
+//                    "resultado", resultado,
+//                    "mensaje", "Nomograma aplicado exitosamente"
+//            ));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+//                    "status", "error",
+//                    "mensaje", "Error al aplicar el nomograma: " + e.getMessage()
+//            ));
+//        }
+//    }
+//
+//    /**
+//     * Endpoint para validar si un paciente es apto URL: POST
+//     */
+//    @PostMapping("/api/nomograma/validar")
+//    public ResponseEntity<?> validarPaciente(@RequestBody Map<String, Object> datosPaciente) {
+//        try {
+//            Map<String, Object> validacion = planner.validarPacienteParaTratamiento(datosPaciente);
+//            return ResponseEntity.ok(validacion);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+//                    "status", "error",
+//                    "mensaje", "Error al validar paciente: " + e.getMessage()
+//            ));
+//        }
+//    }
+//
+//    /**
+//     * Endpoint para obtener información sobre los factores del nomograma URL:
+//     */
+//    @GetMapping("/api/nomograma/factores")
+//    public ResponseEntity<Map<String, Object>> obtenerFactoresNomograma() {
+//        return ResponseEntity.ok(planner.obtenerInformacionNomograma());
+//    }
+//
+//    /**
+//     * Endpoint para generar imágenes de tratamiento aplicando el nomograma URL:
+//     * POST http://localhost:8080/api/nomograma/generar-imagenes
+//     *
+//     * @author Pau Savall
+//     */
+//    @PostMapping("/api/nomograma/generar-imagenes")
+//    public ResponseEntity<?> generarImagenesConNomograma(@RequestBody Map<String, Object> datosPaciente) {
+//        try {
+//            // Generar imágenes con nomograma aplicado
+//            Map<String, Object> resultado = planner.generarImagenesConNomograma(datosPaciente);
+//
+//            return ResponseEntity.ok(resultado);
+//
+//        } catch (IllegalStateException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+//                    "status", "error",
+//                    "tipo", "seguridad",
+//                    "mensaje", e.getMessage()
+//            ));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+//                    "status", "error",
+//                    "mensaje", "Error al generar imágenes: " + e.getMessage()
+//            ));
+//        }
+//    }
+//
+//    /**
+//     * Endpoint para obtener comparación visual antes/después del nomograma URL:
+//     * POST http://localhost:8080/api/nomograma/comparar
+//     *
+//     * @author Pau Savall
+//     */
+//    @PostMapping("/api/nomograma/comparar")
+//    public ResponseEntity<?> compararConNomograma(@RequestBody Map<String, Object> datosPaciente) {
+//        try {
+//            Map<String, Object> comparacion = planner.generarComparacionNomograma(datosPaciente);
+//
+//            // Convertir las Mat a bytes para la respuesta
+//            Mat imagenOriginal = (Mat) comparacion.get("imagenOriginal");
+//            Mat imagenAjustada = (Mat) comparacion.get("imagenAjustada");
+//
+//            // Codificar imágenes
+//            BytePointer bufferOriginal = new BytePointer();
+//            BytePointer bufferAjustada = new BytePointer();
+//            IntPointer params = new IntPointer(opencv_imgcodecs.IMWRITE_JPEG_QUALITY, 95);
+//
+//            opencv_imgcodecs.imencode(".jpg", imagenOriginal, bufferOriginal, params);
+//            opencv_imgcodecs.imencode(".jpg", imagenAjustada, bufferAjustada, params);
+//
+//            // Convertir a Base64 para enviar en JSON
+//            byte[] bytesOriginal = new byte[(int) bufferOriginal.limit()];
+//            byte[] bytesAjustada = new byte[(int) bufferAjustada.limit()];
+//            bufferOriginal.get(bytesOriginal);
+//            bufferAjustada.get(bytesAjustada);
+//
+//            String base64Original = Base64.getEncoder().encodeToString(bytesOriginal);
+//            String base64Ajustada = Base64.getEncoder().encodeToString(bytesAjustada);
+//
+//            // Preparar respuesta
+//            Map<String, Object> respuesta = new HashMap<>();
+//            respuesta.put("status", "success");
+//            respuesta.put("imagenOriginal", "data:image/jpeg;base64," + base64Original);
+//            respuesta.put("imagenAjustada", "data:image/jpeg;base64," + base64Ajustada);
+//            respuesta.put("estadisticas", Map.of(
+//                    "disparosOriginales", comparacion.get("disparosOriginales"),
+//                    "disparosAjustados", comparacion.get("disparosAjustados"),
+//                    "porcentajeCambio", comparacion.get("porcentajeCambio"),
+//                    "factorCorreccion", comparacion.get("factorCorreccion")
+//            ));
+//
+//            // Liberar memoria
+//            bufferOriginal.deallocate();
+//            bufferAjustada.deallocate();
+//            params.deallocate();
+//
+//            return ResponseEntity.ok(respuesta);
+//
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+//                    "status", "error",
+//                    "mensaje", "Error al generar comparación: " + e.getMessage()
+//            ));
+//        }
+//    }
+//
+//    /**
+//     * Endpoint para obtener las imágenes generadas con nomograma URL: GET
+//     * http://localhost:8080/api/nomograma/imagenes/{index}
+//     *
+//     * @author Pau Savall
+//     */
+//    @GetMapping("/api/nomograma/imagenes/{index}")
+//    public ResponseEntity<byte[]> obtenerImagenNomograma(@PathVariable int index) throws IOException {
+//        // Reutilizar el método existente ya que las imágenes están en el mismo lugar
+//        return obtenerImagenPorIndice(index);
+//    }
+//
+//    /**
+//     * Endpoint para actualizar imágenes existentes con nomograma URL: PUT
+//     * http://localhost:8080/api/nomograma/actualizar-imagenes
+//     *
+//     * @author Pau Savall
+//     */
+//    @PutMapping("/api/nomograma/actualizar-imagenes")
+//    public ResponseEntity<?> actualizarImagenesConNomograma(@RequestBody Map<String, Object> datosPaciente) {
+//        try {
+//            boolean actualizado = planner.actualizarImagenesConNomograma(datosPaciente);
+//
+//            if (actualizado) {
+//                return ResponseEntity.ok(Map.of(
+//                        "status", "success",
+//                        "mensaje", "Imágenes actualizadas con nomograma aplicado",
+//                        "pathImagenes", planner.getImagePath()
+//                ));
+//            } else {
+//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+//                        "status", "error",
+//                        "mensaje", "No se pudieron actualizar las imágenes"
+//                ));
+//            }
+//
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+//                    "status", "error",
+//                    "mensaje", "Error al actualizar imágenes: " + e.getMessage()
+//            ));
+//        }
+//    }
 }
