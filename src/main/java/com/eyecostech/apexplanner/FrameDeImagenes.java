@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * CREADOR D'UN FRAME AMB L'SLIDE DE LA LLISTA D'IMATGES
  * @author Pau Savall
  */
 public class FrameDeImagenes extends JFrame {
@@ -48,20 +48,26 @@ public class FrameDeImagenes extends JFrame {
         setVisible(true);
     }
 
+    public FrameDeImagenes(String path, boolean bool) {
+//        String cliente;
+        // Cargar imágenes desde la carpeta "imagenes"
+        cargarImagenes(path);
+
+    }
+
     private String extreaerCliente(String path) {
-        
+
         if (path.contains("\\csv/")) {
             path = path.substring(0, path.indexOf("\\csv/"));
         }
-        
+
         File file = new File(path);
         String nombreCarpeta = file.getName(); // Obtiene el último segmento
-        
 
         return nombreCarpeta;
     }
 
-    private void cargarImagenes(String path) {
+    void cargarImagenes(String path) {
         File folder = new File(path); // Carpeta con tus .png
         if (!folder.exists()) {
             JOptionPane.showMessageDialog(this, "Carpeta 'imagenes' no encontrada.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -90,6 +96,54 @@ public class FrameDeImagenes extends JFrame {
         if (imagenes.isEmpty()) {
             JOptionPane.showMessageDialog(this, "No se encontraron imágenes PNG en la carpeta.", "Advertencia", JOptionPane.WARNING_MESSAGE);
         }
+//        for (ImageIcon elemento : imagenes) {
+//            System.out.println(elemento+" 1o");
+//        }
+    }
+
+    public List<ImageIcon> getArrayImagenes(String path) {
+        List<ImageIcon> imagenesNuevas = new ArrayList<>();
+        File folder = new File(path); // Carpeta con tus .png
+
+        /*COMPROBAR SI LA CARPETA EXISTEIX*/
+        if (!folder.exists()) {
+            JOptionPane.showMessageDialog(this, "Carpeta 'imagenes' no encontrada.", "Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        // Lista temporal para ordenar
+        List<File> archivos = new ArrayList<>();
+        for (File file : folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".png"))) {
+            archivos.add(file);
+        }
+
+        // Ordenar por el número en el nombre: imagen0.png, imagen1.png, ...
+        archivos.sort((f1, f2) -> {
+            int num1 = obtenerNumero(f1.getName());
+            int num2 = obtenerNumero(f2.getName());
+            return Integer.compare(num1, num2);
+        });
+
+        // Cargar imágenes ya ordenadas
+        for (File file : archivos) {
+            ImageIcon icon = new ImageIcon(file.getAbsolutePath());
+            imagenesNuevas.add(icon);
+        }
+
+        if (imagenesNuevas.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No se encontraron imágenes PNG en la carpeta.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return null;
+        }
+        System.out.println("array");
+
+        if (imagenesNuevas == null || imagenesNuevas.isEmpty()) {
+            System.out.println("array null o vacío");
+        }
+//        for (ImageIcon elemento : imagenes) {
+//            System.out.println(elemento+" 2o");
+//        }
+        return imagenesNuevas;
+
     }
 
 // Método auxiliar para extraer el número del nombre del archivo
