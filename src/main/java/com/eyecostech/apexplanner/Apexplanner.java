@@ -447,14 +447,14 @@ public class Apexplanner {
 
     public static void main(String[] args) {
         Apexplanner obj = Apexplanner.getInstance();
-        obj.setPaciente("sara");       
+        obj.setPaciente("mica");       
         csv.setNombre(obj.getPaciente().getNombre());
         
 
         Scanner sc = new Scanner(System.in);
 
-        //FrameDeImagenes frame = obj.iniciarImagenes(getImagePath());
-        //frame.cargarImagenes(getImagePath());
+//        FrameDeImagenes frame = obj.iniciarImagenes(getImagePath());
+//        frame.cargarImagenes(getImagePath());
 //        List<ImageIcon> array = new FrameDeImagenes(getImagePath(), true).getArrayImagenes(getImagePath());
 
         /*PROBA PER COMPROBAR EL CONTINGUT DE L'ARRAY*/
@@ -496,7 +496,7 @@ public class Apexplanner {
 //        System.out.println("total: "+calc.calcularNumeroShootsTotal(matriz));
 //        System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
 //        calc.maxShoots(matriz);
-        //csv.imprimirImagen(csv.prepararImagenColorSimple(matriz), matriz);
+        //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
        //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
 
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/

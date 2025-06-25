@@ -40,6 +40,7 @@ public class CsvAnalizer {
     public Calculador calc = new Calculador();
     public Mat image = null;
     public String nombre;
+    public ImageConverter converter= new ImageConverter();
 
     public CsvAnalizer(String nombre) {
         this.nombre = nombre;
@@ -133,6 +134,12 @@ public class CsvAnalizer {
     public Mat prepararImagen(List<List<Double>> matrix) {
 
         Mat image = new ImageService().crearImagenColor(matrix);
+        
+        /*si necessito girar la imatge*/
+//        BufferedImage imageBuff= converter.matToBufferedImage(image);
+//        imageBuff= converter.rotarImagen(imageBuff, 180.0, false);
+//        image= converter.bufferedImageToMat(imageBuff);
+        
 
         return image;
     }

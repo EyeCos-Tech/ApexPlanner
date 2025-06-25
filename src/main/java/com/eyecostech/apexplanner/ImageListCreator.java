@@ -31,12 +31,14 @@ public class ImageListCreator {
     public ArrayList<BufferedImage> listaImagenes;
     public Calculador calc;
     List<List<Double>> matriz;
+    public ImageConverter converter;
 
     public ImageListCreator(String path) {  //constructor
         this.path = path;
         this.calc = new Calculador();
 
         matriz = csv.crearMatriz(path);
+        converter= new ImageConverter();
     }
 
     public List<List<Double>> getMatriz() {
@@ -56,10 +58,12 @@ public class ImageListCreator {
         for (int k = 0; k < max; k++) { //repeteix fins al maxim dde shots que te el punt que te mes shoots
             BufferedImage imagen = new BufferedImage(rows, cols, BufferedImage.TYPE_INT_ARGB);
             imagen = new ImageService().crearImagen(matriz, indice);
+            //imagen = new ImageConverter().aplicarTransparencia(imagen, indice);
 
             indice++;//pintar
 
-            lista.add(girarImagen90Izquierda(imagen)); //guardar imatge rotada
+            //lista.add(girarImagen90Izquierda(imagen)); //guardar imatge rotada
+            lista.add(converter.rotarImagen(imagen, 90.0, true)); //guardar imatge rotada
             //guardarImagen(imagen, ind);
             ind++;
 
@@ -83,7 +87,8 @@ public class ImageListCreator {
             BufferedImage imagen = new BufferedImage(rows, cols, BufferedImage.TYPE_INT_ARGB);
             imagen = new ImageService().crearImagen(matriz, indice);
             //Mat imagenMat = new ImageService().bufferedImageToMat(girarImagen90Izquierda(imagen));
-            Mat imagenMat = new ImageConverter().bufferedImageToMat(girarImagen90Izquierda(imagen));
+            //Mat imagenMat = new ImageConverter().bufferedImageToMat(converter.girarImagen90Izquierda(imagen));
+            Mat imagenMat = new ImageConverter().bufferedImageToMat(converter.rotarImagen(imagen, 90.0, true));
 
             indice++;//pintar
 
@@ -115,24 +120,6 @@ public class ImageListCreator {
         } catch (IOException e) {
             System.err.println("Error al escribir el archivo: " + e.getMessage());
         }
-
-    }
-
-    public BufferedImage girarImagen90Izquierda(BufferedImage original) {
-        int width = original.getWidth();
-        int height = original.getHeight();
-
-        // Crear nueva imagen con dimensiones invertidas
-        BufferedImage imagenGirada = new BufferedImage(height, width, original.getType());
-
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                // Mover píxeles: columna -> fila inversa
-                imagenGirada.setRGB(y, width - 1 - x, original.getRGB(x, y));
-            }
-        }
-
-        return imagenGirada;
 
     }
 
@@ -281,8 +268,27 @@ public class ImageListCreator {
 
         return sumDist / matriz.size(); // radio promedio
     }
+    
+    public BufferedImage girarImagen90Izquierda(BufferedImage original) {
+        int width = original.getWidth();
+        int height = original.getHeight();
+
+        // Crear nueva imagen con dimensiones invertidas
+        BufferedImage imagenGirada = new BufferedImage(height, width, original.getType());
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                // Mover píxeles: columna -> fila inversa
+                imagenGirada.setRGB(y, width - 1 - x, original.getRGB(x, y));
+            }
+        }
+
+        return imagenGirada;
+
+  }
 
 }
+
 //   public void pintarPunto(int x, int y, double valor, BufferedImage image, int index) {
 //
 //        double shoots = calc.numeroShoots(valor, calc.mmXShoot(193));

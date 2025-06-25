@@ -8,7 +8,10 @@ package com.eyecostech.apexplanner;
  *
  * @author Pau Savall
  */
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import org.bytedeco.opencv.opencv_core.Mat;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -32,6 +35,7 @@ public class ImageConverter {
         // Los convertidores se pueden reutilizar, pero es buena práctica cerrarlos
         // cuando ya no los necesites en tu aplicación
     }
+
     public static Mat bufferedImageToMat(BufferedImage image) {
         Mat mat = null;
 
@@ -98,13 +102,100 @@ public class ImageConverter {
 
         return mat;
     }
-}
 
-//    public Image bufferedToImage() {
-//        BufferedImage bufferedImage = matToBufferedImage(mat);
-//        Image image = (Image) bufferedImage; // Cast directo o simplemente
-//        Image image = bufferedImage; // Conversión implícita
-//        return null;
-//        
-//    }
+    /**
+     * Método más eficiente usando Graphics2D
+     */
+    public BufferedImage aplicarTransparencia(BufferedImage imagen, float alpha) {
+        BufferedImage resultado = new BufferedImage(
+                imagen.getWidth(),
+                imagen.getHeight(),
+                BufferedImage.TYPE_INT_ARGB
+        );
+
+        Graphics2D g2d = resultado.createGraphics();
+
+        // Establecer transparencia
+        g2d.setComposite(AlphaComposite.getInstance(
+                AlphaComposite.SRC_OVER, alpha
+        ));
+
+        // Dibujar imagen con transparencia
+        g2d.drawImage(imagen, 0, 0, null);
+        g2d.dispose();
+
+        return resultado;
+    }
+
+    public BufferedImage girarImagen90Izquierda(BufferedImage original) {
+        int width = original.getWidth();
+        int height = original.getHeight();
+
+        // Crear nueva imagen con dimensiones invertidas
+        BufferedImage imagenGirada = new BufferedImage(height, width, original.getType());
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                // Mover píxeles: columna -> fila inversa
+                imagenGirada.setRGB(y, width - 1 - x, original.getRGB(x, y));
+            }
+        }
+
+        return imagenGirada;
+
+    }
+
+    /**
+     * @param original Imagen a rotar
+     * @param grados Grados de rotación (positivo o negativo)
+     * @param sentidoHorario true para rotar en sentido horario, false para
+     * antihorario
+     */
+    public BufferedImage rotarImagen(BufferedImage original, double grados, boolean sentidoHorario) {
+        // Convertir grados a radianes
+        double radianes = Math.toRadians(grados);
+
+        // Si es sentido horario, invertir el ángulo
+        if (sentidoHorario) {
+            radianes = -radianes;
+        }
+
+        // Calcular dimensiones de la imagen rotada
+        double sin = Math.abs(Math.sin(radianes));
+        double cos = Math.abs(Math.cos(radianes));
+
+        int w = original.getWidth();
+        int h = original.getHeight();
+
+        // Nuevo tamaño para contener la imagen rotada completa
+        int newWidth = (int) Math.floor(w * cos + h * sin);
+        int newHeight = (int) Math.floor(h * cos + w * sin);
+
+        // Crear imagen con nuevo tamaño
+        BufferedImage rotada = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = rotada.createGraphics();
+
+        // Configurar alta calidad
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+        // Fondo transparente
+        g2d.setComposite(AlphaComposite.Clear);
+        g2d.fillRect(0, 0, newWidth, newHeight);
+        g2d.setComposite(AlphaComposite.SrcOver);
+
+        // Trasladar al centro de la nueva imagen
+        g2d.translate(newWidth / 2.0, newHeight / 2.0);
+
+        // Rotar
+        g2d.rotate(radianes);
+
+        // Dibujar imagen centrada
+        g2d.drawImage(original, -w / 2, -h / 2, null);
+        g2d.dispose();
+
+        return rotada;
+    }
+
+}
 
