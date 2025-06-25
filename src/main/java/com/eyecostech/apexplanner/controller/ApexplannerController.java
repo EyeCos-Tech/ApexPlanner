@@ -156,6 +156,17 @@ public class ApexplannerController {
                 .form-group {
                     margin-bottom: 15px;
                 }
+               .patient-path {
+                   word-break: break-all;        /* Rompe palabras largas */
+                   white-space: pre-wrap;        /* Mantiene saltos de línea si los hubiera */
+                   max-width: 100%;              /* Límite del contenedor */
+                   overflow-wrap: break-word;    /* Evita que el texto salga del contenedor */
+                   overflow-x: auto;             /* Añade scroll horizontal si es necesario */
+                   background-color: #f9f9f9;    /* Opcional: mejora visual */
+                   padding: 5px;
+                   border-radius: 4px;
+                   font-size: 14px;
+               }
                 
                 .form-group label {
                     display: block;
@@ -332,7 +343,8 @@ public class ApexplannerController {
                         <div class="patient-info" id="patientInfo">
                             <h4>Información del Paciente</h4>
                             <p><strong>Nombre:</strong> <span id="patientName"></span></p>
-                            <p><strong>Path CSV:</strong> <span id="patientPath"></span></p>
+                            <p><strong>Path CSV:</strong></p>
+                            <div class="patient-path" id="patientPath"></div>
                             <p><strong>Estado:</strong> <span id="patientStatus">Cargado correctamente</span></p>
                         </div>
                     </div>

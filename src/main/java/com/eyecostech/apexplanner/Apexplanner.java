@@ -203,7 +203,7 @@ public class Apexplanner {
 
     public static void main(String[] args) {
         Apexplanner obj = Apexplanner.getInstance();
-        obj.setPaciente("sara");
+        obj.setPaciente("mica");
         csv.setNombre(obj.getPaciente().getNombre());
 
         Scanner sc = new Scanner(System.in);
@@ -224,7 +224,7 @@ public class Apexplanner {
          * INICIALITZAR SPRINGBOOT*
          */
 //        obj.getArrayImg();
-        obj.iniciarSpringboot(args);
+/*SPRINGBOOT*/        //obj.iniciarSpringboot(args);
 
         /*CALCULATOR*/
 //        obj.solicitudDeClaculos(sc);
@@ -240,7 +240,7 @@ public class Apexplanner {
 //        
 
         /*CSV ANALIZER*/
-        //List<List<Double>> matriz = csv.crearMatriz(paciente.getDirectorioCsv());
+/*CREAR MATRIZ*/        //List<List<Double>> matriz = csv.crearMatriz(paciente.getDirectorioCsv());
 //        csv.leerPunto(150, 265, matriz);
 //        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
 //        System.out.println("BREAK!");
@@ -251,16 +251,14 @@ public class Apexplanner {
 //        System.out.println("total: "+calc.calcularNumeroShootsTotal(matriz));
 //        System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
 //        calc.maxShoots(matriz);
-        //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
+/*IMAGEN EN COLOR*/        //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
         //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
 
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
         //crearLlistaImatges(path);
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
-        //obj.iniciarFrameSliderImagenes(path);
+/*FRAME AMB SLIDE*/        //obj.iniciarFrameSliderImagenes(path);
 //      
-        System.out.println("A ver si escribe");
-
 //        setFrameImg(frameImg);
 //        front = new Front();
         //ventata3d= new Vista3DSimulada(ruta);

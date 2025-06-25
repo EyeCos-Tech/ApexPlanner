@@ -12,6 +12,8 @@ import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import org.bytedeco.opencv.opencv_core.Mat;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -103,9 +105,6 @@ public class ImageConverter {
         return mat;
     }
 
-    /**
-     * Método más eficiente usando Graphics2D
-     */
     public BufferedImage aplicarTransparencia(BufferedImage imagen, float alpha) {
         BufferedImage resultado = new BufferedImage(
                 imagen.getWidth(),
@@ -197,5 +196,11 @@ public class ImageConverter {
         return rotada;
     }
 
-}
+    public BufferedImage invertirImagen(BufferedImage img) {
+        AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+        tx.translate(-img.getWidth(), 0);
+        AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+        return op.filter(img, null);
+    }
 
+}
