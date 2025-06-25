@@ -661,10 +661,13 @@ public class ApexplannerController {
                     .body("No hay paciente cargado".getBytes());
         }
 
+        String imagePath = pacienteActual.getDirectorioImg(pacienteActual.getNombre())+"/imgcolor_"+pacienteActual.getNombre()+".jpg";
+        System.out.println("Ruta de imagen: " + imagePath); // Para depurar
         Mat imagen;
-        imagen = planner.getCsv().prepararImagen(
-                planner.getCsv().crearMatriz(pacienteActual.getDirectorioCsv())
-        );
+        //String rutaImagen = pacienteActual.getDirectorioImg(pacienteActual.getNombre());
+        imagen = opencv_imgcodecs.imread(pacienteActual.getDirectorioImg(pacienteActual.getNombre())+"/imgcolor_"+pacienteActual.getNombre()+".jpg");
+        //imagen = Apexplanner.getCsv().prepararImagen(planner.getCsv().crearMatriz(pacienteActual.getDirectorioCsv()));
+        //imagen = planner.csv.prepararImagen(planner.getCsv().crearMatriz(paciente.getDirectorioCsv()), paciente);
         /*convertir mat a bytes*/
         // Codificar la imagen a bytes
 //        BytePointer buffer = new BytePointer();

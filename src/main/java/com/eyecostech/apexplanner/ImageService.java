@@ -21,10 +21,13 @@ import static org.bytedeco.opencv.global.opencv_core.CV_8UC1;
 import static org.bytedeco.opencv.global.opencv_core.CV_8UC3;
 import static org.bytedeco.opencv.global.opencv_core.CV_8UC4;
 import org.bytedeco.opencv.global.opencv_imgproc;
+import org.bytedeco.opencv.global.opencv_imgcodecs;
+//import org.bytedeco.opencv.helper.opencv_imgcodecs;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.bytedeco.opencv.opencv_core.MatVector;
 import org.bytedeco.opencv.opencv_core.Point;
 import org.bytedeco.opencv.opencv_core.Scalar;
+
 
 public class ImageService {
 
@@ -159,7 +162,7 @@ public class ImageService {
 
     }
 
-    public Mat crearImagenColor(List<List<Double>> matrix) {
+    public Mat crearImagenColor(List<List<Double>> matrix, Paciente paciente) {
 
         int rows = matrix.size();
         int cols = matrix.get(0).size();
@@ -196,6 +199,16 @@ public class ImageService {
         opencv_imgproc.applyColorMap(image, colorMap, opencv_imgproc.COLORMAP_JET);
         //addIsobaras(image, colorMap, matrix, 20); // 10 isobaras
         image = colorMap;
+        
+        String rutaSalida = paciente.getDirectorioImg(paciente.getNombre()) +"/imgcolor_"+paciente.getNombre()+".jpg";
+        System.out.println(rutaSalida);
+        boolean resultado = opencv_imgcodecs.imwrite(rutaSalida, image);
+
+        if (resultado) {
+            System.out.println("✅ Imagen creada y guardada en: " + rutaSalida);
+        } else {
+            System.out.println("❌ No se pudo guardar la imagen.");
+        }
 
         return image;
     }

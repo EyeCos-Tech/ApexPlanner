@@ -1,30 +1,13 @@
 package com.eyecostech.apexplanner;
 
-import java.awt.Image;
 import java.util.Scanner;
 import javax.swing.JFrame;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileWriter;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import javax.swing.ImageIcon;
-import org.bytedeco.opencv.opencv_core.Mat;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import com.eyecostech.apexplanner.Paciente;
-import nomograma.Nomograma;
-import com.eyecostech.apexplanner.FrameDeImagenes;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * CLASE PRINCIPAL I MAIN CLASSE PRINCIPAL DEL SPRINGBOOT
@@ -54,12 +37,6 @@ public class Apexplanner {
     //List<List<Double>> matriz;
 
     //private Nomograma nomograma;
-    /**
-     * PER CREAR EL PATH DIRECTAMENT*
-     */
-    //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/mica/csv/mica.csv";
-    //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/sara/csv/sara.csv";
-    //static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/ari/csv/ari.csv";
     public Apexplanner() {
 
     }
@@ -191,7 +168,7 @@ public class Apexplanner {
 //            // Crear la carpeta (crea también directorios padres si no existen)
 //            Files.createDirectories(carpetaImg);
 
-            System.out.println("CREATR¿OR: " + ruta);
+            System.out.println("CREATROR: " + ruta);
             imageList = new ImageListCreator(paciente.getDirectorioImageList(paciente.getNombre()), paciente);
             ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
             imageList.guardarImagenes(lista);
@@ -224,7 +201,7 @@ public class Apexplanner {
          * INICIALITZAR SPRINGBOOT*
          */
 //        obj.getArrayImg();
-/*SPRINGBOOT*/        //obj.iniciarSpringboot(args);
+/*SPRINGBOOT*/        obj.iniciarSpringboot(args);
 
         /*CALCULATOR*/
 //        obj.solicitudDeClaculos(sc);
@@ -240,7 +217,7 @@ public class Apexplanner {
 //        
 
         /*CSV ANALIZER*/
-/*CREAR MATRIZ*/        //List<List<Double>> matriz = csv.crearMatriz(paciente.getDirectorioCsv());
+ /*CREAR MATRIZ*/        //List<List<Double>> matriz = csv.crearMatriz(paciente.getDirectorioCsv());
 //        csv.leerPunto(150, 265, matriz);
 //        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
 //        System.out.println("BREAK!");
@@ -251,13 +228,13 @@ public class Apexplanner {
 //        System.out.println("total: "+calc.calcularNumeroShootsTotal(matriz));
 //        System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
 //        calc.maxShoots(matriz);
-/*IMAGEN EN COLOR*/        //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
+/*IMAGEN EN COLOR*/        //csv.imprimirImagen(csv.prepararImagen(matriz, paciente), matriz);
         //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
 
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
         //crearLlistaImatges(path);
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
-/*FRAME AMB SLIDE*/        //obj.iniciarFrameSliderImagenes(path);
+ /*FRAME AMB SLIDE*/        //obj.iniciarFrameSliderImagenes(path);
 //      
 //        setFrameImg(frameImg);
 //        front = new Front();

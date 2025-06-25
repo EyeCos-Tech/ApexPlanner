@@ -15,7 +15,6 @@ import java.util.List;
  */
 public class Calculador {
 
-    int µ = 0;
     public static final int MAXIMO_COLOR = 255; //maixim valor rgb d'un color ->Blanc
     public static final int MINIMO_COLOR = 0; //minim valor rgb d'un color -> Negre
 

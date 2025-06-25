@@ -141,7 +141,7 @@ public class ImageListCreator {
         int indice = 0;
         for (int i = 0; i < lista.size(); i++) {
             indice++;
-            File outputFile = new File(dir, "imagen" + indice + ".png");
+            File outputFile = new File(dir, "imagen" + indice +"_"+paciente.getNombre()+ ".png");
             img = lista.get(i);
 
             try {

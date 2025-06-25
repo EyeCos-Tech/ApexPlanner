@@ -2,9 +2,6 @@ package com.eyecostech.apexplanner;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,7 +9,22 @@ import java.nio.file.Files;
 
 /**
  * Patient management class with automatic directory structure creation
- *
+ * 
+ * estructura carpeta
+ * 
+ * projecte
+ *  |
+ *  |_ ***
+ *  |
+ *  |_ pacientes
+ *      |
+ *      |_nombre
+ *          |_csv
+ *          |
+ *          |_img
+ *          |
+ *          |_imgList
+ * 
  * @author Pau Savall
  */
 public class Paciente {
@@ -26,7 +38,9 @@ public class Paciente {
     public String directorioImageList;
     public String directorioCsv;
     public String directorioDeGuardado;
-    public List<List<Double>> matriz;
+    public String directorioImg;
+    //public List<List<Double>> matriz;
+    //public File csv;
 
     /**
      * CONSTRUCTOR GETTERS AND SETTERS
@@ -36,21 +50,26 @@ public class Paciente {
         this.apellidos = apellidos;
         this.path = setPath(nombre);
         this.edad = edad;
+//        csv = new File("/pacientes/csv/" + nombre + ".csv");
+//        if (csv == null) {
+//            System.out.println("null");
+//        } else {
+//            System.out.println("csv paciente: "+csv.getAbsolutePath());
+//        }
     }
 
     public Paciente(String nombre) {
         this.nombre = nombre;
         System.out.println("nombre: " + nombre);
         this.path = setPath(nombre);
+//        csv = new File("/pacientes/csv/" + nombre + ".csv");
+//        if (csv == null) {
+//            System.out.println("null");
+//        } else {
+//            System.out.println("csv paciente: "+csv.getAbsolutePath());
+//        }
     }
 
-    public List<List<Double>> getMatriz() {
-        return matriz;
-    }
-
-    public void setMatriz(List<List<Double>> matriz) {
-        this.matriz = matriz;
-    }
 
     public String getNombre() {
         return nombre;
@@ -102,6 +121,29 @@ public class Paciente {
             return null;
         }
     }
+    
+    public String getDirectorioImg(String nombre){
+        try {
+            // Usar el nombre del paciente actual (this.nombre)
+            String nombreLwr = this.nombre.toLowerCase();
+
+            // Crear path
+            Path patientPath = Paths.get(directorioBase, nombreLwr);
+            Path imgPath = patientPath.resolve("img");
+
+            // Crear directorio si no existe
+            if (!Files.exists(imgPath)) {
+                Files.createDirectories(imgPath);
+                System.out.println("Directorio creado: " + imgPath);
+            }
+
+            return imgPath.toString();
+
+        } catch (Exception e) {
+            System.err.println("Error al obtener/crear directorio: " + e.getMessage());
+            return null;
+        }
+    }
 
     public String getDirectorioCsv() {
         try {
@@ -123,12 +165,6 @@ public class Paciente {
     }
 
     /**
-     * Sets the path for the patient and creates the necessary directory
-     * structure Creates the following structure: -
-     * directorioBase/nombrePaciente/ - directorioBase/nombrePaciente/csv/ -
-     * directorioBase/nombrePaciente/imgList/
-     *
-     * @param nombre Patient name
      * @return Full path to the patient's CSV file
      */
     public String setPath(String nombre) {
@@ -164,6 +200,16 @@ public class Paciente {
         }
     }
 
+    public String getImgListPath() {
+        String nombreLowerCase = nombre.toLowerCase();
+        return Paths.get(directorioBase, nombreLowerCase, "imgList").toString();
+    }
+
+    public String getCsvDirPath() {
+        String nombreLowerCase = nombre.toLowerCase();
+        return Paths.get(directorioBase, nombreLowerCase, "csv").toString();
+    }
+
     /**
      * Checks if the patient directory structure exists
      *
@@ -178,25 +224,5 @@ public class Paciente {
         return Files.exists(patientDir)
                 && Files.exists(csvDir)
                 && Files.exists(imgListDir);
-    }
-
-    /**
-     * Gets the path to the imgList directory
-     *
-     * @return Path to imgList directory
-     */
-    public String getImgListPath() {
-        String nombreLowerCase = nombre.toLowerCase();
-        return Paths.get(directorioBase, nombreLowerCase, "imgList").toString();
-    }
-
-    /**
-     * Gets the path to the csv directory
-     *
-     * @return Path to csv directory
-     */
-    public String getCsvDirPath() {
-        String nombreLowerCase = nombre.toLowerCase();
-        return Paths.get(directorioBase, nombreLowerCase, "csv").toString();
     }
 }

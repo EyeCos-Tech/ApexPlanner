@@ -63,7 +63,6 @@ public class CsvAnalizer {
 
     }
 
-
     /*crea una matriu*/
     public List<List<Double>> crearMatriz(String pathCsv) {
         System.out.println("path recibido: " + pathCsv);
@@ -141,9 +140,20 @@ public class CsvAnalizer {
     }
 
     /*prepara una imatge en color representant la matriu del csv i retorna la  imatge*/
+    public Mat prepararImagen(List<List<Double>> matrix, Paciente paciente) {
+
+        Mat image = new ImageService().crearImagenColor(matrix, paciente);
+
+        /*si necessito girar la imatge*/
+//        BufferedImage imageBuff= converter.matToBufferedImage(image);
+//        imageBuff= converter.rotarImagen(imageBuff, 180.0, false);
+//        image= converter.bufferedImageToMat(imageBuff);
+        return image;
+    }
+
     public Mat prepararImagen(List<List<Double>> matrix) {
 
-        Mat image = new ImageService().crearImagenColor(matrix);
+        //Mat image = new ImageService().crearImagenColor(matrix, paciente);
 
         /*si necessito girar la imatge*/
 //        BufferedImage imageBuff= converter.matToBufferedImage(image);
