@@ -101,14 +101,14 @@
                         </exclude>
                     </excludes>
                     <executable>true</executable>
-                <!--<mainClass>com.eyecostech.apexplanner.ApexplannerApplication</mainClass>--> <!-- CLASSE AMB EL MAIN DE SPRINGBOOT-->
+                    <!--<mainClass>com.eyecostech.apexplanner.ApexplannerApplication</mainClass>--> <!-- CLASSE AMB EL MAIN DE SPRINGBOOT-->
 
                 </configuration>
             </plugin>
             
             
             <!-- Plugin para compilar con Java -->
-            <!--            <plugin>
+            <!-- <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
@@ -116,9 +116,9 @@
                     <source>21</source>
                     <target>21</target>
                 </configuration>
-            </plugin>
+            </plugin> -->
             
-            <!-- Plugin para crear JAR con todas las dependencias -->
+            <!-- Plugin para crear JAR con todas las dependencias --> 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>

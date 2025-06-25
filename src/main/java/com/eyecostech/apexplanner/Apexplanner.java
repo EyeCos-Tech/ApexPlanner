@@ -19,6 +19,9 @@ import javax.swing.ImageIcon;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.eyecostech.apexplanner.Paciente;
+import com.eyecostech.apexplanner.Nomograma;
+import com.eyecostech.apexplanner.FrameDeImagenes;
 
 /**
  * CLASE PRINCIPAL I MAIN CLASSE PRINCIPAL DEL SPRINGBOOT
@@ -133,14 +136,14 @@ public class Apexplanner {
         }
 
     }
-
-    public static FrameDeImagenes getFrameImg() {
-        return frameImg;
-    }
-
-    public static String getPath() {
-        return path;
-    }
+//
+//    public static FrameDeImagenes getFrameImg() {
+//        return frameImg;
+//    }
+//
+//    public static String getPath() {
+//        return path;
+//    }
 
     public static CsvAnalizer getCsv() {
         return csv;
