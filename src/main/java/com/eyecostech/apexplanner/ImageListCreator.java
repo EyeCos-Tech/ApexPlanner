@@ -82,7 +82,8 @@ public class ImageListCreator {
         for (int k = 0; k < max; k++) { //repeteix fins al maxim dde shots que te el punt que te mes shoots
             BufferedImage imagen = new BufferedImage(rows, cols, BufferedImage.TYPE_INT_ARGB);
             imagen = new ImageService().crearImagen(matriz, indice);
-            Mat imagenMat = new ImageService().bufferedImageToMat(girarImagen90Izquierda(imagen));
+            //Mat imagenMat = new ImageService().bufferedImageToMat(girarImagen90Izquierda(imagen));
+            Mat imagenMat = new ImageConverter().bufferedImageToMat(girarImagen90Izquierda(imagen));
 
             indice++;//pintar
 
