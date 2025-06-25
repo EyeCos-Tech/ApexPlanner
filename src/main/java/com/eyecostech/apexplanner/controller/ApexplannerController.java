@@ -30,8 +30,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import com.eyecostech.apexplanner.Nomograma;
-import com.eyecostech.apexplanner.Nomograma.ParametrosTratamiento;
+import nomograma.Nomograma;
+import nomograma.Nomograma.ParametrosTratamiento;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -43,7 +43,8 @@ import org.springframework.web.bind.annotation.PutMapping;
  * CONTROLADOR PRINCIPAL DE LA APLICACIÓN
  *
  * @author Pau Savall
- **/
+ *
+ */
 // origins = "http://localhost:3000" permite peticiones desde React
 @RestController
 public class ApexplannerController {
@@ -60,8 +61,7 @@ public class ApexplannerController {
     }
 
     /**
-     * RUTA PRINCIPAL - PÁGINA DE INICIO
-     * URL: http://localhost:8080/ 
+     * RUTA PRINCIPAL - PÁGINA DE INICIO URL: http://localhost:8080/
      */
     @GetMapping("/")
     public String paginaInicio() {
@@ -634,8 +634,8 @@ public class ApexplannerController {
         // Usar el método setPaciente existente, NO crear nueva instancia
         planner.setPaciente(nombre);
         Paciente paciente = planner.getPaciente();
-        this.path= planner.getPath();
-        
+        this.path = planner.getPath();
+
         return ResponseEntity.ok(paciente);
     }
 
@@ -643,13 +643,44 @@ public class ApexplannerController {
     public ResponseEntity<byte[]> obtenerImagen() throws IOException {
 
         /*cargar una Mat*/
+        Paciente pacienteActual = planner.getPaciente();
+        if (pacienteActual == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No hay paciente cargado".getBytes());
+        }
+
         Mat imagen;
-        imagen = planner.getCsv().prepararImagen(planner.getCsv().crearMatriz(path));
+        imagen = planner.getCsv().prepararImagen(
+                planner.getCsv().crearMatriz(pacienteActual.getDirectorioCsv())
+        );
         /*convertir mat a bytes*/
         // Codificar la imagen a bytes
+//        BytePointer buffer = new BytePointer();
+//        IntPointer params = new IntPointer(
+//                opencv_imgcodecs.IMWRITE_JPEG_QUALITY, 95 // Calidad JPEG
+//        );
+//
+//        boolean success = opencv_imgcodecs.imencode(".jpg", imagen, buffer, params);
+//
+//        if (!success) {
+//            throw new RuntimeException("Error al codificar la imagen");
+//        }
+//
+//        // Convertir BytePointer a byte[]
+//        byte[] imageBytes = new byte[(int) buffer.limit()];
+//        buffer.get(imageBytes);
+//
+//        // Liberar memoria
+//        buffer.deallocate();
+//        params.deallocate();
+//        imagen.deallocate();
+//
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.IMAGE_JPEG)
+//                .body(imageBytes);
         BytePointer buffer = new BytePointer();
         IntPointer params = new IntPointer(
-                opencv_imgcodecs.IMWRITE_JPEG_QUALITY, 95 // Calidad JPEG
+                opencv_imgcodecs.IMWRITE_JPEG_QUALITY, 95
         );
 
         boolean success = opencv_imgcodecs.imencode(".jpg", imagen, buffer, params);
@@ -658,11 +689,9 @@ public class ApexplannerController {
             throw new RuntimeException("Error al codificar la imagen");
         }
 
-        // Convertir BytePointer a byte[]
         byte[] imageBytes = new byte[(int) buffer.limit()];
         buffer.get(imageBytes);
 
-        // Liberar memoria
         buffer.deallocate();
         params.deallocate();
         imagen.deallocate();

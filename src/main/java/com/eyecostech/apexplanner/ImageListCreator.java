@@ -32,13 +32,15 @@ public class ImageListCreator {
     public Calculador calc;
     List<List<Double>> matriz;
     public ImageConverter converter;
+    public Paciente paciente;
 
-    public ImageListCreator(String path) {  //constructor
+    public ImageListCreator(String path, Paciente paciente) {  //constructor
         this.path = path;
         this.calc = new Calculador();
+        this.paciente = paciente;
 
-        matriz = csv.crearMatriz(path);
-        converter= new ImageConverter();
+        matriz = csv.crearMatriz(paciente.getDirectorioCsv());
+        converter = new ImageConverter();
     }
 
     public List<List<Double>> getMatriz() {
@@ -127,16 +129,14 @@ public class ImageListCreator {
         System.out.println("BREAK guardar imagenes");
         BufferedImage img;
 
-        File csvFile = new File(path); // path apunta al .csv
-        File parentDir = csvFile.getParentFile(); // obtiene la carpeta que contiene el .csv
-        File dir = new File(parentDir, "imgList"); // crea carpeta imgList en esa ruta
+        // Usar directamente el path que ya es el directorio imgList
+        File dir = new File(path);
 
         if (!dir.exists()) {
-            dir.mkdirs(); // Crea el directorio (y subdirectorios si es necesario)
+            dir.mkdirs();
         }
 
         int indice = 0;
-        //for (BufferedImage img : lista) {
         for (int i = 0; i < lista.size(); i++) {
             indice++;
             File outputFile = new File(dir, "imagen" + indice + ".png");
@@ -144,17 +144,13 @@ public class ImageListCreator {
 
             try {
                 ImageIO.write(img, "png", outputFile);
-                //System.out.println("Imagen guardada en: " + outputFile.getAbsolutePath());
             } catch (IOException ex) {
                 System.getLogger(ImageListCreator.class.getName())
                         .log(System.Logger.Level.ERROR, "Error al guardar imagen" + indice, ex);
             }
-            //System.out.println(outputFile.getAbsolutePath());
-            //recortarFondoImagen(outputFile.getAbsolutePath(), indice); /*LA BONA*/
-            //recortarSoloFondoBlancoExteriorRobusto(outputFile.getAbsolutePath(), indice);
-
         }
-        crearTXTInstrucciones(dir.getAbsolutePath(), "¡Disparar en las áreas en blanco!\nLongitud de onda del laser 193");
+        crearTXTInstrucciones(dir.getAbsolutePath(),
+                "¡Disparar en las áreas en blanco!\nLongitud de onda del laser 193");
 
     }
 
@@ -268,7 +264,7 @@ public class ImageListCreator {
 
         return sumDist / matriz.size(); // radio promedio
     }
-    
+
     public BufferedImage girarImagen90Izquierda(BufferedImage original) {
         int width = original.getWidth();
         int height = original.getHeight();
@@ -285,7 +281,7 @@ public class ImageListCreator {
 
         return imagenGirada;
 
-  }
+    }
 
 }
 

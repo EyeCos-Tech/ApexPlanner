@@ -1,5 +1,6 @@
-package com.eyecostech.apexplanner;
+package nomograma;
 
+import com.eyecostech.apexplanner.Calculador;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -443,6 +444,13 @@ public class Nomograma {
             this.energiaNominal = energiaNominal; 
         }
     }
+    
+    
+   
+    
+    
+    
+    
 }
 /*
 

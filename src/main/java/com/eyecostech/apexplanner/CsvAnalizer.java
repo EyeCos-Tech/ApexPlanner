@@ -10,6 +10,7 @@ import org.bytedeco.opencv.opencv_core.Mat;
 import org.bytedeco.opencv.opencv_highgui.MouseCallback;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -40,7 +41,7 @@ public class CsvAnalizer {
     public Calculador calc = new Calculador();
     public Mat image = null;
     public String nombre;
-    public ImageConverter converter= new ImageConverter();
+    public ImageConverter converter = new ImageConverter();
 
     public CsvAnalizer(String nombre) {
         this.nombre = nombre;
@@ -63,18 +64,26 @@ public class CsvAnalizer {
     }
 
 
-     /*crea una matriu*/
-    public List<List<Double>> crearMatriz(String path) {
-        String csvPath = path;
-        List<List<Double>> matrix = loadCSV(csvPath);
+    /*crea una matriu*/
+    public List<List<Double>> crearMatriz(String pathCsv) {
+        System.out.println("path recibido: " + pathCsv);
+
+        File csvFile = new File(pathCsv);
+
+        // Verificar que el archivo existe
+        if (!csvFile.exists()) {
+            System.err.println("ERROR: El archivo no existe: " + pathCsv);
+            return null;
+        }
+
+        List<List<Double>> matrix = loadCSV(pathCsv);
         if (matrix == null) {
             System.out.println("No se pudo cargar el archivo.");
-
         } else {
-            System.out.println("Csv " + csvPath + " carreget amb exit");
+            System.out.println("CSV " + pathCsv + " cargado con éxito");
+            System.out.println("Filas: " + matrix.size() + ", Columnas: "
+                    + (matrix.isEmpty() ? 0 : matrix.get(0).size()));
         }
-//        int rows = matrix.size();
-//        int cols = matrix.get(0).size();
         return matrix;
     }
 
@@ -98,6 +107,7 @@ public class CsvAnalizer {
             return null;
         }
     }
+
     public double getMaxValue(List<List<Double>> matrix) {
         double maxValue = 0.0;
         int rows = matrix.size();
@@ -134,13 +144,11 @@ public class CsvAnalizer {
     public Mat prepararImagen(List<List<Double>> matrix) {
 
         Mat image = new ImageService().crearImagenColor(matrix);
-        
+
         /*si necessito girar la imatge*/
 //        BufferedImage imageBuff= converter.matToBufferedImage(image);
 //        imageBuff= converter.rotarImagen(imageBuff, 180.0, false);
 //        image= converter.bufferedImageToMat(imageBuff);
-        
-
         return image;
     }
 

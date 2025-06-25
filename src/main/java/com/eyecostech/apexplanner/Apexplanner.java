@@ -20,8 +20,11 @@ import org.bytedeco.opencv.opencv_core.Mat;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.eyecostech.apexplanner.Paciente;
-import com.eyecostech.apexplanner.Nomograma;
+import nomograma.Nomograma;
 import com.eyecostech.apexplanner.FrameDeImagenes;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * CLASE PRINCIPAL I MAIN CLASSE PRINCIPAL DEL SPRINGBOOT
@@ -50,8 +53,7 @@ public class Apexplanner {
     private ImageService imagenesService = new ImageService();
     //List<List<Double>> matriz;
 
-    private Nomograma nomograma;
-
+    //private Nomograma nomograma;
     /**
      * PER CREAR EL PATH DIRECTAMENT*
      */
@@ -59,7 +61,7 @@ public class Apexplanner {
     //static String path= "C:/Users/Usuario/Documents/Topografias/OPD Scan III/sara/csv/sara.csv";
     //static String path = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/ari/csv/ari.csv";
     public Apexplanner() {
-        
+
     }
 
     public Apexplanner(String nombre) {
@@ -72,13 +74,12 @@ public class Apexplanner {
 
     }
 
-    public Nomograma getNomograma() {
-        if (nomograma == null) {
-            nomograma = new Nomograma();
-        }
-        return nomograma;
-    }
-
+//    public Nomograma getNomograma() {
+//        if (nomograma == null) {
+//            nomograma = new Nomograma();
+//        }
+//        return nomograma;
+//    }
     public static Apexplanner getInstance() {
         if (instancia == null) {
             instancia = new Apexplanner();
@@ -95,7 +96,6 @@ public class Apexplanner {
         path = paciente.getPath();
     }
 
-    
     public static String getPath() {
         return path;
     }
@@ -136,14 +136,6 @@ public class Apexplanner {
         }
 
     }
-//
-//    public static FrameDeImagenes getFrameImg() {
-//        return frameImg;
-//    }
-//
-//    public static String getPath() {
-//        return path;
-//    }
 
     public static CsvAnalizer getCsv() {
         return csv;
@@ -166,26 +158,20 @@ public class Apexplanner {
     }
 
     public FrameDeImagenes iniciarFrameSliderImagenes(String ruta) {
-        File file = new File(path);
-        String directorio = file.getParent() + "/imgList/";
+        String directorio = paciente.getDirectorioImageList(paciente.getNombre());
         frameImg = new FrameDeImagenes(directorio);
-
         return frameImg;
     }
 
     /*INICIA EL FRAME DE IMAFENES PERO SENSE TREURE EL FRAME A PANTALLA NOMER RETORNA UNA LISRT<iMAGEiCON>*/
     public FrameDeImagenes iniciarImagenes(String ruta) {
-        File file = new File(path);
-        String directorio = file.getParent() + "/imgList/";
+        String directorio = paciente.getDirectorioImageList(paciente.getNombre());
         frameImg = new FrameDeImagenes(directorio, true);
-
         return frameImg;
     }
 
     public static String getImagePath() {
-        File file = new File(path);
-        String directorio = file.getParent() + "/imgList/";
-        return directorio;
+        return paciente.getDirectorioImageList(paciente.getNombre());
     }
 
     public List<ImageIcon> getArrayImg() {
@@ -194,249 +180,19 @@ public class Apexplanner {
         return imagenesService.cargarImagenes(directorio);
     }
 
-    /**
-     * NOMOGRAMA*
-     */
-    /**
-     * Calcula los parámetros de tratamiento usando el nomograma
-     *
-     * @param datosPaciente Map con los datos del paciente
-     * @return Map con los parámetros calculados
-     * @throws Exception Si hay error en los datos o cálculos
-     * @author Pau Savall
-     */
-    public Map<String, Object> calcularTratamientoConNomograma(Map<String, Object> datosPaciente) throws Exception {
-        Nomograma nomograma = getNomograma();
-        nomograma.setDatosPacienteDesdeMap(datosPaciente);
-        return nomograma.calcularTratamientoComoMap();
-    }
-
-    /**
-     * Aplica el nomograma a la matriz de ablación actual
-     *
-     * @param datosPaciente Map con los datos del paciente
-     * @return Map con la matriz ajustada y estadísticas
-     * @throws Exception Si hay error en el proceso
-     * @author Pau Savall
-     */
-    public Map<String, Object> aplicarNomogramaAMatrizActual(Map<String, Object> datosPaciente) throws Exception {
-        // Primero calcular los parámetros
-        calcularTratamientoConNomograma(datosPaciente);
-
-        // Obtener la matriz actual
-        List<List<Double>> matrizOriginal = csv.crearMatriz(path);
-
-        // Aplicar el nomograma
-        return getNomograma().aplicarNomogramaAMatriz(matrizOriginal);
-    }
-
-    /**
-     * Valida si un paciente es apto para el tratamiento
-     *
-     * @param datosPaciente Map con los datos del paciente
-     * @return Map con el resultado de la validación
-     * @throws Exception Si hay error en los datos
-     * @author Pau Savall
-     */
-    public Map<String, Object> validarPacienteParaTratamiento(Map<String, Object> datosPaciente) throws Exception {
-        Nomograma nomograma = getNomograma();
-        nomograma.setDatosPacienteDesdeMap(datosPaciente);
-        return nomograma.validarPaciente();
-    }
-
-    /**
-     * Obtiene información sobre los factores del nomograma
-     *
-     * @return Map con información de los factores
-     * @author Pau Savall
-     */
-    public Map<String, Object> obtenerInformacionNomograma() {
-        return Nomograma.obtenerInformacionFactores();
-    }
-    // Añadir estos métodos a Apexplanner.java
-
-    /**
-     * Genera las imágenes de tratamiento aplicando el nomograma
-     *
-     * @param datosPaciente Map con los datos del paciente para el nomograma
-     * @return Map con información del proceso y path de las imágenes
-     * @author Pau Savall
-     */
-    public Map<String, Object> generarImagenesConNomograma(Map<String, Object> datosPaciente) throws Exception {
-        Map<String, Object> resultado = new HashMap<>();
-
-        try {
-            // 1. Calcular parámetros del nomograma
-            System.out.println("=== APLICANDO NOMOGRAMA ===");
-            Nomograma nomograma = getNomograma();
-            nomograma.setDatosPacienteDesdeMap(datosPaciente);
-            Map<String, Object> parametrosNomograma = nomograma.calcularTratamientoComoMap();
-
-            // 2. Cargar matriz original
-            List<List<Double>> matrizOriginal = csv.crearMatriz(path);
-            System.out.println("Matriz original cargada: " + matrizOriginal.size() + " filas");
-
-            // 3. Aplicar nomograma a la matriz
-            Map<String, Object> resultadoNomograma = nomograma.aplicarNomogramaAMatriz(matrizOriginal);
-            List<List<Double>> matrizAjustada = (List<List<Double>>) resultadoNomograma.get("matrizAjustada");
-            double factorCorreccion = (Double) resultadoNomograma.get("factorCorreccion");
-
-            System.out.println("Factor de corrección aplicado: " + factorCorreccion);
-
-            // 4. Crear las imágenes con la matriz ajustada
-            imageList = new ImageListCreator(path);
-            ArrayList<BufferedImage> listaImagenes = imageList.crearListaImagenes(matrizAjustada);
-
-            // 5. Guardar las imágenes
-            imageList.guardarImagenes(listaImagenes);
-
-            // 6. Guardar información del nomograma en archivo de texto
-            guardarInfoNomograma(parametrosNomograma, resultadoNomograma);
-
-            // 7. Preparar respuesta
-            resultado.put("status", "success");
-            resultado.put("parametrosNomograma", parametrosNomograma);
-            resultado.put("factorCorreccion", factorCorreccion);
-            resultado.put("numeroImagenes", listaImagenes.size());
-            resultado.put("pathImagenes", getImagePath());
-            resultado.put("disparosTotales", resultadoNomograma.get("disparosTotales"));
-            resultado.put("disparosMaximos", resultadoNomograma.get("disparosMaximos"));
-            resultado.put("mensaje", "Imágenes generadas con nomograma aplicado");
-
-            System.out.println("=== PROCESO COMPLETADO ===");
-
-        } catch (Exception e) {
-            System.err.println("Error al generar imágenes con nomograma: " + e.getMessage());
-            throw e;
-        }
-
-        return resultado;
-    }
-
-    /**
-     * Guarda la información del nomograma en un archivo de texto junto a las
-     * imágenes
-     *
-     * @param parametrosNomograma Parámetros calculados por el nomograma
-     * @param resultadoNomograma Resultado de aplicar el nomograma
-     * @author Pau Savall
-     */
-    private void guardarInfoNomograma(Map<String, Object> parametrosNomograma,
-            Map<String, Object> resultadoNomograma) {
-        try {
-            File csvFile = new File(path);
-            File parentDir = csvFile.getParentFile();
-            File imgDir = new File(parentDir, "imgList");
-            File infoFile = new File(imgDir, "nomograma_info.txt");
-
-            Map<String, Object> parametros = (Map<String, Object>) parametrosNomograma.get("parametrosTratamiento");
-            Map<String, Object> datosOriginales = (Map<String, Object>) parametrosNomograma.get("datosOriginales");
-
-            try (FileWriter writer = new FileWriter(infoFile)) {
-                writer.write("=== INFORMACIÓN DEL NOMOGRAMA APLICADO ===\n");
-                writer.write("Fecha: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n\n");
-
-                writer.write("DATOS ORIGINALES DEL PACIENTE:\n");
-                writer.write("- Esfera: " + datosOriginales.get("esfera") + " D\n");
-                writer.write("- Cilindro: " + datosOriginales.get("cilindro") + " D\n");
-                writer.write("- Eje: " + datosOriginales.get("eje") + "°\n");
-                writer.write("- Edad: " + datosOriginales.get("edad") + " años\n");
-                writer.write("- Paquimetría: " + datosOriginales.get("paquimetria") + " µm\n\n");
-
-                writer.write("PARÁMETROS AJUSTADOS:\n");
-                writer.write("- Esfera corregida: " + parametros.get("esferaCorregida") + " D\n");
-                writer.write("- Cilindro corregido: " + parametros.get("cilindroCorregido") + " D\n");
-                writer.write("- Zona óptica: " + parametros.get("zonaOptica") + " mm\n");
-                writer.write("- Zona transición: " + parametros.get("zonaTransicion") + " mm\n");
-                writer.write("- Profundidad ablación: " + parametros.get("profundidadAblacion") + " µm\n\n");
-
-                writer.write("RESULTADOS:\n");
-                writer.write("- Factor de corrección: " + resultadoNomograma.get("factorCorreccion") + "\n");
-                writer.write("- Disparos totales: " + resultadoNomograma.get("disparosTotales") + "\n");
-                writer.write("- Disparos máximos en un punto: " + resultadoNomograma.get("disparosMaximos") + "\n");
-            }
-
-            System.out.println("Información del nomograma guardada en: " + infoFile.getAbsolutePath());
-
-        } catch (IOException e) {
-            System.err.println("Error al guardar información del nomograma: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Obtiene una comparación visual entre la matriz original y la ajustada
-     *
-     * @param datosPaciente Datos del paciente para el nomograma
-     * @return Map con las imágenes de comparación
-     * @author Pau Savall
-     */
-    public Map<String, Object> generarComparacionNomograma(Map<String, Object> datosPaciente) throws Exception {
-        Map<String, Object> resultado = new HashMap<>();
-
-        // 1. Configurar nomograma
-        Nomograma nomograma = getNomograma();
-        nomograma.setDatosPacienteDesdeMap(datosPaciente);
-
-        // 2. Cargar matriz original
-        List<List<Double>> matrizOriginal = csv.crearMatriz(path);
-
-        // 3. Generar imagen de la matriz original
-        Mat imagenOriginal = csv.prepararImagen(matrizOriginal);
-
-        // 4. Aplicar nomograma
-        Map<String, Object> resultadoNomograma = nomograma.aplicarNomogramaAMatriz(matrizOriginal);
-        List<List<Double>> matrizAjustada = (List<List<Double>>) resultadoNomograma.get("matrizAjustada");
-
-        // 5. Generar imagen de la matriz ajustada
-        Mat imagenAjustada = csv.prepararImagen(matrizAjustada);
-
-        // 6. Calcular diferencias
-        double disparosOriginales = calc.calcularNumeroShootsTotal(matrizOriginal);
-        double disparosAjustados = (Double) resultadoNomograma.get("disparosTotales");
-        double porcentajeCambio = ((disparosAjustados - disparosOriginales) / disparosOriginales) * 100;
-
-        resultado.put("imagenOriginal", imagenOriginal);
-        resultado.put("imagenAjustada", imagenAjustada);
-        resultado.put("disparosOriginales", disparosOriginales);
-        resultado.put("disparosAjustados", disparosAjustados);
-        resultado.put("porcentajeCambio", porcentajeCambio);
-        resultado.put("factorCorreccion", resultadoNomograma.get("factorCorreccion"));
-
-        // Liberar memoria
-        imagenOriginal.release();
-        imagenAjustada.release();
-
-        return resultado;
-    }
-
-    /**
-     * Actualiza las imágenes existentes aplicando el nomograma
-     *
-     * @param datosPaciente Datos del paciente
-     * @return true si se actualizaron correctamente
-     * @author Pau Savall
-     */
-    public boolean actualizarImagenesConNomograma(Map<String, Object> datosPaciente) {
-        try {
-            // Generar nuevas imágenes con nomograma
-            generarImagenesConNomograma(datosPaciente);
-
-            // Recargar el frame de imágenes si está activo
-            if (frameImg != null) {
-                String directorio = getImagePath();
-                frameImg.cargarImagenes(directorio);
-            }
-
-            return true;
-        } catch (Exception e) {
-            System.err.println("Error al actualizar imágenes: " + e.getMessage());
-            return false;
-        }
-    }
-
     public static void crearLlistaImatges(String ruta) {
         try {
-            imageList = new ImageListCreator(ruta);
+//            Path pathCsv = Paths.get(ruta);
+//            Path carpetaPaciente = pathCsv.getParent().getParent();
+//
+//            // Crear path para carpeta img
+//            Path carpetaImg = carpetaPaciente.resolve("imgList");
+//
+//            // Crear la carpeta (crea también directorios padres si no existen)
+//            Files.createDirectories(carpetaImg);
+
+            System.out.println("CREATR¿OR: " + ruta);
+            imageList = new ImageListCreator(paciente.getDirectorioImageList(paciente.getNombre()), paciente);
             ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
             imageList.guardarImagenes(lista);
 
@@ -447,9 +203,8 @@ public class Apexplanner {
 
     public static void main(String[] args) {
         Apexplanner obj = Apexplanner.getInstance();
-        obj.setPaciente("mica");       
+        obj.setPaciente("sara");
         csv.setNombre(obj.getPaciente().getNombre());
-        
 
         Scanner sc = new Scanner(System.in);
 
@@ -485,7 +240,7 @@ public class Apexplanner {
 //        
 
         /*CSV ANALIZER*/
-        //List<List<Double>> matriz = csv.crearMatriz(path);
+        //List<List<Double>> matriz = csv.crearMatriz(paciente.getDirectorioCsv());
 //        csv.leerPunto(150, 265, matriz);
 //        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
 //        System.out.println("BREAK!");
@@ -497,7 +252,7 @@ public class Apexplanner {
 //        System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
 //        calc.maxShoots(matriz);
         //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
-       //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
+        //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
 
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
         //crearLlistaImatges(path);
@@ -514,6 +269,246 @@ public class Apexplanner {
     }
 
 }
+//    /**
+//     * NOMOGRAMA*
+//     */
+//    /**
+//     * Calcula los parámetros de tratamiento usando el nomograma
+//     *
+//     * @param datosPaciente Map con los datos del paciente
+//     * @return Map con los parámetros calculados
+//     * @throws Exception Si hay error en los datos o cálculos
+//     * @author Pau Savall
+//     */
+//    public Map<String, Object> calcularTratamientoConNomograma(Map<String, Object> datosPaciente) throws Exception {
+//        Nomograma nomograma = getNomograma();
+//        nomograma.setDatosPacienteDesdeMap(datosPaciente);
+//        return nomograma.calcularTratamientoComoMap();
+//    }
+//
+//    /**
+//     * Aplica el nomograma a la matriz de ablación actual
+//     *
+//     * @param datosPaciente Map con los datos del paciente
+//     * @return Map con la matriz ajustada y estadísticas
+//     * @throws Exception Si hay error en el proceso
+//     * @author Pau Savall
+//     */
+//    public Map<String, Object> aplicarNomogramaAMatrizActual(Map<String, Object> datosPaciente) throws Exception {
+//// Primero calcular los parámetros
+//        calcularTratamientoConNomograma(datosPaciente);
+//
+//// Obtener la matriz actual
+//        List<List<Double>> matrizOriginal = csv.crearMatriz(path);
+//
+//// Aplicar el nomograma
+//        return getNomograma().aplicarNomogramaAMatriz(matrizOriginal);
+//    }
+//
+//    /**
+//     * Valida si un paciente es apto para el tratamiento
+//     *
+//     * @param datosPaciente Map con los datos del paciente
+//     * @return Map con el resultado de la validación
+//     * @throws Exception Si hay error en los datos
+//     * @author Pau Savall
+//     */
+//    public Map<String, Object> validarPacienteParaTratamiento(Map<String, Object> datosPaciente) throws Exception {
+//        Nomograma nomograma = getNomograma();
+//        nomograma.setDatosPacienteDesdeMap(datosPaciente);
+//        return nomograma.validarPaciente();
+//    }
+//
+//    /**
+//     * Obtiene información sobre los factores del nomograma
+//     *
+//     * @return Map con información de los factores
+//     * @author Pau Savall
+//     */
+//    public Map<String, Object> obtenerInformacionNomograma() {
+//        return Nomograma.obtenerInformacionFactores();
+//    }
+//// Añadir estos métodos a Apexplanner.java
+//
+//    /**
+//     * Genera las imágenes de tratamiento aplicando el nomograma
+//     *
+//     * @param datosPaciente Map con los datos del paciente para el nomograma
+//     * @return Map con información del proceso y path de las imágenes
+//     * @author Pau Savall
+//     */
+//    public Map<String, Object> generarImagenesConNomograma(Map<String, Object> datosPaciente) throws Exception {
+//        Map<String, Object> resultado = new HashMap<>();
+//
+//        try {
+//// 1. Calcular parámetros del nomograma
+//            System.out.println("=== APLICANDO NOMOGRAMA ===");
+//            Nomograma nomograma = getNomograma();
+//            nomograma.setDatosPacienteDesdeMap(datosPaciente);
+//            Map<String, Object> parametrosNomograma = nomograma.calcularTratamientoComoMap();
+//
+//// 2. Cargar matriz original
+//            List<List<Double>> matrizOriginal = csv.crearMatriz(path);
+//            System.out.println("Matriz original cargada: " + matrizOriginal.size() + " filas");
+//
+//// 3. Aplicar nomograma a la matriz
+//            Map<String, Object> resultadoNomograma = nomograma.aplicarNomogramaAMatriz(matrizOriginal);
+//            List<List<Double>> matrizAjustada = (List<List<Double>>) resultadoNomograma.get("matrizAjustada");
+//            double factorCorreccion = (Double) resultadoNomograma.get("factorCorreccion");
+//
+//            System.out.println("Factor de corrección aplicado: " + factorCorreccion);
+//
+//// 4. Crear las imágenes con la matriz ajustada
+//            imageList = new ImageListCreator(path);
+//            ArrayList<BufferedImage> listaImagenes = imageList.crearListaImagenes(matrizAjustada);
+//
+//// 5. Guardar las imágenes
+//            imageList.guardarImagenes(listaImagenes);
+//
+//// 6. Guardar información del nomograma en archivo de texto
+//            guardarInfoNomograma(parametrosNomograma, resultadoNomograma);
+//
+//// 7. Preparar respuesta
+//            resultado.put("status", "success");
+//            resultado.put("parametrosNomograma", parametrosNomograma);
+//            resultado.put("factorCorreccion", factorCorreccion);
+//            resultado.put("numeroImagenes", listaImagenes.size());
+//            resultado.put("pathImagenes", getImagePath());
+//            resultado.put("disparosTotales", resultadoNomograma.get("disparosTotales"));
+//            resultado.put("disparosMaximos", resultadoNomograma.get("disparosMaximos"));
+//            resultado.put("mensaje", "Imágenes generadas con nomograma aplicado");
+//
+//            System.out.println("=== PROCESO COMPLETADO ===");
+//
+//        } catch (Exception e) {
+//            System.err.println("Error al generar imágenes con nomograma: " + e.getMessage());
+//            throw e;
+//        }
+//
+//        return resultado;
+//    }
+//
+//    /**
+//     * Guarda la información del nomograma en un archivo de texto junto a las
+//     * imágenes
+//     *
+//     * @param parametrosNomograma Parámetros calculados por el nomograma
+//     * @param resultadoNomograma Resultado de aplicar el nomograma
+//     * @author Pau Savall
+//     */
+//    private void guardarInfoNomograma(Map<String, Object> parametrosNomograma,
+//            Map<String, Object> resultadoNomograma) {
+//        try {
+//            File csvFile = new File(path);
+//            File parentDir = csvFile.getParentFile();
+//            File imgDir = new File(parentDir, "imgList");
+//            File infoFile = new File(imgDir, "nomograma_info.txt");
+//
+//            Map<String, Object> parametros = (Map<String, Object>) parametrosNomograma.get("parametrosTratamiento");
+//            Map<String, Object> datosOriginales = (Map<String, Object>) parametrosNomograma.get("datosOriginales");
+//
+//            try (FileWriter writer = new FileWriter(infoFile)) {
+//                writer.write("=== INFORMACIÓN DEL NOMOGRAMA APLICADO ===\n");
+//                writer.write("Fecha: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n\n");
+//
+//                writer.write("DATOS ORIGINALES DEL PACIENTE:\n");
+//                writer.write("- Esfera: " + datosOriginales.get("esfera") + " D\n");
+//                writer.write("- Cilindro: " + datosOriginales.get("cilindro") + " D\n");
+//                writer.write("- Eje: " + datosOriginales.get("eje") + "°\n");
+//                writer.write("- Edad: " + datosOriginales.get("edad") + " años\n");
+//                writer.write("- Paquimetría: " + datosOriginales.get("paquimetria") + " µm\n\n");
+//
+//                writer.write("PARÁMETROS AJUSTADOS:\n");
+//                writer.write("- Esfera corregida: " + parametros.get("esferaCorregida") + " D\n");
+//                writer.write("- Cilindro corregido: " + parametros.get("cilindroCorregido") + " D\n");
+//                writer.write("- Zona óptica: " + parametros.get("zonaOptica") + " mm\n");
+//                writer.write("- Zona transición: " + parametros.get("zonaTransicion") + " mm\n");
+//                writer.write("- Profundidad ablación: " + parametros.get("profundidadAblacion") + " µm\n\n");
+//
+//                writer.write("RESULTADOS:\n");
+//                writer.write("- Factor de corrección: " + resultadoNomograma.get("factorCorreccion") + "\n");
+//                writer.write("- Disparos totales: " + resultadoNomograma.get("disparosTotales") + "\n");
+//                writer.write("- Disparos máximos en un punto: " + resultadoNomograma.get("disparosMaximos") + "\n");
+//            }
+//
+//            System.out.println("Información del nomograma guardada en: " + infoFile.getAbsolutePath());
+//
+//        } catch (IOException e) {
+//            System.err.println("Error al guardar información del nomograma: " + e.getMessage());
+//        }
+//    }
+//
+//    /**
+//     * Obtiene una comparación visual entre la matriz original y la ajustada
+//     *
+//     * @param datosPaciente Datos del paciente para el nomograma
+//     * @return Map con las imágenes de comparación
+//     * @author Pau Savall
+//     */
+//    public Map<String, Object> generarComparacionNomograma(Map<String, Object> datosPaciente) throws Exception {
+//        Map<String, Object> resultado = new HashMap<>();
+//
+//// 1. Configurar nomograma
+//        Nomograma nomograma = getNomograma();
+//        nomograma.setDatosPacienteDesdeMap(datosPaciente);
+//
+//// 2. Cargar matriz original
+//        List<List<Double>> matrizOriginal = csv.crearMatriz(path);
+//
+//// 3. Generar imagen de la matriz original
+//        Mat imagenOriginal = csv.prepararImagen(matrizOriginal);
+//
+//// 4. Aplicar nomograma
+//        Map<String, Object> resultadoNomograma = nomograma.aplicarNomogramaAMatriz(matrizOriginal);
+//        List<List<Double>> matrizAjustada = (List<List<Double>>) resultadoNomograma.get("matrizAjustada");
+//
+//// 5. Generar imagen de la matriz ajustada
+//        Mat imagenAjustada = csv.prepararImagen(matrizAjustada);
+//
+//// 6. Calcular diferencias
+//        double disparosOriginales = calc.calcularNumeroShootsTotal(matrizOriginal);
+//        double disparosAjustados = (Double) resultadoNomograma.get("disparosTotales");
+//        double porcentajeCambio = ((disparosAjustados - disparosOriginales) / disparosOriginales) * 100;
+//
+//        resultado.put("imagenOriginal", imagenOriginal);
+//        resultado.put("imagenAjustada", imagenAjustada);
+//        resultado.put("disparosOriginales", disparosOriginales);
+//        resultado.put("disparosAjustados", disparosAjustados);
+//        resultado.put("porcentajeCambio", porcentajeCambio);
+//        resultado.put("factorCorreccion", resultadoNomograma.get("factorCorreccion"));
+//
+//// Liberar memoria
+//        imagenOriginal.release();
+//        imagenAjustada.release();
+//
+//        return resultado;
+//    }
+//
+//    /**
+//     * Actualiza las imágenes existentes aplicando el nomograma
+//     *
+//     * @param datosPaciente Datos del paciente
+//     * @return true si se actualizaron correctamente
+//     * @author Pau Savall
+//     */
+//    public boolean actualizarImagenesConNomograma(Map<String, Object> datosPaciente) {
+//        try {
+//// Generar nuevas imágenes con nomograma
+//            generarImagenesConNomograma(datosPaciente);
+//
+//// Recargar el frame de imágenes si está activo
+//            if (frameImg != null) {
+//                String directorio = getImagePath();
+//                frameImg.cargarImagenes(directorio);
+//            }
+//
+//            return true;
+//        } catch (Exception e) {
+//            System.err.println("Error al actualizar imágenes: " + e.getMessage());
+//            return false;
+//        }
+//    }
+
 
 //    public void escribirLog(String mensaje) throws IOException {
 //        try {

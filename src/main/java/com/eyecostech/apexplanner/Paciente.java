@@ -6,6 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 
 /**
  * Patient management class with automatic directory structure creation
@@ -16,9 +19,13 @@ public class Paciente {
 
     public String nombre;
     public String apellidos;
-    public String path;
+    public String path; //directori de l'arxiu .csv
     public String edad;
-    public String directorioBase = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/";
+    //public String directorioBase = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/";
+    public String directorioBase = "C:\\Users\\Usuario\\WORCKSPACES\\NetBeans26\\apexplanner\\pacientes";
+    public String directorioImageList;
+    public String directorioCsv;
+    public String directorioDeGuardado;
     public List<List<Double>> matriz;
 
     /**
@@ -73,6 +80,48 @@ public class Paciente {
         this.edad = edad;
     }
 
+    public String getDirectorioImageList(String nombre) {
+        try {
+            // Usar el nombre del paciente actual (this.nombre)
+            String nombreLwr = this.nombre.toLowerCase();
+
+            // Crear path
+            Path patientPath = Paths.get(directorioBase, nombreLwr);
+            Path imgListPath = patientPath.resolve("imgList");
+
+            // Crear directorio si no existe
+            if (!Files.exists(imgListPath)) {
+                Files.createDirectories(imgListPath);
+                System.out.println("Directorio creado: " + imgListPath);
+            }
+
+            return imgListPath.toString();
+
+        } catch (Exception e) {
+            System.err.println("Error al obtener/crear directorio: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public String getDirectorioCsv() {
+        try {
+            String nombreLwr = this.nombre.toLowerCase();
+            Path patientPath = Paths.get(directorioBase, nombreLwr);
+            Path csvPath = patientPath.resolve("csv");
+
+            if (!Files.exists(csvPath)) {
+                Files.createDirectories(csvPath);
+                System.out.println("Directorio CSV creado: " + csvPath);
+            }
+
+            // Retornar la ruta completa al archivo CSV
+            return csvPath.resolve(nombreLwr + ".csv").toString();
+        } catch (Exception e) {
+            System.err.println("Error al obtener/crear directorio CSV: " + e.getMessage());
+            return null;
+        }
+    }
+
     /**
      * Sets the path for the patient and creates the necessary directory
      * structure Creates the following structure: -
@@ -83,37 +132,37 @@ public class Paciente {
      * @return Full path to the patient's CSV file
      */
     public String setPath(String nombre) {
-    try {
-        // Convert name to lowercase for directory
-        String nombreLowerCase = nombre.toLowerCase();
+        try {
+            // Convert name to lowercase for directory
+            String nombreLowerCase = nombre.toLowerCase();
 
-        // Create patient base directory
-        Path patientDir = Paths.get(directorioBase, nombreLowerCase);
-        if (!Files.exists(patientDir)) {
-            Files.createDirectories(patientDir);
-            System.out.println("Created patient directory: " + patientDir);
+            // Create patient base directory
+            Path patientDir = Paths.get(directorioBase, nombreLowerCase);
+            if (!Files.exists(patientDir)) {
+                Files.createDirectories(patientDir);
+                System.out.println("Created patient directory: " + patientDir);
+            }
+
+            // Create csv subdirectory
+            Path csvDir = patientDir.resolve("csv");
+            if (!Files.exists(csvDir)) {
+                Files.createDirectories(csvDir);
+                System.out.println("Created CSV directory: " + csvDir);
+            }
+
+            // CAMBIO IMPORTANTE: Retornar la ruta completa al archivo CSV, no solo al directorio
+            // Asumiendo que el archivo CSV tiene el mismo nombre que el paciente
+            return csvDir.toString() + File.separator + nombreLowerCase + ".csv";
+
+        } catch (IOException e) {
+            System.err.println("Error creating directory structure: " + e.getMessage());
+            e.printStackTrace();
+
+            // Return default path even if creation fails
+            // CAMBIO: También aquí incluir el nombre del archivo
+            return directorioBase + nombre.toLowerCase() + "/csv/" + nombre.toLowerCase() + ".csv";
         }
-
-        // Create csv subdirectory
-        Path csvDir = patientDir.resolve("csv");
-        if (!Files.exists(csvDir)) {
-            Files.createDirectories(csvDir);
-            System.out.println("Created CSV directory: " + csvDir);
-        }
-
-        // CAMBIO IMPORTANTE: Retornar la ruta completa al archivo CSV, no solo al directorio
-        // Asumiendo que el archivo CSV tiene el mismo nombre que el paciente
-        return csvDir.toString() + File.separator + nombreLowerCase + ".csv";
-
-    } catch (IOException e) {
-        System.err.println("Error creating directory structure: " + e.getMessage());
-        e.printStackTrace();
-
-        // Return default path even if creation fails
-        // CAMBIO: También aquí incluir el nombre del archivo
-        return directorioBase + nombre.toLowerCase() + "/csv/" + nombre.toLowerCase() + ".csv";
     }
-}
 
     /**
      * Checks if the patient directory structure exists
