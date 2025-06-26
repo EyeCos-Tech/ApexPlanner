@@ -47,11 +47,11 @@ public class ImageListCreator {
         return this.matriz;
     }
 
-    public ArrayList<BufferedImage> crearListaImagenes(List<List<Double>> matriz) {
+    public ArrayList<BufferedImage> crearListaImagenes(List<List<Double>> matriz, Laser laser) {
 
         int rows = matriz.size();
         int cols = matriz.get(0).size();
-        double max = calc.maxShoots(matriz);
+        double max = calc.maxShoots(matriz, laser);
         System.out.println("max= " + max);
         ArrayList<BufferedImage> lista = new ArrayList<BufferedImage>();
         int indice = 0;
@@ -76,11 +76,11 @@ public class ImageListCreator {
         return lista;
     }
 
-    public ArrayList<Mat> crearListaImagenesMat(List<List<Double>> matriz) {
+    public ArrayList<Mat> crearListaImagenesMat(List<List<Double>> matriz, Laser laser) {
 
         int rows = matriz.size();
         int cols = matriz.get(0).size();
-        double max = calc.maxShoots(matriz);
+        double max = calc.maxShoots(matriz, laser);
         System.out.println("max= " + max);
         //ArrayList<BufferedImage> lista = new ArrayList<BufferedImage>();
         ArrayList<Mat> listaMat = new ArrayList<Mat>();

@@ -1,6 +1,7 @@
 package nomograma;
 
 import com.eyecostech.apexplanner.Calculador;
+import com.eyecostech.apexplanner.Laser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -110,7 +111,7 @@ public class Nomograma {
      * @param matrizOriginal Matriz de ablación original
      * @return Map con la matriz ajustada y estadísticas
      */
-    public Map<String, Object> aplicarNomogramaAMatriz(List<List<Double>> matrizOriginal) {
+    public Map<String, Object> aplicarNomogramaAMatriz(List<List<Double>> matrizOriginal, Laser laser) {
         if (parametrosCalculados == null) {
             calcularTratamiento();
         }
@@ -123,8 +124,8 @@ public class Nomograma {
         
         // Calcular estadísticas
         Calculador calc = new Calculador();
-        double totalDisparos = calc.calcularNumeroShootsTotal(matrizAjustada);
-        double maxDisparos = calc.maxShoots(matrizAjustada);
+        double totalDisparos = calc.calcularNumeroShootsTotal(matrizAjustada, laser);
+        double maxDisparos = calc.maxShoots(matrizAjustada, laser);
         
         Map<String, Object> resultado = new HashMap<>();
         resultado.put("matrizAjustada", matrizAjustada);

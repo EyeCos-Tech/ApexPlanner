@@ -10,15 +10,16 @@ package com.eyecostech.apexplanner;
  */
 public class Laser {
 
-    double spot; //tamany disparo laser -> 50-500-1000 micras
+    double spot; //tamany disparo laser -> 50-500-1000 micras => 100 micras son 0.1 mm
     double potencia; // potencia laser -> 1.5 jules
-    double longitudOnda; //refractiva -> 213 -> llum ultravioleta
+    int longitudOnda; //refractiva -> 213 -> llum ultravioleta
 
     public Laser() {
     
         this.longitudOnda = 193; //213 pero de momento lo dejamos asi
-        
-    
+        this.spot= 0.1; //mm
+        this.potencia= 1.5; //jules=>W
+            
     }
 
     public double getSpot() {
@@ -37,11 +38,11 @@ public class Laser {
         this.potencia = potencia;
     }
 
-    public double getLongitudOna() {
+    public int getLongitudOnda() {
         return longitudOnda;
     }
 
-    public void setLongitudOna(double longitudOna) {
+    public void setLongitudOnda(int longitudOna) {
         this.longitudOnda = longitudOna;
     }
 

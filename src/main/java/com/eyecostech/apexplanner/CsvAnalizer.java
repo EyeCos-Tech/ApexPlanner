@@ -140,9 +140,9 @@ public class CsvAnalizer {
     }
 
     /*prepara una imatge en color representant la matriu del csv i retorna la  imatge*/
-    public Mat prepararImagen(List<List<Double>> matrix, Paciente paciente) {
+    public Mat prepararImagen(List<List<Double>> matrix, Paciente paciente, Laser laser) {
 
-        Mat image = new ImageService().crearImagenColor(matrix, paciente);
+        Mat image = new ImageService().crearImagenColor(matrix, paciente, laser);
 
         /*si necessito girar la imatge*/
 //        BufferedImage imageBuff= converter.matToBufferedImage(image);
@@ -163,7 +163,7 @@ public class CsvAnalizer {
     }
 
     /*mostra la imatge i imprimeix a consola la cantitat de disparos que has de fer en el punt on clickes */
-    public void imprimirImagen(Mat imagen, List<List<Double>> matrix) {
+    public void imprimirImagen(Mat imagen, List<List<Double>> matrix, Laser laser) {
 
         String windowName = "Mapa de Ablacion Corneal: " + getNombre();
         opencv_highgui.namedWindow(windowName, opencv_highgui.WINDOW_NORMAL);
@@ -188,7 +188,7 @@ public class CsvAnalizer {
                         double mm = valorRedondo; //????????????
 
                         String numero = String.valueOf(mm);
-                        calc.numeroShoots(numero, calc.mmXShoot(193));//calcula el numero de disparos que necessita per un laser de potencia estandard (193 de longitud d'ona)
+                        calc.numeroShoots(numero, calc.mmXShoot(laser));//calcula el numero de disparos que necessita per un laser de potencia estandard (193 de longitud d'ona)
 
                     }
                 }

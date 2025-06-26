@@ -18,37 +18,72 @@ public class Calculador {
     public static final int MAXIMO_COLOR = 255; //maixim valor rgb d'un color ->Blanc
     public static final int MINIMO_COLOR = 0; //minim valor rgb d'un color -> Negre
 
-    public double total = 0;
-    public Laser laser;
+    public double total;
+    //public Laser laser;
+    
+    public Calculador(){
+        //laser= new Laser();
+        total = 0;
+    }
 
     /*Alt + 0181 = µ*/
     
     /*DEMANA LA POTENCIA DEL LASER*/
-    public int setPotenciaLaser(String potencia) {
-        int numeroPotencia;
+//    public int setPotenciaLaser(String potencia) {
+//        int numeroPotencia;
+//        
+//
+//        if (potencia == "") {
+//            numeroPotencia = 193;
+//            System.out.println("Longitud de oda de laser Standard: 193");
+//
+//        } else {
+//
+//            numeroPotencia = Integer.parseInt(potencia);
+//        }
+//
+//        System.out.println("Longitud de onda del laser: " + numeroPotencia);
+//        return numeroPotencia;
+//    }
+    public int setPotenciaLaser(Laser laser) {
+        int numeroLongitudOnda;
+        
 
-        if (potencia == "") {
-            numeroPotencia = 193;
+        if (laser.getLongitudOnda()==0) {
+            numeroLongitudOnda = 193;
             System.out.println("Longitud de oda de laser Standard: 193");
 
         } else {
 
-            numeroPotencia = Integer.parseInt(potencia);
+            numeroLongitudOnda = laser.getLongitudOnda();
         }
 
-        System.out.println("Longitud de onda del laser: " + numeroPotencia);
-        return numeroPotencia;
+        System.out.println("Longitud de onda del laser: " + numeroLongitudOnda);
+        return numeroLongitudOnda;
     }
 
     /*CALCULA QUAN ABLACIONA (en mm) AMB UN SHOOT EL LASER SEGONS LA POTENCIA*/
-    public double mmXShoot(int potencia) {
+//    public double mmXShoot(int potencia) {
+//        
+//        
+//        double referenciaPow = 193;
+//        double referenciaAbl = 0.00025;
+//
+//        /*regla de 3 amb les referencies d'ablacio dels laser de 193*/
+//        double ablacion = (referenciaAbl / referenciaPow) * potencia;//???
+//        DecimalFormat df = new DecimalFormat("#.####");
+//        //System.out.println("mm d'ablacio per disparo: " + df.format(ablacion));
+//
+//        return ablacion;
+//    }
+    public double mmXShoot(Laser laser) {
         
         
         double referenciaPow = 193;
         double referenciaAbl = 0.00025;
 
         /*regla de 3 amb les referencies d'ablacio dels laser de 193*/
-        double ablacion = (referenciaAbl / referenciaPow) * potencia;//???
+        double ablacion = (referenciaAbl / referenciaPow) * (double)laser.getLongitudOnda();//???
         DecimalFormat df = new DecimalFormat("#.####");
         //System.out.println("mm d'ablacio per disparo: " + df.format(ablacion));
 
@@ -109,7 +144,7 @@ public class Calculador {
         return shoots;
     }
 
-    public double calcularNumeroShootsTotal(List<List<Double>> matriz) {
+    public double calcularNumeroShootsTotal(List<List<Double>> matriz, Laser laser) {
         int rows = matriz.size();
         int cols = matriz.get(0).size();
         double total = 0;
@@ -117,7 +152,7 @@ public class Calculador {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 double ablacion = matriz.get(i).get(j);
-                double shoots = numeroShoots(ablacion, calc.mmXShoot(193));
+                double shoots = numeroShoots(ablacion, calc.mmXShoot(laser));
                 System.out.println(shoots);
                 total = total + shoots;
             }
@@ -128,7 +163,7 @@ public class Calculador {
     }
 
     /*retorna el numero de shoots del punt que te mes shoots de tota la matriu */
-    public double maxShoots(List<List<Double>> matriz) {
+    public double maxShoots(List<List<Double>> matriz, Laser laser) {
         double maxShoots = 0;
         int rows = matriz.size();
         int cols = matriz.get(0).size();
@@ -136,7 +171,7 @@ public class Calculador {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 double ablacion = matriz.get(i).get(j);
-                double shoots = numeroShoots(ablacion, calc.mmXShoot(193));
+                double shoots = numeroShoots(ablacion, calc.mmXShoot(laser));
                 //double shoots = numeroShoots(ablacion, calc.mmXShoot(213));
                 if (shoots >= maxShoots) {
                     maxShoots = shoots;

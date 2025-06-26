@@ -34,10 +34,12 @@ public class Apexplanner {
     static Paciente paciente;
     static String path;
     private ImageService imagenesService = new ImageService();
+    public static Laser laser;
     //List<List<Double>> matriz;
 
     //private Nomograma nomograma;
     public Apexplanner() {
+        this.laser= new Laser();
 
     }
 
@@ -46,8 +48,9 @@ public class Apexplanner {
         System.out.println(path);
 
         //matriz = csv.crearMatriz(path);
-        paciente = new Paciente(nombre);
-        path = paciente.getPath();
+        this.paciente = new Paciente(nombre);
+        this.path = paciente.getPath();
+        this.laser= new Laser();
 
     }
 
@@ -85,32 +88,39 @@ public class Apexplanner {
         Apexplanner.frameImg = frameImg;
     }
 
-    public void solicitudDeClaculos(Scanner sc) {
-        System.out.println("Dame la longtud de onda del LASER: ");
-        String potencia = sc.nextLine();
+    public void solicitudDeClaculos(Scanner sc,Laser laser) {
+//        System.out.println("Dame la longtud de onda del LASER: ");
+//        String potencia = sc.nextLine();
         System.out.println("Dame la cantidad de mm a ablacionar: ");
         String ablacionNecesaria = sc.nextLine();
-        Double numero = null;
+//        Double numero = null;
+//
+//        while (numero == null) {
+//            try {
+//                numero = Double.valueOf(ablacionNecesaria);
+//                System.out.println("Número convertido: " + numero);
+//
+//            } catch (NumberFormatException e) {
+//                System.out.println("Error: El texto no es un número válido.");
+//                System.out.println("Dame la cantidad de mm a ablacionar: ");
+//                ablacionNecesaria = sc.nextLine();
+//                numero = null;
+//                
+//            }
+            
+            //String ablacionNecesaria= "0.90";//mm
+            System.out.println("tegido a ablacionar: "+ablacionNecesaria);
 
-        while (numero == null) {
-            try {
-                numero = Double.valueOf(ablacionNecesaria);
-                System.out.println("Número convertido: " + numero);
-
-            } catch (NumberFormatException e) {
-                System.out.println("Error: El texto no es un número válido.");
-                System.out.println("Dame la cantidad de mm a ablacionar: ");
-                ablacionNecesaria = sc.nextLine();
-                numero = null;
-                {
-                }
-            }
-
-            pow = calc.setPotenciaLaser(potencia);
-            ab = calc.mmXShoot(pow);
+            pow = calc.setPotenciaLaser(laser);
+            System.out.println("potencia laser: "+pow);
+            
+            ab = calc.mmXShoot(laser);            
+            System.out.println("ablacion x shot: "+ab);
+            
             numeroShoots = calc.numeroShoots(ablacionNecesaria, ab);
+            System.out.println("numero de shots: "+numeroShoots);
 
-        }
+        //}
 
     }
 
@@ -170,7 +180,7 @@ public class Apexplanner {
 
             System.out.println("CREATROR: " + ruta);
             imageList = new ImageListCreator(paciente.getDirectorioImageList(paciente.getNombre()), paciente);
-            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz());
+            ArrayList<BufferedImage> lista = imageList.crearListaImagenes(imageList.getMatriz(), laser);
             imageList.guardarImagenes(lista);
 
         } catch (Exception e) {
@@ -180,7 +190,7 @@ public class Apexplanner {
 
     public static void main(String[] args) {
         Apexplanner obj = Apexplanner.getInstance();
-        obj.setPaciente("mica");
+        obj.setPaciente("ari");
         csv.setNombre(obj.getPaciente().getNombre());
 
         Scanner sc = new Scanner(System.in);
@@ -204,7 +214,7 @@ public class Apexplanner {
 /*SPRINGBOOT*/        obj.iniciarSpringboot(args);
 
         /*CALCULATOR*/
-//        obj.solicitudDeClaculos(sc);
+        //obj.solicitudDeClaculos(sc);
 //        /*IMAGE ANALIZER*/
 //        frame = new JFrame();
 //        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -228,17 +238,19 @@ public class Apexplanner {
 //        System.out.println("total: "+calc.calcularNumeroShootsTotal(matriz));
 //        System.out.println("Maxiomo numero de disparos: " +calc.numeroShoots(String.valueOf(valorMaximo), calc.mmXShoot(193)));
 //        calc.maxShoots(matriz);
-/*IMAGEN EN COLOR*/        //csv.imprimirImagen(csv.prepararImagen(matriz, paciente), matriz);
+/*IMAGEN EN COLOR*/        //csv.imprimirImagen(csv.prepararImagen(matriz, paciente, laser), matriz, laser);
         //csv.imprimirImagen(csv.prepararImagen(matriz), matriz);
 
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
         //crearLlistaImatges(path);
         /*JFRAME CON SLIDER PARA MOSTRAR LAS IMAGENES*/
  /*FRAME AMB SLIDE*/        //obj.iniciarFrameSliderImagenes(path);
-//      
-//        setFrameImg(frameImg);
-//        front = new Front();
-        //ventata3d= new Vista3DSimulada(ruta);
+   
+
+        
+        /*PROBA CALCULATOR*/
+        //obj.solicitudDeClaculos(sc, laser);
+        
         sc.close();
 
     }

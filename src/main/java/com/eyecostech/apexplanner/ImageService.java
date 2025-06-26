@@ -88,7 +88,8 @@ public class ImageService {
 
     public void pintarPunto(int x, int y, double valor, BufferedImage image, int index) {
 
-        double shoots = calc.numeroShoots(valor, calc.mmXShoot(193));
+        //double shoots = calc.numeroShoots(valor, calc.mmXShoot(193));
+        double shoots = calc.numeroShoots(valor, calc.mmXShoot(new Laser()));
         //if (shoots > 0.0 && shoots <= index) { //pinta el fondo exterior del cercle blanc => te un pixel blanc al centre
         if (shoots >= 0.0 && shoots <= index) { //pinta el fondo exterior del cercle negre => no te un pixel blanc al centre
             image.setRGB(y, x, Color.BLACK.getRGB());
@@ -162,7 +163,7 @@ public class ImageService {
 
     }
 
-    public Mat crearImagenColor(List<List<Double>> matrix, Paciente paciente) {
+    public Mat crearImagenColor(List<List<Double>> matrix, Paciente paciente, Laser laser) {
 
         int rows = matrix.size();
         int cols = matrix.get(0).size();
@@ -184,10 +185,10 @@ public class ImageService {
 
         /*FET A PARTIR DELS NUMEROS DE SHOOT DE CADA PUNT DE LA MATRIU*/
         // Escalado
-        double maxValue = calc.maxShoots(matrix);
+        double maxValue = calc.maxShoots(matrix, laser);
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
-                int grayValue = (int) (255.0 * calc.numeroShoots(matrix.get(y).get(x), calc.mmXShoot(193)) / maxValue);
+                int grayValue = (int) (255.0 * calc.numeroShoots(matrix.get(y).get(x), calc.mmXShoot(laser)) / maxValue);
                 grayValue = Math.min(255, Math.max(0, grayValue));
                 image.ptr(y, x).put((byte) grayValue);
             }
@@ -213,7 +214,7 @@ public class ImageService {
         return image;
     }
 
-    public void addIsobaras(Mat grayImage, Mat colorImage, List<List<Double>> matrix, int numIsobaras) {
+    public void addIsobaras(Mat grayImage, Mat colorImage, List<List<Double>> matrix, int numIsobaras, Laser laser) {
 //        int rows = matrix.size();
 //        int cols = matrix.get(0).size();
 
@@ -224,7 +225,7 @@ public class ImageService {
 //                .max().orElse(1.0);
 
         /*passar aixo a disparos-> maxValue ha de ser maxShoots*/
-        double maxValue = calc.maxShoots(matrix);
+        double maxValue = calc.maxShoots(matrix, laser);
 //                .flatMap(List::stream)
 //                .mapToDouble(Double::doubleValue)
 //                .max().orElse(1.0);
