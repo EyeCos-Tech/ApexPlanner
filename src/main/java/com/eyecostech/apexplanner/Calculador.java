@@ -19,6 +19,7 @@ public class Calculador {
     public static final int MINIMO_COLOR = 0; //minim valor rgb d'un color -> Negre
 
     public double total = 0;
+    public Laser laser;
 
     /*Alt + 0181 = µ*/
     
@@ -41,6 +42,8 @@ public class Calculador {
 
     /*CALCULA QUAN ABLACIONA (en mm) AMB UN SHOOT EL LASER SEGONS LA POTENCIA*/
     public double mmXShoot(int potencia) {
+        
+        
         double referenciaPow = 193;
         double referenciaAbl = 0.00025;
 
