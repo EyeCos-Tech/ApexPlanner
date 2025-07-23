@@ -34,7 +34,7 @@ public class Paciente {
     public String path; //directori de l'arxiu .csv
     public String edad;
     //public String directorioBase = "C:/Users/Usuario/Documents/Topografias/OPD Scan III/";
-    public String directorioBase = "C:\\Users\\Usuario\\WORCKSPACES\\NetBeans26\\apexplanner\\pacientes";
+    public String directorioBase = "C:\\Users\\Usuario\\WORCKSPACES\\NetBeans26\\Apexplanner\\apexplanner\\pacientes";
     public String directorioImageList;
     public String directorioCsv;
     public String directorioDeGuardado;
