@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import org.bytedeco.javacpp.BytePointer;
@@ -30,14 +29,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import nomograma.Nomograma;
-import nomograma.Nomograma.ParametrosTratamiento;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import org.springframework.web.bind.annotation.RequestBody;
-import java.util.Map;
-import org.springframework.web.bind.annotation.PutMapping;
 
 /**
  * CONTROLADOR PRINCIPAL DE LA APLICACIÓN
