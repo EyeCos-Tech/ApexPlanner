@@ -151,16 +151,16 @@ public class CsvAnalizer {
         return image;
     }
 
-    public Mat prepararImagen(List<List<Double>> matrix) {
-
-        //Mat image = new ImageService().crearImagenColor(matrix, paciente);
-
-        /*si necessito girar la imatge*/
-//        BufferedImage imageBuff= converter.matToBufferedImage(image);
-//        imageBuff= converter.rotarImagen(imageBuff, 180.0, false);
-//        image= converter.bufferedImageToMat(imageBuff);
-        return image;
-    }
+//    public Mat prepararImagen(List<List<Double>> matrix) {
+//
+//        //Mat image = new ImageService().crearImagenColor(matrix, paciente);
+//
+//        /*si necessito girar la imatge*/
+////        BufferedImage imageBuff= converter.matToBufferedImage(image);
+////        imageBuff= converter.rotarImagen(imageBuff, 180.0, false);
+////        image= converter.bufferedImageToMat(imageBuff);
+//        return image;
+//    }
 
     /*mostra la imatge i imprimeix a consola la cantitat de disparos que has de fer en el punt on clickes */
     public void imprimirImagen(Mat imagen, List<List<Double>> matrix, Laser laser) {

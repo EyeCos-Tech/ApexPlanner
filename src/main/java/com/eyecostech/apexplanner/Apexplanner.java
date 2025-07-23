@@ -10,7 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * CLASE PRINCIPAL I MAIN CLASSE PRINCIPAL DEL SPRINGBOOT
+ * CLASE PRINCIPAL I MAIN CLASS DE SPRINGBOOT
  *
  * @author Pau Savall
  */
@@ -150,7 +150,7 @@ public class Apexplanner {
         return frameImg;
     }
 
-    /*INICIA EL FRAME DE IMAFENES PERO SENSE TREURE EL FRAME A PANTALLA NOMER RETORNA UNA LISRT<iMAGEiCON>*/
+    /*INICIA EL FRAME DE IMAGENES PERO SENSE TREURE EL FRAME A PANTALLA NOMER RETORNA UNA LISRT<iMAGEiCON>*/
     public FrameDeImagenes iniciarImagenes(String ruta) {
         String directorio = paciente.getDirectorioImageList(paciente.getNombre());
         frameImg = new FrameDeImagenes(directorio, true);
@@ -230,7 +230,6 @@ public class Apexplanner {
  /*CREAR MATRIZ*/        //List<List<Double>> matriz = csv.crearMatriz(paciente.getDirectorioCsv());
 //        csv.leerPunto(150, 265, matriz);
 //        List<Double> rutaLaser= sPlanner.ordenarXDistancia(matriz);
-//        System.out.println("BREAK!");
 //        System.out.println(rutaLaser.get(5).toString());
 //        double valorMaximo = csv.getMaxValue(matriz);
 //        System.out.println("Valor maximo: " + valorMaximo);

@@ -83,7 +83,7 @@ public class Front extends JFrame {
 
         // Imagen 2 (sin slider)
         JPanel panel2 = new JPanel(new BorderLayout());
-        isobaras.setImage((Image)converter.matToBufferedImage(csv.prepararImagen(csv.crearMatriz(Apexplanner.getPath()))));
+        //isobaras.setImage((Image)converter.matToBufferedImage(csv.prepararImagen(csv.crearMatriz(Apexplanner.getPath()))));
         imageLabel2 = new JLabel(isobaras, SwingConstants.CENTER);
         imageLabel2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         panel2.add(imageLabel2, BorderLayout.CENTER);
