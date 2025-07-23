@@ -16,3 +16,4 @@ backend/target/apexplanner-standalone.jar
 target/apexplanner-1.0.0.jar
 target/apexplanner-1.0.0.jar
 /target
+backend/target/
