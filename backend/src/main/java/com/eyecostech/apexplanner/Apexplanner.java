@@ -25,23 +25,31 @@ public class Apexplanner {
     static double ab = 0.00025; //ablacio del laser per disparo
     static double numeroShoots = 1;
     static BufferedImage imagen;
-    public static Calculador calc = new Calculador();
-    static ImageAnalizer imageAnalizer = new ImageAnalizer();
+    //public static Calculador calc = new Calculador();
+    public static Calculador calc;
+    //static ImageAnalizer imageAnalizer = new ImageAnalizer();
+    static ImageAnalizer imageAnalizer;
     static int[] pixel;
     static JFrame frame;
-    static CsvAnalizer csv = new CsvAnalizer();
+    //static CsvAnalizer csv = new CsvAnalizer();
+    static CsvAnalizer csv;
     static ImageListCreator imageList;
     static FrameDeImagenes frameImg;
     //static Vista3DSimulada ventata3d;
     static Paciente paciente;
     static String path;
-    private ImageService imagenesService = new ImageService();
+    //private ImageService imagenesService = new ImageService();
+    private ImageService imagenesService;
     public static Laser laser;
     //List<List<Double>> matriz;
 
     //private Nomograma nomograma;
     public Apexplanner() {
         this.laser= new Laser();
+        this.csv = new CsvAnalizer();
+        this.imageAnalizer = new ImageAnalizer();
+        this.calc = new Calculador();
+        this.imagenesService = new ImageService();
 
     }
 
@@ -49,6 +57,10 @@ public class Apexplanner {
         System.out.println("=== CREANDO INSTANCIA DE APEXPLANNER ===");
         System.out.println(path);
 
+        this.imagenesService = new ImageService();
+        this.calc = new Calculador();
+        this.imageAnalizer = new ImageAnalizer();
+        this.csv = new CsvAnalizer();
         //matriz = csv.crearMatriz(path);
         this.paciente = new Paciente(nombre);
         this.path = paciente.getPath();
