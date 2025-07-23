@@ -30,8 +30,16 @@ public class ApexplannerApp {
         System.out.println("     Sistema de Planificacion para Cirugia Laser");
         System.out.println("===================================================\n");
 
-        // Iniciar la aplicación Spring Boot sin try-catch
-        // Spring Boot maneja sus propias excepciones apropiadamente
+        // Debug seguro del stack trace
+        System.out.println("Informacion de debug:");
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        System.out.println("  Numero de elementos en stack: " + stackTrace.length);
+        for (int i = 0; i < Math.min(stackTrace.length, 5); i++) {
+            System.out.println("  [" + i + "] " + stackTrace[i]);
+        }
+        System.out.println();
+
+        // Iniciar la aplicación Spring Boot
         SpringApplication.run(ApexplannerApp.class, args);
     }
 
