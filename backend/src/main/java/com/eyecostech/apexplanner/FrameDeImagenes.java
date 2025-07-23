@@ -67,7 +67,7 @@ public class FrameDeImagenes extends JFrame {
         return nombreCarpeta;
     }
 
-    void cargarImagenes(String path) {
+    public void cargarImagenes(String path) {
         File folder = new File(path); // Carpeta con tus .png
         if (!folder.exists()) {
             JOptionPane.showMessageDialog(this, "Carpeta 'imagenes' no encontrada.", "Error", JOptionPane.ERROR_MESSAGE);

@@ -153,7 +153,7 @@ public class Calculador {
             for (int j = 0; j < cols; j++) {
                 double ablacion = matriz.get(i).get(j);
                 double shoots = numeroShoots(ablacion, calc.mmXShoot(laser));
-                System.out.println(shoots);
+                //System.out.println(shoots);
                 total = total + shoots;
             }
         }
