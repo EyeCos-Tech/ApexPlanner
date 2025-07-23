@@ -13,5 +13,6 @@ target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
 backend/target/apexplanner-1.0.0.jar
 backend/target/apexplanner-1.0.0.jar.original
 backend/target/apexplanner-standalone.jar
+target/apexplanner-1.0.0.jar
+target/apexplanner-1.0.0.jar
 /target
-backend/target/
