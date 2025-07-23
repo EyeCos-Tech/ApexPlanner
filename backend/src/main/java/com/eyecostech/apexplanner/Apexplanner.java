@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  * @author Pau Savall
  */
 //@SpringBootApplication // ← SPRING BOOT
-@Component
+//@Component
 public class Apexplanner {
 
     private static Apexplanner instancia;
