@@ -115,7 +115,7 @@ public class CsvAnalizer {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 double value = matrix.get(i).get(j);
-                System.out.println(value);
+                //System.out.println(value);
 
                 if (value > maxValue) {
                     maxValue = value;
