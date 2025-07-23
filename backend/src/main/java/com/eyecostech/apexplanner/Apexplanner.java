@@ -8,13 +8,15 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Component;
 
 /**
  * CLASE PRINCIPAL I MAIN CLASS DE SPRINGBOOT
  *
  * @author Pau Savall
  */
-@SpringBootApplication // ← SPRING BOOT
+//@SpringBootApplication // ← SPRING BOOT
+@Component
 public class Apexplanner {
 
     private static Apexplanner instancia;
