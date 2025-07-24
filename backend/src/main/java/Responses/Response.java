@@ -7,4 +7,7 @@ package Responses;
  */
 public class Response {
     
+    String id;
+    String name;
+    
 }
