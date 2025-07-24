@@ -24,7 +24,7 @@ public class Tests {
         apex = new Apexplanner(paciente);
         apex.getCsv().setNombre(apex.getPaciente().getNombre());
         
-        JFrameFront front = new JFrameFront();
+        //JFrameFront front = new JFrameFront();
 
         System.out.println("path imagenes: " + apex.getImagePath());
 
@@ -40,8 +40,8 @@ public class Tests {
 //
 //
         /*iniciar SPRINGBOOT*/
-        //ApexplannerApp.main(args);
-        //apex.iniciarSpringboot(args);
+        ApexplannerApp.main(args);
+        apex.iniciarSpringboot(args);
 //        
 //        /*CALCULATOR*/
 //        Scanner sc = new Scanner(System.in);
