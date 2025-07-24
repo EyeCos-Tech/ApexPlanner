@@ -30,6 +30,7 @@ import java.nio.file.Files;
 public class Paciente {
 
     public String nombre;
+    public String id;
     public String apellidos;
     public String path; //directori de l'arxiu .csv
     public String edad;
@@ -68,6 +69,14 @@ public class Paciente {
 //        } else {
 //            System.out.println("csv paciente: "+csv.getAbsolutePath());
 //        }
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
 
