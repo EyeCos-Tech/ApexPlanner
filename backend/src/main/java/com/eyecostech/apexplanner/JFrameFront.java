@@ -14,7 +14,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
-public class Front extends JFrame {
+public class JFrameFront extends JFrame {
 
     private JLabel imageLabel1;
     private JLabel imageLabel2;
@@ -29,7 +29,7 @@ public class Front extends JFrame {
     private ImageConverter converter;
     
 
-    public Front() {
+    public JFrameFront() {
         setTitle("Interfaz con imágenes y controles");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -77,7 +77,7 @@ public class Front extends JFrame {
         //imagenConSlider.setImage(Apexplanner.getFrameImg());
         imageLabel1 = new JLabel("Imagen 1", SwingConstants.CENTER);
         imageLabel1.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        //slider = new JSlider(0, 100, 50);
+        slider = new JSlider(0, 100, 50);
         panel1.add(imageLabel1, BorderLayout.CENTER);
         panel1.add(slider, BorderLayout.SOUTH);
 
@@ -134,6 +134,6 @@ public class Front extends JFrame {
     }
 
 //    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(Front::new);
+//        SwingUtilities.invokeLater(JFrameFront::new);
 //    }
 }
