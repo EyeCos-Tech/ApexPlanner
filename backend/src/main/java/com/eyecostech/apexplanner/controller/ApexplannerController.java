@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.eyecostech.apexplanner.controller;
 
 import com.eyecostech.apexplanner.Apexplanner;
@@ -632,6 +629,7 @@ public class ApexplannerController {
      * ASIGNA UN PACIEN AL PLANNER I RETORNA UN OBJECETE PACIENT AL FRONT (per
      * poder accedir a les veriables de paciente)*
      */
+    
     @PostMapping("/api/paciente")
     public ResponseEntity<Paciente> setPaciente(@RequestParam String nombre) {
         // Usar el método setPaciente existente, NO crear nueva instancia

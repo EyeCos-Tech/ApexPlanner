@@ -24,7 +24,7 @@ public class Tests {
         apex = new Apexplanner(paciente);
         apex.getCsv().setNombre(apex.getPaciente().getNombre());
         
-        JFrameFront front = new JFrameFront();
+        //JFrameFront front = new JFrameFront();
 
         System.out.println("path imagenes: " + apex.getImagePath());
 
@@ -78,10 +78,10 @@ public class Tests {
 //        //apex.getCsv().imprimirImagen(apex.getCsv().prepararImagen(matriz,apex.getPaciente(),apex.getLaser()), matriz,apex.getLaser());
 
         /*IMAGE LIST CREATOR: CREAR LLISTA D'IMATGES D'1 BIT AMB EL TRACTAMENT*/
-        //apex.crearLlistaImatges(apex.getPath());
+         apex.crearLlistaImatges(apex.getPath());
         
         /*FRAME AMB SLIDE*/
-        //apex.iniciarFrameSliderImagenes(apex.getPath());
+        apex.iniciarFrameSliderImagenes(apex.getPath());
     }
 
 }

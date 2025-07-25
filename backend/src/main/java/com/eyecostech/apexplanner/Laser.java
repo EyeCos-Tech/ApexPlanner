@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.eyecostech.apexplanner;
 
 /**
@@ -9,19 +5,51 @@ package com.eyecostech.apexplanner;
  * @author Pau Savall
  */
 public class Laser {
-
+    String name;
+    int id;
     double spot; //tamany disparo laser -> 50-500-1000 micras => 100 micras son 0.1 mm
     double potencia; // potencia laser -> 1.5 jules
     int longitudOnda; //refractiva -> 213 -> llum ultravioleta
 
     public Laser() {
-    
+        this.name= "Laser_1";
+        this.id= 0;    
         this.longitudOnda = 193; //213 pero de momento lo dejamos asi
         this.spot= 0.1; //mm
         this.potencia= 1.5; //jules=>W
             
     }
+    public Laser(int id) {
+        this.id= id;
+        this.longitudOnda = 193; //213 pero de momento lo dejamos asi
+        this.spot= 0.1; //mm
+        this.potencia= 1.5; //jules=>W
+            
+    }
+    public Laser(int id, double spot, double potencia, int longitudOnda ) {
+        this.id= id;
+        this.longitudOnda = longitudOnda;
+        this.spot=spot; //mm
+        this.potencia= potencia; //jules=>W
+            
+    }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
     public double getSpot() {
         return spot;
     }

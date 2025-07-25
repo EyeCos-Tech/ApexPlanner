@@ -25,6 +25,8 @@ import org.opencv.core.CvType;
  * @author Pau Savall
  */
 public class ImageAnalizer {
+    
+    BufferedImage colorImage;
 
     /*CARREGA IMATGE*/
     public BufferedImage cargarImagen(String ruta) {
