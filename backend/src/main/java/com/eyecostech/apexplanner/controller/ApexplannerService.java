@@ -13,21 +13,20 @@ import org.bytedeco.opencv.opencv_core.Mat;
  *  AQUI HAN D'ANAR LES PETICIONS DEL CONTROLLER (QUE LES REP DEL FRONT) I  ENVIAR-LES AL BACK
  * @author Pau Savall
  */
+
 public class ApexplannerService {
     
     Apexplanner apex;
-    
-    
+   
     public Paciente getPaciente (String pacienteId){
         
         
         return apex.getPaciente();
     }
+    
     public double getPowerValue(){
         double value;
-        value= apex.getLaser().getPotencia();
-        
-        
+        value= apex.getLaser().getPotencia();     
         return value;
     }
     
@@ -46,6 +45,14 @@ public class ApexplannerService {
             apex.setPaciente(pacienteId);
         
     }
+    public void setLaser(String laserId) {
     
+            apex.setPaciente(laserId);
+        
+    }   
     
+    public String getLaserName(){
+        
+        return apex.getLaser().getName();
+    }
 }

@@ -3,17 +3,24 @@ package com.eyecostech.apexplanner.controller;
 import Responses.UserResponse;
 import com.eyecostech.apexplanner.Paciente;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.javacpp.IntPointer;
+import org.bytedeco.opencv.global.opencv_imgcodecs;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -68,33 +75,34 @@ public class Controller {
             return null;
         }
     }
-     /**
+
+    /**
      * ASIGNA UN PACIENTE AL PLANNER I RETORNA UN OBJECETE PACIENT AL FRONT
      */
     @PostMapping("/api/paciente")
     public ResponseEntity<Paciente> setPaciente(@RequestParam String pacienteId) {
         Paciente paciente;
         service.setPaciente(pacienteId);
-        paciente= service.getPaciente(pacienteId);
+        paciente = service.getPaciente(pacienteId);
 //        this.path = planner.getPath();
 //
         return ResponseEntity.ok(paciente);
     }
-    
+
     @GetMapping("/paciente/info")
-    public ResponseEntity<String> getPacientAge(@PathVariable String pacientId){
+    public ResponseEntity<String> getPacientAge(@PathVariable String pacientId) {
         try {
             logger.info("Accediendo a {}", pacientId);
-    
-            String edad= service.getPaciente(pacientId).getEdad();
+
+            String edad = service.getPaciente(pacientId).getEdad();
             logger.info("Consulta exitosa. edad: {}", edad);
-            return  ResponseEntity.ok(edad);
+            return ResponseEntity.ok(edad);
         } catch (Exception e) {
-            
+
             logger.error("Fallo en la consulta");
-         
-            return null;           
-        }   
+
+            return null;
+        }
     }
 
     @GetMapping("/laser/cambiar")
@@ -106,30 +114,76 @@ public class Controller {
             logger.info("new Power: {}", service.getPowerValue());
             Map<String, Object> response = new HashMap<>();
             response.put("Operacion ", "exitosa.");
-            
+
             return ResponseEntity.ok(response);
         } else {
-            logger.error("Fallo al cambiar el valor!");logger.info("new Power: {}", service.getPowerValue());
+            logger.error("Fallo al cambiar el valor!");
+            logger.info("new Power: {}", service.getPowerValue());
             Map<String, Object> response = new HashMap<>();
-            response.put("Valor de power: ",service.getPowerValue() );          
+            response.put("Valor de power: ", service.getPowerValue());
             return ResponseEntity.ok(response);
         }
     }
-    
-    @GetMapping("/paciente/{pacienteId")
-    public ResponseEntity<?> getColorImage(@PathVariable String pacienteId){
+
+    @GetMapping("/paciente/colorImg/{pacienteId")
+    public ResponseEntity<?> getMatColorImage(@PathVariable String pacienteId) {
         try {
             logger.info("Accediendo a la imagen en color de {}", pacienteId);
-            Mat image= service.getColorImage();
+            Mat image = service.getColorImage();
             return ResponseEntity.ok()
                     .header("Color Image")
                     .body(image);
         } catch (Exception e) {
             logger.error("Error al acceder a la imagen en color de {}", pacienteId);
             return null;
-        }        
+        }
     }
 
+    @GetMapping("/paciente/colorImg/{pacienteId}")
+    public ResponseEntity<byte[]> getBytesColorImage(@PathVariable String pacienteId) throws IOException {
+        try {
+            logger.info("Accediendo a la imagen en color");
+            Mat imagen;
+            imagen = service.getColorImage();
+            BytePointer buffer = new BytePointer();
+            IntPointer params = new IntPointer(
+                    opencv_imgcodecs.IMWRITE_JPEG_QUALITY, 95
+            );
+            boolean success = opencv_imgcodecs.imencode(".jpg", imagen, buffer, params);
+            if (!success) {
+                throw new RuntimeException("Error al codificar la imagen");
+            }
+            byte[] imageBytes = new byte[(int) buffer.limit()];
+            buffer.get(imageBytes);
+
+            buffer.deallocate();
+            params.deallocate();
+            imagen.deallocate();
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(imageBytes);
+        } catch (Exception e) {
+            logger.error("error al cargar la imagen");
+            return null;
+        }
+
+    }
+
+    @PutMapping("/laser/{laserId}")
+    public ResponseEntity<?> setLaser(@PathVariable String laserId) {
+        logger.info("Cambiando el tipo de laser");
+        try {
+            service.setLaser(laserId);
+            return ResponseEntity.ok("Nuevo Laser: "+service.getLaserName());
+        } catch (Exception e) {
+            logger.error("Fallo al cambiar el Laser");
+            return ResponseEntity.ok("ERROR");
+        }
+
+    }
+
+}
 //    /**
 //     * Get API information GET /api/iris/info
 //     */
@@ -145,7 +199,6 @@ public class Controller {
 //    
 //        return null;
 //    }
-}
 /*loguejar
         try{
         loguejar
@@ -164,3 +217,19 @@ Map<String, Object> response = new HashMap<>();
 
         return ResponseEntity.ok(response);
  */
+
+/*PER A RETORNAR MES D'UN OBJECTE EN UNA RESPONSE.
+fas un mapa amb clau:objecte
+
+@GetMapping("/api/ejemplo")
+public ResponseEntity<?> obtenerDatos() {
+    Paciente paciente = new Paciente("Juan");
+    List<Double> valores = Arrays.asList(1.2, 3.4, 5.6);
+    
+    Map<String, Object> respuesta = new HashMap<>();
+    respuesta.put("paciente", paciente);
+    respuesta.put("valores", valores);
+    
+    return ResponseEntity.ok(respuesta);
+}
+*/
